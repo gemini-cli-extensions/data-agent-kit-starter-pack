@@ -1,0 +1,24 @@
+{
+  extends: [
+    'config:recommended',
+    ':semanticCommitTypeAll(chore)',
+    ':ignoreUnstable',
+    ':separateMajorReleases',
+    ':prConcurrentLimitNone',
+    ':prHourlyLimitNone',
+    ':preserveSemverRanges',
+  ],
+  rebaseWhen: 'conflicted',
+  dependencyDashboardLabels: [
+    'type: process',
+  ],
+  packageRules: [
+    {
+      groupName: 'GitHub Actions',
+      matchManagers: [
+        'github-actions',
+      ],
+      pinDigests: true,
+    }
+  ]
+}
