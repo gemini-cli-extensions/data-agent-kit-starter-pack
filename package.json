@@ -1,0 +1,13 @@
+{
+  "name": "data-cloud-ai-dev-kit",
+  "version": "0.1.0",
+  "description": "Standalone MCP server for notebook manipulation",
+  "bin": {
+    "notebook-tools": "bin/run.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "tsx": "^4.7.0",
+    "zod": "^3.22.0"
+  }
+}
