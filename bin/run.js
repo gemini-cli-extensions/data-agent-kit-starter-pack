@@ -2,10 +2,9 @@
 const { spawn } = require('child_process');
 const path = require('path');
 
-const tsxPath = path.resolve(__dirname, '../node_modules/.bin/tsx');
-const serverPath = path.resolve(__dirname, '../notebook_mcp/server.ts');
+const serverPath = path.resolve(__dirname, '../notebook_mcp/build/server.js');
 
-const child = spawn(tsxPath, [serverPath], {
+const child = spawn(process.execPath, [serverPath], {
   stdio: 'inherit'
 });
 

@@ -1,8 +1,8 @@
 # Ignore dependencies
 node_modules/
 
-# Ignore compiled output
-build/
+# Ensure compiled output is INCLUDED for npx
+# build/
 
 # Ignore IDE or MCP local configs
 .mcp.json
