@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Standalone MCP server for notebook manipulation",
   "bin": {
-    "notebook-tools": "bin/run.js"
+    "notebook-tools": "notebook_mcp/dist/index.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
