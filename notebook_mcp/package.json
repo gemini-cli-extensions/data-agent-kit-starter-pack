@@ -4,7 +4,7 @@
   "description": "Standalone MCP server for notebook manipulation",
   "main": "server.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "npm run bundle",
     "bundle": "esbuild server.ts --bundle --platform=node --outfile=dist/index.js --banner:js=\"#!/usr/bin/env node\"",
     "prepublishOnly": "npm run build",
     "start": "tsx server.ts"

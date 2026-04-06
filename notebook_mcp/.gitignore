@@ -1,8 +1,8 @@
 # Ignore dependencies
 node_modules/
 
-# Ensure compiled output is INCLUDED for npx
-# build/
+# Ignore compiled output (we use dist/ for bundle now)
+build/
 
 # Ignore IDE or MCP local configs
 .mcp.json
