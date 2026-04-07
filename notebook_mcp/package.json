@@ -16,7 +16,6 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "@vercel/ncc": "^0.38.4",
     "esbuild": "^0.28.0",
     "typescript": "^5.0.0"
   }
