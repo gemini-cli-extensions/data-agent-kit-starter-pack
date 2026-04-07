@@ -1,6 +1,7 @@
 import {Server} from '@modelcontextprotocol/sdk/server/index.js';
 import {StdioServerTransport} from '@modelcontextprotocol/sdk/server/stdio.js';
 import { spawn } from 'child_process';
+import path from 'path';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -212,8 +213,11 @@ async function run() {
   if (isIde) {
     console.error('IDE environment detected. Spawning proxy to extension host...');
     
-    const proxyCmd = '/Users/snehamitshah/.antigravity/extensions/googlecloudtools.datacloud-99.99.99/mcp_servers/cli/mcp_proxy_bundle.js';
-    const proxyArgs = ['notebooks-antigravity'];
+    const extPath = process.env.DATA_CLOUD_CURR_EXT_PATH || '/Users/snehamitshah/.antigravity/extensions/googlecloudtools.datacloud-99.99.99';
+    const ideName = process.env.DATA_CLOUD_CURR_IDE_NAME || 'Antigravity';
+
+    const proxyCmd = path.join(extPath, 'mcp_servers/cli/mcp_proxy_bundle.js');
+    const proxyArgs = [`notebooks-${ideName.toLowerCase()}`];
 
     const child = spawn(process.execPath, [proxyCmd, ...proxyArgs], { stdio: 'inherit' });
 

@@ -3223,8 +3223,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path) {
-      let input = path;
+    function removeDotSegments(path2) {
+      let input = path2;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -3423,8 +3423,8 @@ var require_schemes = __commonJS({
         wsComponent.secure = void 0;
       }
       if (wsComponent.resourceName) {
-        const [path, query] = wsComponent.resourceName.split("?");
-        wsComponent.path = path && path !== "/" ? path : void 0;
+        const [path2, query] = wsComponent.resourceName.split("?");
+        wsComponent.path = path2 && path2 !== "/" ? path2 : void 0;
         wsComponent.query = query;
         wsComponent.resourceName = void 0;
       }
@@ -7277,8 +7277,8 @@ function getErrorMap() {
 
 // node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
-  const { data, path, errorMaps, issueData } = params;
-  const fullPath = [...path, ...issueData.path || []];
+  const { data, path: path2, errorMaps, issueData } = params;
+  const fullPath = [...path2, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -7394,11 +7394,11 @@ var errorUtil;
 
 // node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
-  constructor(parent, value, path, key) {
+  constructor(parent, value, path2, key) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path;
+    this._path = path2;
     this._key = key;
   }
   get path() {
@@ -11035,10 +11035,10 @@ function assignProp(target, prop, value) {
     configurable: true
   });
 }
-function getElementAtPath(obj, path) {
-  if (!path)
+function getElementAtPath(obj, path2) {
+  if (!path2)
     return obj;
-  return path.reduce((acc, key) => acc?.[key], obj);
+  return path2.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -11358,11 +11358,11 @@ function aborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path, issues) {
+function prefixIssues(path2, issues) {
   return issues.map((iss) => {
     var _a;
     (_a = iss).path ?? (_a.path = []);
-    iss.path.unshift(path);
+    iss.path.unshift(path2);
     return iss;
   });
 }
@@ -17924,6 +17924,7 @@ var StdioServerTransport = class {
 
 // server.ts
 var import_child_process = require("child_process");
+var import_path = __toESM(require("path"));
 
 // tools/delete_cell.ts
 var fs = __toESM(require("fs/promises"));
@@ -18244,8 +18245,10 @@ async function run() {
   const isIde = Object.keys(process.env).some((key) => key.startsWith("GEMINI_CLI_IDE_"));
   if (isIde) {
     console.error("IDE environment detected. Spawning proxy to extension host...");
-    const proxyCmd = "/Users/snehamitshah/.antigravity/extensions/googlecloudtools.datacloud-99.99.99/mcp_servers/cli/mcp_proxy_bundle.js";
-    const proxyArgs = ["notebooks-antigravity"];
+    const extPath = process.env.DATA_CLOUD_CURR_EXT_PATH || "/Users/snehamitshah/.antigravity/extensions/googlecloudtools.datacloud-99.99.99";
+    const ideName = process.env.DATA_CLOUD_CURR_IDE_NAME || "Antigravity";
+    const proxyCmd = import_path.default.join(extPath, "mcp_servers/cli/mcp_proxy_bundle.js");
+    const proxyArgs = [`notebooks-${ideName.toLowerCase()}`];
     const child = (0, import_child_process.spawn)(process.execPath, [proxyCmd, ...proxyArgs], { stdio: "inherit" });
     child.on("exit", (code) => {
       console.error(`Proxy process exited with code ${code}`);
