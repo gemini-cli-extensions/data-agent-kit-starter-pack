@@ -1,5 +1,6 @@
 import {Server} from '@modelcontextprotocol/sdk/server/index.js';
 import {StdioServerTransport} from '@modelcontextprotocol/sdk/server/stdio.js';
+import { spawn } from 'child_process';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -205,6 +206,25 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 async function run() {
+  // Check for IDE environment variables
+  const isIde = Object.keys(process.env).some(key => key.startsWith('GEMINI_CLI_IDE_'));
+
+  if (isIde) {
+    console.error('IDE environment detected. Spawning proxy to extension host...');
+    
+    const proxyCmd = '/Users/snehamitshah/.antigravity/extensions/googlecloudtools.datacloud-99.99.99/mcp_servers/cli/mcp_proxy_bundle.js';
+    const proxyArgs = ['notebooks-antigravity'];
+
+    const child = spawn(process.execPath, [proxyCmd, ...proxyArgs], { stdio: 'inherit' });
+
+    child.on('exit', (code) => {
+      console.error(`Proxy process exited with code ${code}`);
+      process.exit(code ?? 0);
+    });
+    
+    return;
+  }
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error('Standalone Notebook MCP server running on stdio');
