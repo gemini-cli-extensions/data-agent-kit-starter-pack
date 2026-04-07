@@ -15,10 +15,12 @@ export async function readCell(notebookPath: string, cellIndex: number) {
 
     const cell = notebook.cells[cellIndex];
     const source = Array.isArray(cell.source) ? cell.source.join('') : cell.source || '';
+    const outputs = cell.outputs || [];
 
     return {
       cellType: cell.cell_type,
       content: source,
+      outputs: outputs,
     };
   } catch (error: any) {
     throw new Error(`Failed to read cell: ${error.message}`);

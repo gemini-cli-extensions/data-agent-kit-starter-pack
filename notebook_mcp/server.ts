@@ -15,7 +15,7 @@ import {replaceCell} from './tools/replace_cell.js';
 
 const server = new Server(
   {
-    name: 'standalone-notebook-mcp',
+    name: 'notebook',
     version: '0.1.0',
   },
   {

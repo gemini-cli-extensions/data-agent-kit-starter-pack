@@ -12,10 +12,16 @@ export async function listCells(notebookPath: string) {
     const cells = notebook.cells.map((cell: any, index: number) => {
       const source = Array.isArray(cell.source) ? cell.source.join('') : cell.source || '';
       const preview = source.split('\n')[0] || '';
+      const fullPreview = preview;
+      const needsTruncation = fullPreview.length > 100;
+      const previewText = needsTruncation 
+        ? fullPreview.substring(0, 100) + '... [truncated]' 
+        : fullPreview;
+
       return {
         index,
         type: cell.cell_type,
-        preview: preview.substring(0, 100), // Limit preview length
+        preview: previewText,
       };
     });
 

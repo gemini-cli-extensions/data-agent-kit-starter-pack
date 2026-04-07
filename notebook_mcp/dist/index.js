@@ -17997,11 +17997,13 @@ async function listCells(notebookPath) {
     const cells = notebook.cells.map((cell, index) => {
       const source = Array.isArray(cell.source) ? cell.source.join("") : cell.source || "";
       const preview = source.split("\n")[0] || "";
+      const fullPreview = preview;
+      const needsTruncation = fullPreview.length > 100;
+      const previewText = needsTruncation ? fullPreview.substring(0, 100) + "... [truncated]" : fullPreview;
       return {
         index,
         type: cell.cell_type,
-        preview: preview.substring(0, 100)
-        // Limit preview length
+        preview: previewText
       };
     });
     return {
@@ -18026,9 +18028,11 @@ async function readCell(notebookPath, cellIndex) {
     }
     const cell = notebook.cells[cellIndex];
     const source = Array.isArray(cell.source) ? cell.source.join("") : cell.source || "";
+    const outputs = cell.outputs || [];
     return {
       cellType: cell.cell_type,
-      content: source
+      content: source,
+      outputs
     };
   } catch (error2) {
     throw new Error(`Failed to read cell: ${error2.message}`);
@@ -18061,7 +18065,7 @@ async function replaceCell(notebookPath, cellIndex, content) {
 // server.ts
 var server = new Server(
   {
-    name: "standalone-notebook-mcp",
+    name: "notebook",
     version: "0.1.0"
   },
   {
