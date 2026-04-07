@@ -1,0 +1,20 @@
+{
+  "name": "data-cloud-ai-dev-kit-marketplace",
+  "interface": {
+    "displayName": "data-cloud-ai-dev-kit Marketplace"
+  },
+  "plugins": [
+    {
+      "name": "data-cloud-ai-dev-kit",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
