@@ -18127,7 +18127,7 @@ async function searchCells(notebookPath, query, caseSensitive = false) {
       });
       if (matchingLines.length > 0) {
         matches.push({
-          index,
+          cell_index: index,
           type: cell.cell_type,
           matches: matchingLines
         });

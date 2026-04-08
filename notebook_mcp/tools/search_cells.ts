@@ -43,7 +43,7 @@ export async function searchCells(
 
       if (matchingLines.length > 0) {
         matches.push({
-          index,
+          cell_index: index,
           type: cell.cell_type,
           matches: matchingLines,
         });
