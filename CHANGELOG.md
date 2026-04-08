@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit/compare/0.1.4...0.1.5) (2026-04-08)
+
+
+### Bug Fixes
+
+* use v4 tag for setup-node in workflow ([#14](https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit/issues/14)) ([2d72fff](https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit/commit/2d72fffed3a7f8c14cf2450d03f7895d1de4ab2d))
+
 ## [0.1.4](https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit/compare/0.1.3...0.1.4) (2026-04-08)
 
 
