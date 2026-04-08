@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit/compare/0.1.2...0.1.3) (2026-04-08)
+
+
+### Bug Fixes
+
+* add missing notebook_guidance skill and fix data-autocleaning markdown formatting ([#6](https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit/issues/6)) ([3461cd9](https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit/commit/3461cd9f044e94cf89b5e90513ebf945e61f8863))
+
 ## [0.1.2](https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit/compare/0.1.1...0.1.2) (2026-04-08)
 
 
