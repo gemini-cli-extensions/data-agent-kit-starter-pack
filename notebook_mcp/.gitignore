@@ -1,0 +1,9 @@
+# Ignore dependencies
+node_modules/
+
+# Ignore compiled output (we use dist/ for bundle now)
+build/
+
+# Ignore IDE or MCP local configs
+.mcp.json
+.claude-plugin/
