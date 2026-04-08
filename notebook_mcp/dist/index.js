@@ -1,4 +1,20 @@
 #!/usr/bin/env node
+/*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 "use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
@@ -6786,12 +6802,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs6, exportName) {
+    function addFormats(ajv, list, fs8, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs6[f]);
+        ajv.addFormat(f, fs8[f]);
     }
     module2.exports = exports2 = formatsPlugin;
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -17987,7 +18003,7 @@ async function insertCell(notebookPath, cellType, content, cellIndex) {
 
 // tools/list_cells.ts
 var fs3 = __toESM(require("fs/promises"));
-async function listCells(notebookPath) {
+async function listCells(notebookPath, maxLength = 100) {
   try {
     const data = await fs3.readFile(notebookPath, "utf8");
     const notebook = JSON.parse(data);
@@ -17998,8 +18014,8 @@ async function listCells(notebookPath) {
       const source = Array.isArray(cell.source) ? cell.source.join("") : cell.source || "";
       const preview = source.split("\n")[0] || "";
       const fullPreview = preview;
-      const needsTruncation = fullPreview.length > 100;
-      const previewText = needsTruncation ? fullPreview.substring(0, 100) + "... [truncated]" : fullPreview;
+      const needsTruncation = fullPreview.length > maxLength;
+      const previewText = needsTruncation ? fullPreview.substring(0, maxLength) + "... [truncated]" : fullPreview;
       return {
         index,
         type: cell.cell_type,
@@ -18062,6 +18078,69 @@ async function replaceCell(notebookPath, cellIndex, content) {
   }
 }
 
+// tools/get_notebook_info.ts
+var fs6 = __toESM(require("fs/promises"));
+async function getNotebookInfo(notebookPath) {
+  try {
+    const data = await fs6.readFile(notebookPath, "utf8");
+    const notebook = JSON.parse(data);
+    if (!notebook.cells || !Array.isArray(notebook.cells)) {
+      throw new Error("Invalid notebook format: missing cells array");
+    }
+    const totalCells = notebook.cells.length;
+    let codeCells = 0;
+    let markdownCells = 0;
+    notebook.cells.forEach((cell) => {
+      if (cell.cell_type === "code") codeCells++;
+      if (cell.cell_type === "markdown") markdownCells++;
+    });
+    return {
+      totalCells,
+      cellTypeSummary: {
+        code: codeCells,
+        markdown: markdownCells
+      },
+      metadata: notebook.metadata || {}
+    };
+  } catch (error2) {
+    throw new Error(`Failed to get notebook info: ${error2.message}`);
+  }
+}
+
+// tools/search_cells.ts
+var fs7 = __toESM(require("fs/promises"));
+async function searchCells(notebookPath, query, caseSensitive = false) {
+  try {
+    const data = await fs7.readFile(notebookPath, "utf8");
+    const notebook = JSON.parse(data);
+    if (!notebook.cells || !Array.isArray(notebook.cells)) {
+      throw new Error("Invalid notebook format: missing cells array");
+    }
+    const matches = [];
+    const searchFor = caseSensitive ? query : query.toLowerCase();
+    notebook.cells.forEach((cell, index) => {
+      const source = Array.isArray(cell.source) ? cell.source.join("") : cell.source || "";
+      const lines = source.split("\n");
+      const matchingLines = lines.filter((line) => {
+        const textToSearch = caseSensitive ? line : line.toLowerCase();
+        return textToSearch.includes(searchFor);
+      });
+      if (matchingLines.length > 0) {
+        matches.push({
+          index,
+          type: cell.cell_type,
+          matches: matchingLines
+        });
+      }
+    });
+    return {
+      matches
+    };
+  } catch (error2) {
+    throw new Error(`Failed to search cells: ${error2.message}`);
+  }
+}
+
 // server.ts
 var server = new Server(
   {
@@ -18086,6 +18165,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             notebookPath: {
               type: "string",
               description: "Path to the notebook file"
+            },
+            maxLength: {
+              type: "number",
+              description: "Maximum length of the preview snippet for each cell (optional, defaults to 100)"
             }
           },
           required: ["notebookPath"]
@@ -18169,12 +18252,51 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["notebookPath", "cellIndex"]
         }
+      },
+      {
+        name: "get_notebook_info",
+        description: "Get summary information about a notebook",
+        inputSchema: {
+          type: "object",
+          properties: {
+            notebookPath: {
+              type: "string",
+              description: "Path to the notebook file"
+            }
+          },
+          required: ["notebookPath"]
+        }
+      },
+      {
+        name: "search_cells",
+        description: "Search for text within cells of a notebook",
+        inputSchema: {
+          type: "object",
+          properties: {
+            notebookPath: {
+              type: "string",
+              description: "Path to the notebook file"
+            },
+            query: {
+              type: "string",
+              description: "Text to search for"
+            },
+            caseSensitive: {
+              type: "boolean",
+              description: "Whether search is case sensitive (optional)"
+            }
+          },
+          required: ["notebookPath", "query"]
+        }
       }
     ]
   };
 });
 var NotebookPathSchema = external_exports.object({
   notebookPath: external_exports.string()
+});
+var ListCellsSchema = NotebookPathSchema.extend({
+  maxLength: external_exports.number().optional()
 });
 var CellIndexSchema = NotebookPathSchema.extend({
   cellIndex: external_exports.number()
@@ -18187,13 +18309,17 @@ var InsertCellSchema = NotebookPathSchema.extend({
 var ReplaceCellSchema = CellIndexSchema.extend({
   content: external_exports.string()
 });
+var SearchCellsSchema = NotebookPathSchema.extend({
+  query: external_exports.string(),
+  caseSensitive: external_exports.boolean().optional()
+});
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
   try {
     switch (name) {
       case "list_cells": {
-        const parsed = NotebookPathSchema.parse(args);
-        const result = await listCells(parsed.notebookPath);
+        const parsed = ListCellsSchema.parse(args);
+        const result = await listCells(parsed.notebookPath, parsed.maxLength);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
         };
@@ -18235,6 +18361,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
         };
       }
+      case "get_notebook_info": {
+        const parsed = NotebookPathSchema.parse(args);
+        const result = await getNotebookInfo(parsed.notebookPath);
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
+        };
+      }
+      case "search_cells": {
+        const parsed = SearchCellsSchema.parse(args);
+        const result = await searchCells(parsed.notebookPath, parsed.query, parsed.caseSensitive);
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
+        };
+      }
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
@@ -18247,10 +18387,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 async function run() {
   const isIde = Object.keys(process.env).some((key) => key.startsWith("GEMINI_CLI_IDE_"));
-  if (isIde) {
-    console.error("IDE environment detected. Spawning proxy to extension host...");
-    const extPath = process.env.DATA_CLOUD_CURR_EXT_PATH || "/Users/snehamitshah/.antigravity/extensions/googlecloudtools.datacloud-99.99.99";
-    const ideName = process.env.DATA_CLOUD_CURR_IDE_NAME || "Antigravity";
+  const extPath = process.env.DATA_CLOUD_CURR_EXT_PATH;
+  const ideName = process.env.DATA_CLOUD_CURR_IDE_NAME;
+  if (isIde && extPath && ideName) {
+    console.error("IDE environment and Data Cloud variables detected. Spawning proxy to extension host...");
     const proxyCmd = import_path.default.join(extPath, "mcp_servers/cli/mcp_proxy_bundle.js");
     const proxyArgs = [`notebooks-${ideName.toLowerCase()}`];
     const child = (0, import_child_process.spawn)(process.execPath, [proxyCmd, ...proxyArgs], { stdio: "inherit" });

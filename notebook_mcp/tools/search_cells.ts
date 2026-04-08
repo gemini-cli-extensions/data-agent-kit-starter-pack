@@ -16,11 +16,10 @@
 
 import * as fs from 'fs/promises';
 
-export async function insertCell(
+export async function searchCells(
   notebookPath: string,
-  cellType: "code" | "markdown",
-  content: string,
-  cellIndex?: number
+  query: string,
+  caseSensitive: boolean = false
 ) {
   try {
     const data = await fs.readFile(notebookPath, 'utf8');
@@ -30,32 +29,31 @@ export async function insertCell(
       throw new Error("Invalid notebook format: missing cells array");
     }
 
-    const newCell = {
-      cell_type: cellType,
-      metadata: {},
-      source: [content], // Valid nbformat: array containing a single string
-    };
+    const matches: any[] = [];
+    const searchFor = caseSensitive ? query : query.toLowerCase();
 
-    if (cellType === "code") {
-      (newCell as any).outputs = [];
-      (newCell as any).execution_count = null;
-    }
+    notebook.cells.forEach((cell: any, index: number) => {
+      const source = Array.isArray(cell.source) ? cell.source.join('') : cell.source || '';
+      const lines = source.split('\n');
+      
+      const matchingLines = lines.filter((line: string) => {
+        const textToSearch = caseSensitive ? line : line.toLowerCase();
+        return textToSearch.includes(searchFor);
+      });
 
-    if (cellIndex === undefined || cellIndex >= notebook.cells.length) {
-      notebook.cells.push(newCell);
-    } else if (cellIndex < 0) {
-      notebook.cells.unshift(newCell);
-    } else {
-      notebook.cells.splice(cellIndex, 0, newCell);
-    }
-
-    await fs.writeFile(notebookPath, JSON.stringify(notebook, null, 2), 'utf8');
+      if (matchingLines.length > 0) {
+        matches.push({
+          index,
+          type: cell.cell_type,
+          matches: matchingLines,
+        });
+      }
+    });
 
     return {
-      success: true,
-      message: `Cell inserted at index ${cellIndex !== undefined ? cellIndex : notebook.cells.length - 1}`,
+      matches,
     };
   } catch (error: any) {
-    throw new Error(`Failed to insert cell: ${error.message}`);
+    throw new Error(`Failed to search cells: ${error.message}`);
   }
 }

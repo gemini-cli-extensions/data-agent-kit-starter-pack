@@ -5,7 +5,7 @@
   "main": "server.ts",
   "scripts": {
     "build": "npm run bundle",
-    "bundle": "esbuild server.ts --bundle --platform=node --outfile=dist/index.js --banner:js=\"#!/usr/bin/env node\"",
+    "bundle": "node build.js",
     "prepublishOnly": "npm run build",
     "start": "tsx server.ts"
   },

@@ -16,7 +16,7 @@
 
 import * as fs from 'fs/promises';
 
-export async function listCells(notebookPath: string, maxLength: number = 100) {
+export async function getNotebookInfo(notebookPath: string) {
   try {
     const data = await fs.readFile(notebookPath, 'utf8');
     const notebook = JSON.parse(data);
@@ -25,26 +25,24 @@ export async function listCells(notebookPath: string, maxLength: number = 100) {
       throw new Error("Invalid notebook format: missing cells array");
     }
 
-    const cells = notebook.cells.map((cell: any, index: number) => {
-      const source = Array.isArray(cell.source) ? cell.source.join('') : cell.source || '';
-      const preview = source.split('\n')[0] || '';
-      const fullPreview = preview;
-      const needsTruncation = fullPreview.length > maxLength;
-      const previewText = needsTruncation 
-        ? fullPreview.substring(0, maxLength) + '... [truncated]' 
-        : fullPreview;
+    const totalCells = notebook.cells.length;
+    let codeCells = 0;
+    let markdownCells = 0;
 
-      return {
-        index,
-        type: cell.cell_type,
-        preview: previewText,
-      };
+    notebook.cells.forEach((cell: any) => {
+      if (cell.cell_type === 'code') codeCells++;
+      if (cell.cell_type === 'markdown') markdownCells++;
     });
 
     return {
-      cells,
+      totalCells,
+      cellTypeSummary: {
+        code: codeCells,
+        markdown: markdownCells,
+      },
+      metadata: notebook.metadata || {},
     };
   } catch (error: any) {
-    throw new Error(`Failed to list cells: ${error.message}`);
+    throw new Error(`Failed to get notebook info: ${error.message}`);
   }
 }
