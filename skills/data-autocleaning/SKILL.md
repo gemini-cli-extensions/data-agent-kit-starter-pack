@@ -121,21 +121,22 @@ Perform these checks **before** generating the `implementation_plan.md`.
 
 #### Data Cleaning Rules
 
-| Category | Rule |
-| --- | --- |
-| **Garbage Values** | Drop or convert to `NULL` only for malformed data (e.g., unparseable dates, zero-length strings for non-nullable integers). |
-| **Unit Normalization** | Standardize measurable units (e.g., `'C'` → `'F'`) to the most common unit. If units are too varied (e.g., `mg`, `liter`), leave as-is. |
-| **Type Conversion** | Use `COALESCE` with `SAFE.PARSE_*` functions for multiple date/time/datetime/timestamp formats. Fetch diverse samples when source data shows high variance. |
+- **Garbage Values**: Drop or convert to `NULL` only for malformed data (e.g., unparseable dates, zero-length strings for non-nullable integers).
+- **Unit Normalization**: Standardize measurable units (e.g., `'C'` → `'F'`) to the most common unit. If units are too varied (e.g., `mg`, `liter`), leave as-is.
+- **Type Conversion**: Use `COALESCE` with `SAFE.PARSE_*` functions for multiple date/time/datetime/timestamp formats. Fetch diverse samples when source data shows high variance.
 
 #### JSON Data Handling
 
-| Rule | Detail |
-| --- | --- |
-| **Parsing** | Use `SAFE.PARSE_JSON` to cast JSON strings to `JSON` type. **Never** use deprecated `JSON_EXTRACT_*`. |
-| **Extraction** | Flatten or extract fields **only** if a destination schema requires it. |
-| **Accessors** | Use `JSON_VALUE`, `JSON_QUERY`, `JSON_QUERY_ARRAY`, `JSON_VALUE_ARRAY` without `SAFE.` prefix (they are safe by default). |
-| **Schema mapping** | When a destination schema is provided, extract JSON fields to match target column names and types. |
-| **NULL handling** | If `SAFE.PARSE_JSON` returns NULL, keep the original string and note the invalid JSON in the cleaning summary. |
+-   **Parsing**: Use `SAFE.PARSE_JSON` to cast JSON strings to `JSON` type.
+    **Never** use deprecated `JSON_EXTRACT_*`.
+-   **Extraction**: Flatten or extract fields **only** if a destination schema
+    requires it.
+-   **Accessors**: Use `JSON_VALUE`, `JSON_QUERY`, `JSON_QUERY_ARRAY`,
+    `JSON_VALUE_ARRAY` without `SAFE.` prefix (they are safe by default).
+-   **Schema mapping**: When a destination schema is provided, extract JSON
+    fields to match target column names and types.
+-   **NULL handling**: If `SAFE.PARSE_JSON` returns NULL, keep the original
+    string and note the invalid JSON in the cleaning summary.
 
 #### Array Data Handling
 
@@ -182,10 +183,12 @@ Perform these checks **before** generating the `implementation_plan.md`.
 5.  **Compare profiles** (Skip if scans were denied) — Check the new profile
     against the Step 1 profile for **every transformed column**:
 
-    Anomaly Type          | Threshold
-    --------------------- | -------------------------------------------------
-    **NULL increase**     | >1% increase compared to source (unless expected)
-    **Value range shift** | Unexpected ranges or formats
+    ```markdown
+    | Anomaly Type | Threshold |
+    | --- | --- |
+    | **NULL increase** | >1% increase compared to source (unless expected) |
+    | **Value range shift** | Unexpected ranges or formats |
+    ```
 
 6.  **Iterate on anomalies** — For each anomaly:
 
@@ -212,14 +215,16 @@ here instead of Job IDs.
 
 ### Step 4: Documentation
 
-Your `walkthrough.md` must contain the following for each transformation:
+Your `walkthrough.md` must contain a table for each transformation in the following format:
 
-Field                             | Description
---------------------------------- | -----------------------------------------
-**Destination schema considered** | The target column/type being matched
-**Issue Detected**                | What data quality problem was found
-**Transformation Applied**        | The SQL logic used to fix it
-**Benefit**                       | Why this transformation improves the data
+```markdown
+| Field | Description |
+| --- | --- |
+| **Destination schema considered** | The target column/type being matched |
+| **Issue Detected** | What data quality problem was found |
+| **Transformation Applied** | The SQL logic used to fix it |
+| **Benefit** | Why this transformation improves the data |
+```
 
 Include a summary of all quality review steps and profiling evidence.
 
