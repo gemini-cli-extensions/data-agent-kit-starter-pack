@@ -53,7 +53,8 @@ data.plugins = data.plugins || [];
 data.plugins = data.plugins.filter(p => p.name !== '${PLUGIN_NAME}');
 data.plugins.push({
     name: '${PLUGIN_NAME}',
-    source: { source: 'local', path: './${PLUGIN_NAME}' },
+    interface: { displayName: 'Google Data Cloud AI Dev Kit' },
+    source: { source: 'local', path: './.agents/plugins/${PLUGIN_NAME}' },
     policy: { installation: 'AVAILABLE', authentication: 'ON_INSTALL' },
     category: 'Productivity'
 });
