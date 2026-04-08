@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit/compare/0.1.3...0.1.4) (2026-04-08)
+
+
+### Features
+
+* Add Standalone Notebook MCP Server ([#4](https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit/issues/4)) ([0ec4307](https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit/commit/0ec4307d541195c10972ebec32de7764617d6bd3))
+
 ## [0.1.3](https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit/compare/0.1.2...0.1.3) (2026-04-08)
 
 
