@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const esbuild = require('esbuild');
+import esbuild from 'esbuild';
 
 const licenseHeader = `/*
  * Copyright 2026 Google LLC
@@ -36,6 +36,7 @@ esbuild.build({
   entryPoints: ['server.ts'],
   bundle: true,
   platform: 'node',
+  format: 'esm',
   outfile: 'dist/index.js',
   banner: {
     js: `#!/usr/bin/env node\n${licenseHeader}\n`,
