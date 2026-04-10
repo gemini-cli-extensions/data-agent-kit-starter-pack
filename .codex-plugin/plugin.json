@@ -7,5 +7,6 @@
     "displayName": "Data Cloud AI Dev Kit",
     "shortDescription": "Data Cloud AI Dev Kit",
     "category": "Productivity"
-  }
+  },
+  "mcp": "./.mcp.json"
 }

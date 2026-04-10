@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "notebook": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "git+https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit.git"
+      ],
+      "env": {}
+    }
+  }
+}
