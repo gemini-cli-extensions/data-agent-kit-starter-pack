@@ -1,6 +1,7 @@
 {
   "name": "@google/standalone-notebook-mcp",
-  "version": "0.1.5",
+  "version": "0.1.6",
+  "type": "module",
   "description": "Standalone MCP server for notebook manipulation",
   "main": "server.ts",
   "scripts": {

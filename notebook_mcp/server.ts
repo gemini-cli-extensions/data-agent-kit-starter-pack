@@ -18,6 +18,8 @@ import {Server} from '@modelcontextprotocol/sdk/server/index.js';
 import {StdioServerTransport} from '@modelcontextprotocol/sdk/server/stdio.js';
 import { spawn } from 'child_process';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -287,31 +289,52 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
+async function startStandaloneServer() {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.error('Standalone Notebook MCP server running on stdio');
+}
+
 async function run() {
-  // Check for IDE environment variables
-  const isIde = Object.keys(process.env).some(key => key.startsWith('GEMINI_CLI_IDE_'));
-  const extPath = process.env.DATA_CLOUD_CURR_EXT_PATH;
   const ideName = process.env.DATA_CLOUD_CURR_IDE_NAME;
+  const logPath = '/tmp/mcp_debug.log';
 
-  if (isIde && extPath && ideName) {
-    console.error('IDE environment and Data Cloud variables detected. Spawning proxy to extension host...');
+  const log = (msg: string) => {
+    fs.appendFileSync(logPath, `[${new Date().toISOString()}] ${msg}\n`);
+    console.error(msg);
+  };
 
-    const proxyCmd = path.join(extPath, 'mcp_servers/cli/mcp_proxy_bundle.js');
+  log(`Server started. DATA_CLOUD_CURR_IDE_NAME=${ideName}`);
+
+  if (ideName) {
+    log(`IDE environment detected via env var (${ideName}). Spawning local proxy...`);
+
+    // Proxy is in ../bin/mcp_proxy_bundle.cjs relative to this file in dist/
+    const proxyCmd = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../bin/mcp_proxy_bundle.cjs');
     const proxyArgs = [`notebooks-${ideName.toLowerCase()}`];
 
-    const child = spawn(process.execPath, [proxyCmd, ...proxyArgs], { stdio: 'inherit' });
+    log(`Spawning proxy: ${proxyCmd} ${proxyArgs.join(' ')}`);
 
-    child.on('exit', (code) => {
-      console.error(`Proxy process exited with code ${code}`);
-      process.exit(code ?? 0);
+    const child = spawn(process.execPath, [proxyCmd, ...proxyArgs], { stdio: ['inherit', 'inherit', 'pipe'] });
+
+    child.stderr.on('data', (data) => {
+      log(`[Proxy Stderr] ${data.toString()}`);
+    });
+
+    child.on('exit', async (code) => {
+      log(`Proxy process exited with code ${code}`);
+      if (code !== 0) {
+        log('Proxy failed. Falling back to standalone stdio server...');
+        await startStandaloneServer();
+      } else {
+        process.exit(0);
+      }
     });
     
     return;
   }
 
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error('Standalone Notebook MCP server running on stdio');
+  await startStandaloneServer();
 }
 
 run().catch((error) => {
