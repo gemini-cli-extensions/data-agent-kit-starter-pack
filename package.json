@@ -4,5 +4,8 @@
   "description": "Developer toolkit for Data Cloud and AI integrations",
   "bin": {
     "notebook-tools": "mcp/dist/index.js"
+  },
+  "dependencies": {
+    "cross-spawn": "^7.0.3"
   }
 }
