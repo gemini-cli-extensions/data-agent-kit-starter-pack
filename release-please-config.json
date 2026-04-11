@@ -45,7 +45,7 @@
         },
         {
           "type": "json",
-          "path": "notebook_mcp/package.json",
+          "path": "mcp/package.json",
           "jsonpath": "$.version"
         },
         {
