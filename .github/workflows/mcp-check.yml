@@ -17,7 +17,7 @@ name: Notebook MCP Bundle Check
 on:
   pull_request:
     paths:
-      - 'notebook_mcp/**'
+      - 'mcp/**'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
@@ -36,11 +36,11 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: notebook_mcp
+        working-directory: mcp
 
       - name: Build bundle
         run: npm run bundle
-        working-directory: notebook_mcp
+        working-directory: mcp
 
       - name: Check for uncommitted changes in bundle
-        run: git diff --exit-code notebook_mcp/dist/index.js
+        run: git diff --exit-code mcp/dist/index.js
