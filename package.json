@@ -3,6 +3,9 @@
   "version": "0.1.5",
   "description": "Developer toolkit for Data Cloud and AI integrations",
   "bin": {
-    "notebook-tools": "notebook_mcp/dist/index.js"
+    "notebook-tools": "mcp/dist/index.js"
+  },
+  "dependencies": {
+    "cross-spawn": "^7.0.3"
   }
 }

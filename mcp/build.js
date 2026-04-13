@@ -38,6 +38,7 @@ esbuild.build({
   platform: 'node',
   format: 'esm',
   outfile: 'dist/index.js',
+  external: ['child_process', 'fs', 'path', 'url', 'cross-spawn'],
   banner: {
     js: `#!/usr/bin/env node\n${licenseHeader}\n`,
   },

@@ -17937,8 +17937,849 @@ var StdioServerTransport = class {
   }
 };
 
+// node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/client.js
+var ExperimentalClientTasks = class {
+  constructor(_client) {
+    this._client = _client;
+  }
+  /**
+   * Calls a tool and returns an AsyncGenerator that yields response messages.
+   * The generator is guaranteed to end with either a 'result' or 'error' message.
+   *
+   * This method provides streaming access to tool execution, allowing you to
+   * observe intermediate task status updates for long-running tool calls.
+   * Automatically validates structured output if the tool has an outputSchema.
+   *
+   * @example
+   * ```typescript
+   * const stream = client.experimental.tasks.callToolStream({ name: 'myTool', arguments: {} });
+   * for await (const message of stream) {
+   *   switch (message.type) {
+   *     case 'taskCreated':
+   *       console.log('Tool execution started:', message.task.taskId);
+   *       break;
+   *     case 'taskStatus':
+   *       console.log('Tool status:', message.task.status);
+   *       break;
+   *     case 'result':
+   *       console.log('Tool result:', message.result);
+   *       break;
+   *     case 'error':
+   *       console.error('Tool error:', message.error);
+   *       break;
+   *   }
+   * }
+   * ```
+   *
+   * @param params - Tool call parameters (name and arguments)
+   * @param resultSchema - Zod schema for validating the result (defaults to CallToolResultSchema)
+   * @param options - Optional request options (timeout, signal, task creation params, etc.)
+   * @returns AsyncGenerator that yields ResponseMessage objects
+   *
+   * @experimental
+   */
+  async *callToolStream(params, resultSchema = CallToolResultSchema, options) {
+    const clientInternal = this._client;
+    const optionsWithTask = {
+      ...options,
+      // We check if the tool is known to be a task during auto-configuration, but assume
+      // the caller knows what they're doing if they pass this explicitly
+      task: options?.task ?? (clientInternal.isToolTask(params.name) ? {} : void 0)
+    };
+    const stream = clientInternal.requestStream({ method: "tools/call", params }, resultSchema, optionsWithTask);
+    const validator = clientInternal.getToolOutputValidator(params.name);
+    for await (const message of stream) {
+      if (message.type === "result" && validator) {
+        const result = message.result;
+        if (!result.structuredContent && !result.isError) {
+          yield {
+            type: "error",
+            error: new McpError(ErrorCode.InvalidRequest, `Tool ${params.name} has an output schema but did not return structured content`)
+          };
+          return;
+        }
+        if (result.structuredContent) {
+          try {
+            const validationResult = validator(result.structuredContent);
+            if (!validationResult.valid) {
+              yield {
+                type: "error",
+                error: new McpError(ErrorCode.InvalidParams, `Structured content does not match the tool's output schema: ${validationResult.errorMessage}`)
+              };
+              return;
+            }
+          } catch (error2) {
+            if (error2 instanceof McpError) {
+              yield { type: "error", error: error2 };
+              return;
+            }
+            yield {
+              type: "error",
+              error: new McpError(ErrorCode.InvalidParams, `Failed to validate structured content: ${error2 instanceof Error ? error2.message : String(error2)}`)
+            };
+            return;
+          }
+        }
+      }
+      yield message;
+    }
+  }
+  /**
+   * Gets the current status of a task.
+   *
+   * @param taskId - The task identifier
+   * @param options - Optional request options
+   * @returns The task status
+   *
+   * @experimental
+   */
+  async getTask(taskId, options) {
+    return this._client.getTask({ taskId }, options);
+  }
+  /**
+   * Retrieves the result of a completed task.
+   *
+   * @param taskId - The task identifier
+   * @param resultSchema - Zod schema for validating the result
+   * @param options - Optional request options
+   * @returns The task result
+   *
+   * @experimental
+   */
+  async getTaskResult(taskId, resultSchema, options) {
+    return this._client.getTaskResult({ taskId }, resultSchema, options);
+  }
+  /**
+   * Lists tasks with optional pagination.
+   *
+   * @param cursor - Optional pagination cursor
+   * @param options - Optional request options
+   * @returns List of tasks with optional next cursor
+   *
+   * @experimental
+   */
+  async listTasks(cursor, options) {
+    return this._client.listTasks(cursor ? { cursor } : void 0, options);
+  }
+  /**
+   * Cancels a running task.
+   *
+   * @param taskId - The task identifier
+   * @param options - Optional request options
+   *
+   * @experimental
+   */
+  async cancelTask(taskId, options) {
+    return this._client.cancelTask({ taskId }, options);
+  }
+  /**
+   * Sends a request and returns an AsyncGenerator that yields response messages.
+   * The generator is guaranteed to end with either a 'result' or 'error' message.
+   *
+   * This method provides streaming access to request processing, allowing you to
+   * observe intermediate task status updates for task-augmented requests.
+   *
+   * @param request - The request to send
+   * @param resultSchema - Zod schema for validating the result
+   * @param options - Optional request options (timeout, signal, task creation params, etc.)
+   * @returns AsyncGenerator that yields ResponseMessage objects
+   *
+   * @experimental
+   */
+  requestStream(request, resultSchema, options) {
+    return this._client.requestStream(request, resultSchema, options);
+  }
+};
+
+// node_modules/@modelcontextprotocol/sdk/dist/esm/client/index.js
+function applyElicitationDefaults(schema, data) {
+  if (!schema || data === null || typeof data !== "object")
+    return;
+  if (schema.type === "object" && schema.properties && typeof schema.properties === "object") {
+    const obj = data;
+    const props = schema.properties;
+    for (const key of Object.keys(props)) {
+      const propSchema = props[key];
+      if (obj[key] === void 0 && Object.prototype.hasOwnProperty.call(propSchema, "default")) {
+        obj[key] = propSchema.default;
+      }
+      if (obj[key] !== void 0) {
+        applyElicitationDefaults(propSchema, obj[key]);
+      }
+    }
+  }
+  if (Array.isArray(schema.anyOf)) {
+    for (const sub of schema.anyOf) {
+      if (typeof sub !== "boolean") {
+        applyElicitationDefaults(sub, data);
+      }
+    }
+  }
+  if (Array.isArray(schema.oneOf)) {
+    for (const sub of schema.oneOf) {
+      if (typeof sub !== "boolean") {
+        applyElicitationDefaults(sub, data);
+      }
+    }
+  }
+}
+function getSupportedElicitationModes(capabilities) {
+  if (!capabilities) {
+    return { supportsFormMode: false, supportsUrlMode: false };
+  }
+  const hasFormCapability = capabilities.form !== void 0;
+  const hasUrlCapability = capabilities.url !== void 0;
+  const supportsFormMode = hasFormCapability || !hasFormCapability && !hasUrlCapability;
+  const supportsUrlMode = hasUrlCapability;
+  return { supportsFormMode, supportsUrlMode };
+}
+var Client = class extends Protocol {
+  /**
+   * Initializes this client with the given name and version information.
+   */
+  constructor(_clientInfo, options) {
+    super(options);
+    this._clientInfo = _clientInfo;
+    this._cachedToolOutputValidators = /* @__PURE__ */ new Map();
+    this._cachedKnownTaskTools = /* @__PURE__ */ new Set();
+    this._cachedRequiredTaskTools = /* @__PURE__ */ new Set();
+    this._listChangedDebounceTimers = /* @__PURE__ */ new Map();
+    this._capabilities = options?.capabilities ?? {};
+    this._jsonSchemaValidator = options?.jsonSchemaValidator ?? new AjvJsonSchemaValidator();
+    if (options?.listChanged) {
+      this._pendingListChangedConfig = options.listChanged;
+    }
+  }
+  /**
+   * Set up handlers for list changed notifications based on config and server capabilities.
+   * This should only be called after initialization when server capabilities are known.
+   * Handlers are silently skipped if the server doesn't advertise the corresponding listChanged capability.
+   * @internal
+   */
+  _setupListChangedHandlers(config2) {
+    if (config2.tools && this._serverCapabilities?.tools?.listChanged) {
+      this._setupListChangedHandler("tools", ToolListChangedNotificationSchema, config2.tools, async () => {
+        const result = await this.listTools();
+        return result.tools;
+      });
+    }
+    if (config2.prompts && this._serverCapabilities?.prompts?.listChanged) {
+      this._setupListChangedHandler("prompts", PromptListChangedNotificationSchema, config2.prompts, async () => {
+        const result = await this.listPrompts();
+        return result.prompts;
+      });
+    }
+    if (config2.resources && this._serverCapabilities?.resources?.listChanged) {
+      this._setupListChangedHandler("resources", ResourceListChangedNotificationSchema, config2.resources, async () => {
+        const result = await this.listResources();
+        return result.resources;
+      });
+    }
+  }
+  /**
+   * Access experimental features.
+   *
+   * WARNING: These APIs are experimental and may change without notice.
+   *
+   * @experimental
+   */
+  get experimental() {
+    if (!this._experimental) {
+      this._experimental = {
+        tasks: new ExperimentalClientTasks(this)
+      };
+    }
+    return this._experimental;
+  }
+  /**
+   * Registers new capabilities. This can only be called before connecting to a transport.
+   *
+   * The new capabilities will be merged with any existing capabilities previously given (e.g., at initialization).
+   */
+  registerCapabilities(capabilities) {
+    if (this.transport) {
+      throw new Error("Cannot register capabilities after connecting to transport");
+    }
+    this._capabilities = mergeCapabilities(this._capabilities, capabilities);
+  }
+  /**
+   * Override request handler registration to enforce client-side validation for elicitation.
+   */
+  setRequestHandler(requestSchema, handler) {
+    const shape = getObjectShape(requestSchema);
+    const methodSchema = shape?.method;
+    if (!methodSchema) {
+      throw new Error("Schema is missing a method literal");
+    }
+    let methodValue;
+    if (isZ4Schema(methodSchema)) {
+      const v4Schema = methodSchema;
+      const v4Def = v4Schema._zod?.def;
+      methodValue = v4Def?.value ?? v4Schema.value;
+    } else {
+      const v3Schema = methodSchema;
+      const legacyDef = v3Schema._def;
+      methodValue = legacyDef?.value ?? v3Schema.value;
+    }
+    if (typeof methodValue !== "string") {
+      throw new Error("Schema method literal must be a string");
+    }
+    const method = methodValue;
+    if (method === "elicitation/create") {
+      const wrappedHandler = async (request, extra) => {
+        const validatedRequest = safeParse2(ElicitRequestSchema, request);
+        if (!validatedRequest.success) {
+          const errorMessage = validatedRequest.error instanceof Error ? validatedRequest.error.message : String(validatedRequest.error);
+          throw new McpError(ErrorCode.InvalidParams, `Invalid elicitation request: ${errorMessage}`);
+        }
+        const { params } = validatedRequest.data;
+        params.mode = params.mode ?? "form";
+        const { supportsFormMode, supportsUrlMode } = getSupportedElicitationModes(this._capabilities.elicitation);
+        if (params.mode === "form" && !supportsFormMode) {
+          throw new McpError(ErrorCode.InvalidParams, "Client does not support form-mode elicitation requests");
+        }
+        if (params.mode === "url" && !supportsUrlMode) {
+          throw new McpError(ErrorCode.InvalidParams, "Client does not support URL-mode elicitation requests");
+        }
+        const result = await Promise.resolve(handler(request, extra));
+        if (params.task) {
+          const taskValidationResult = safeParse2(CreateTaskResultSchema, result);
+          if (!taskValidationResult.success) {
+            const errorMessage = taskValidationResult.error instanceof Error ? taskValidationResult.error.message : String(taskValidationResult.error);
+            throw new McpError(ErrorCode.InvalidParams, `Invalid task creation result: ${errorMessage}`);
+          }
+          return taskValidationResult.data;
+        }
+        const validationResult = safeParse2(ElicitResultSchema, result);
+        if (!validationResult.success) {
+          const errorMessage = validationResult.error instanceof Error ? validationResult.error.message : String(validationResult.error);
+          throw new McpError(ErrorCode.InvalidParams, `Invalid elicitation result: ${errorMessage}`);
+        }
+        const validatedResult = validationResult.data;
+        const requestedSchema = params.mode === "form" ? params.requestedSchema : void 0;
+        if (params.mode === "form" && validatedResult.action === "accept" && validatedResult.content && requestedSchema) {
+          if (this._capabilities.elicitation?.form?.applyDefaults) {
+            try {
+              applyElicitationDefaults(requestedSchema, validatedResult.content);
+            } catch {
+            }
+          }
+        }
+        return validatedResult;
+      };
+      return super.setRequestHandler(requestSchema, wrappedHandler);
+    }
+    if (method === "sampling/createMessage") {
+      const wrappedHandler = async (request, extra) => {
+        const validatedRequest = safeParse2(CreateMessageRequestSchema, request);
+        if (!validatedRequest.success) {
+          const errorMessage = validatedRequest.error instanceof Error ? validatedRequest.error.message : String(validatedRequest.error);
+          throw new McpError(ErrorCode.InvalidParams, `Invalid sampling request: ${errorMessage}`);
+        }
+        const { params } = validatedRequest.data;
+        const result = await Promise.resolve(handler(request, extra));
+        if (params.task) {
+          const taskValidationResult = safeParse2(CreateTaskResultSchema, result);
+          if (!taskValidationResult.success) {
+            const errorMessage = taskValidationResult.error instanceof Error ? taskValidationResult.error.message : String(taskValidationResult.error);
+            throw new McpError(ErrorCode.InvalidParams, `Invalid task creation result: ${errorMessage}`);
+          }
+          return taskValidationResult.data;
+        }
+        const hasTools = params.tools || params.toolChoice;
+        const resultSchema = hasTools ? CreateMessageResultWithToolsSchema : CreateMessageResultSchema;
+        const validationResult = safeParse2(resultSchema, result);
+        if (!validationResult.success) {
+          const errorMessage = validationResult.error instanceof Error ? validationResult.error.message : String(validationResult.error);
+          throw new McpError(ErrorCode.InvalidParams, `Invalid sampling result: ${errorMessage}`);
+        }
+        return validationResult.data;
+      };
+      return super.setRequestHandler(requestSchema, wrappedHandler);
+    }
+    return super.setRequestHandler(requestSchema, handler);
+  }
+  assertCapability(capability, method) {
+    if (!this._serverCapabilities?.[capability]) {
+      throw new Error(`Server does not support ${capability} (required for ${method})`);
+    }
+  }
+  async connect(transport, options) {
+    await super.connect(transport);
+    if (transport.sessionId !== void 0) {
+      return;
+    }
+    try {
+      const result = await this.request({
+        method: "initialize",
+        params: {
+          protocolVersion: LATEST_PROTOCOL_VERSION,
+          capabilities: this._capabilities,
+          clientInfo: this._clientInfo
+        }
+      }, InitializeResultSchema, options);
+      if (result === void 0) {
+        throw new Error(`Server sent invalid initialize result: ${result}`);
+      }
+      if (!SUPPORTED_PROTOCOL_VERSIONS.includes(result.protocolVersion)) {
+        throw new Error(`Server's protocol version is not supported: ${result.protocolVersion}`);
+      }
+      this._serverCapabilities = result.capabilities;
+      this._serverVersion = result.serverInfo;
+      if (transport.setProtocolVersion) {
+        transport.setProtocolVersion(result.protocolVersion);
+      }
+      this._instructions = result.instructions;
+      await this.notification({
+        method: "notifications/initialized"
+      });
+      if (this._pendingListChangedConfig) {
+        this._setupListChangedHandlers(this._pendingListChangedConfig);
+        this._pendingListChangedConfig = void 0;
+      }
+    } catch (error2) {
+      void this.close();
+      throw error2;
+    }
+  }
+  /**
+   * After initialization has completed, this will be populated with the server's reported capabilities.
+   */
+  getServerCapabilities() {
+    return this._serverCapabilities;
+  }
+  /**
+   * After initialization has completed, this will be populated with information about the server's name and version.
+   */
+  getServerVersion() {
+    return this._serverVersion;
+  }
+  /**
+   * After initialization has completed, this may be populated with information about the server's instructions.
+   */
+  getInstructions() {
+    return this._instructions;
+  }
+  assertCapabilityForMethod(method) {
+    switch (method) {
+      case "logging/setLevel":
+        if (!this._serverCapabilities?.logging) {
+          throw new Error(`Server does not support logging (required for ${method})`);
+        }
+        break;
+      case "prompts/get":
+      case "prompts/list":
+        if (!this._serverCapabilities?.prompts) {
+          throw new Error(`Server does not support prompts (required for ${method})`);
+        }
+        break;
+      case "resources/list":
+      case "resources/templates/list":
+      case "resources/read":
+      case "resources/subscribe":
+      case "resources/unsubscribe":
+        if (!this._serverCapabilities?.resources) {
+          throw new Error(`Server does not support resources (required for ${method})`);
+        }
+        if (method === "resources/subscribe" && !this._serverCapabilities.resources.subscribe) {
+          throw new Error(`Server does not support resource subscriptions (required for ${method})`);
+        }
+        break;
+      case "tools/call":
+      case "tools/list":
+        if (!this._serverCapabilities?.tools) {
+          throw new Error(`Server does not support tools (required for ${method})`);
+        }
+        break;
+      case "completion/complete":
+        if (!this._serverCapabilities?.completions) {
+          throw new Error(`Server does not support completions (required for ${method})`);
+        }
+        break;
+      case "initialize":
+        break;
+      case "ping":
+        break;
+    }
+  }
+  assertNotificationCapability(method) {
+    switch (method) {
+      case "notifications/roots/list_changed":
+        if (!this._capabilities.roots?.listChanged) {
+          throw new Error(`Client does not support roots list changed notifications (required for ${method})`);
+        }
+        break;
+      case "notifications/initialized":
+        break;
+      case "notifications/cancelled":
+        break;
+      case "notifications/progress":
+        break;
+    }
+  }
+  assertRequestHandlerCapability(method) {
+    if (!this._capabilities) {
+      return;
+    }
+    switch (method) {
+      case "sampling/createMessage":
+        if (!this._capabilities.sampling) {
+          throw new Error(`Client does not support sampling capability (required for ${method})`);
+        }
+        break;
+      case "elicitation/create":
+        if (!this._capabilities.elicitation) {
+          throw new Error(`Client does not support elicitation capability (required for ${method})`);
+        }
+        break;
+      case "roots/list":
+        if (!this._capabilities.roots) {
+          throw new Error(`Client does not support roots capability (required for ${method})`);
+        }
+        break;
+      case "tasks/get":
+      case "tasks/list":
+      case "tasks/result":
+      case "tasks/cancel":
+        if (!this._capabilities.tasks) {
+          throw new Error(`Client does not support tasks capability (required for ${method})`);
+        }
+        break;
+      case "ping":
+        break;
+    }
+  }
+  assertTaskCapability(method) {
+    assertToolsCallTaskCapability(this._serverCapabilities?.tasks?.requests, method, "Server");
+  }
+  assertTaskHandlerCapability(method) {
+    if (!this._capabilities) {
+      return;
+    }
+    assertClientRequestTaskCapability(this._capabilities.tasks?.requests, method, "Client");
+  }
+  async ping(options) {
+    return this.request({ method: "ping" }, EmptyResultSchema, options);
+  }
+  async complete(params, options) {
+    return this.request({ method: "completion/complete", params }, CompleteResultSchema, options);
+  }
+  async setLoggingLevel(level, options) {
+    return this.request({ method: "logging/setLevel", params: { level } }, EmptyResultSchema, options);
+  }
+  async getPrompt(params, options) {
+    return this.request({ method: "prompts/get", params }, GetPromptResultSchema, options);
+  }
+  async listPrompts(params, options) {
+    return this.request({ method: "prompts/list", params }, ListPromptsResultSchema, options);
+  }
+  async listResources(params, options) {
+    return this.request({ method: "resources/list", params }, ListResourcesResultSchema, options);
+  }
+  async listResourceTemplates(params, options) {
+    return this.request({ method: "resources/templates/list", params }, ListResourceTemplatesResultSchema, options);
+  }
+  async readResource(params, options) {
+    return this.request({ method: "resources/read", params }, ReadResourceResultSchema, options);
+  }
+  async subscribeResource(params, options) {
+    return this.request({ method: "resources/subscribe", params }, EmptyResultSchema, options);
+  }
+  async unsubscribeResource(params, options) {
+    return this.request({ method: "resources/unsubscribe", params }, EmptyResultSchema, options);
+  }
+  /**
+   * Calls a tool and waits for the result. Automatically validates structured output if the tool has an outputSchema.
+   *
+   * For task-based execution with streaming behavior, use client.experimental.tasks.callToolStream() instead.
+   */
+  async callTool(params, resultSchema = CallToolResultSchema, options) {
+    if (this.isToolTaskRequired(params.name)) {
+      throw new McpError(ErrorCode.InvalidRequest, `Tool "${params.name}" requires task-based execution. Use client.experimental.tasks.callToolStream() instead.`);
+    }
+    const result = await this.request({ method: "tools/call", params }, resultSchema, options);
+    const validator = this.getToolOutputValidator(params.name);
+    if (validator) {
+      if (!result.structuredContent && !result.isError) {
+        throw new McpError(ErrorCode.InvalidRequest, `Tool ${params.name} has an output schema but did not return structured content`);
+      }
+      if (result.structuredContent) {
+        try {
+          const validationResult = validator(result.structuredContent);
+          if (!validationResult.valid) {
+            throw new McpError(ErrorCode.InvalidParams, `Structured content does not match the tool's output schema: ${validationResult.errorMessage}`);
+          }
+        } catch (error2) {
+          if (error2 instanceof McpError) {
+            throw error2;
+          }
+          throw new McpError(ErrorCode.InvalidParams, `Failed to validate structured content: ${error2 instanceof Error ? error2.message : String(error2)}`);
+        }
+      }
+    }
+    return result;
+  }
+  isToolTask(toolName) {
+    if (!this._serverCapabilities?.tasks?.requests?.tools?.call) {
+      return false;
+    }
+    return this._cachedKnownTaskTools.has(toolName);
+  }
+  /**
+   * Check if a tool requires task-based execution.
+   * Unlike isToolTask which includes 'optional' tools, this only checks for 'required'.
+   */
+  isToolTaskRequired(toolName) {
+    return this._cachedRequiredTaskTools.has(toolName);
+  }
+  /**
+   * Cache validators for tool output schemas.
+   * Called after listTools() to pre-compile validators for better performance.
+   */
+  cacheToolMetadata(tools) {
+    this._cachedToolOutputValidators.clear();
+    this._cachedKnownTaskTools.clear();
+    this._cachedRequiredTaskTools.clear();
+    for (const tool of tools) {
+      if (tool.outputSchema) {
+        const toolValidator = this._jsonSchemaValidator.getValidator(tool.outputSchema);
+        this._cachedToolOutputValidators.set(tool.name, toolValidator);
+      }
+      const taskSupport = tool.execution?.taskSupport;
+      if (taskSupport === "required" || taskSupport === "optional") {
+        this._cachedKnownTaskTools.add(tool.name);
+      }
+      if (taskSupport === "required") {
+        this._cachedRequiredTaskTools.add(tool.name);
+      }
+    }
+  }
+  /**
+   * Get cached validator for a tool
+   */
+  getToolOutputValidator(toolName) {
+    return this._cachedToolOutputValidators.get(toolName);
+  }
+  async listTools(params, options) {
+    const result = await this.request({ method: "tools/list", params }, ListToolsResultSchema, options);
+    this.cacheToolMetadata(result.tools);
+    return result;
+  }
+  /**
+   * Set up a single list changed handler.
+   * @internal
+   */
+  _setupListChangedHandler(listType, notificationSchema, options, fetcher) {
+    const parseResult = ListChangedOptionsBaseSchema.safeParse(options);
+    if (!parseResult.success) {
+      throw new Error(`Invalid ${listType} listChanged options: ${parseResult.error.message}`);
+    }
+    if (typeof options.onChanged !== "function") {
+      throw new Error(`Invalid ${listType} listChanged options: onChanged must be a function`);
+    }
+    const { autoRefresh, debounceMs } = parseResult.data;
+    const { onChanged } = options;
+    const refresh = async () => {
+      if (!autoRefresh) {
+        onChanged(null, null);
+        return;
+      }
+      try {
+        const items = await fetcher();
+        onChanged(null, items);
+      } catch (e) {
+        const error2 = e instanceof Error ? e : new Error(String(e));
+        onChanged(error2, null);
+      }
+    };
+    const handler = () => {
+      if (debounceMs) {
+        const existingTimer = this._listChangedDebounceTimers.get(listType);
+        if (existingTimer) {
+          clearTimeout(existingTimer);
+        }
+        const timer = setTimeout(refresh, debounceMs);
+        this._listChangedDebounceTimers.set(listType, timer);
+      } else {
+        refresh();
+      }
+    };
+    this.setNotificationHandler(notificationSchema, handler);
+  }
+  async sendRootsListChanged() {
+    return this.notification({ method: "notifications/roots/list_changed" });
+  }
+};
+
+// node_modules/@modelcontextprotocol/sdk/dist/esm/client/stdio.js
+import spawn from "cross-spawn";
+import process3 from "node:process";
+import { PassThrough } from "node:stream";
+var DEFAULT_INHERITED_ENV_VARS = process3.platform === "win32" ? [
+  "APPDATA",
+  "HOMEDRIVE",
+  "HOMEPATH",
+  "LOCALAPPDATA",
+  "PATH",
+  "PROCESSOR_ARCHITECTURE",
+  "SYSTEMDRIVE",
+  "SYSTEMROOT",
+  "TEMP",
+  "USERNAME",
+  "USERPROFILE",
+  "PROGRAMFILES"
+] : (
+  /* list inspired by the default env inheritance of sudo */
+  ["HOME", "LOGNAME", "PATH", "SHELL", "TERM", "USER"]
+);
+function getDefaultEnvironment() {
+  const env = {};
+  for (const key of DEFAULT_INHERITED_ENV_VARS) {
+    const value = process3.env[key];
+    if (value === void 0) {
+      continue;
+    }
+    if (value.startsWith("()")) {
+      continue;
+    }
+    env[key] = value;
+  }
+  return env;
+}
+var StdioClientTransport = class {
+  constructor(server2) {
+    this._readBuffer = new ReadBuffer();
+    this._stderrStream = null;
+    this._serverParams = server2;
+    if (server2.stderr === "pipe" || server2.stderr === "overlapped") {
+      this._stderrStream = new PassThrough();
+    }
+  }
+  /**
+   * Starts the server process and prepares to communicate with it.
+   */
+  async start() {
+    if (this._process) {
+      throw new Error("StdioClientTransport already started! If using Client class, note that connect() calls start() automatically.");
+    }
+    return new Promise((resolve, reject) => {
+      this._process = spawn(this._serverParams.command, this._serverParams.args ?? [], {
+        // merge default env with server env because mcp server needs some env vars
+        env: {
+          ...getDefaultEnvironment(),
+          ...this._serverParams.env
+        },
+        stdio: ["pipe", "pipe", this._serverParams.stderr ?? "inherit"],
+        shell: false,
+        windowsHide: process3.platform === "win32",
+        cwd: this._serverParams.cwd
+      });
+      this._process.on("error", (error2) => {
+        reject(error2);
+        this.onerror?.(error2);
+      });
+      this._process.on("spawn", () => {
+        resolve();
+      });
+      this._process.on("close", (_code) => {
+        this._process = void 0;
+        this.onclose?.();
+      });
+      this._process.stdin?.on("error", (error2) => {
+        this.onerror?.(error2);
+      });
+      this._process.stdout?.on("data", (chunk) => {
+        this._readBuffer.append(chunk);
+        this.processReadBuffer();
+      });
+      this._process.stdout?.on("error", (error2) => {
+        this.onerror?.(error2);
+      });
+      if (this._stderrStream && this._process.stderr) {
+        this._process.stderr.pipe(this._stderrStream);
+      }
+    });
+  }
+  /**
+   * The stderr stream of the child process, if `StdioServerParameters.stderr` was set to "pipe" or "overlapped".
+   *
+   * If stderr piping was requested, a PassThrough stream is returned _immediately_, allowing callers to
+   * attach listeners before the start method is invoked. This prevents loss of any early
+   * error output emitted by the child process.
+   */
+  get stderr() {
+    if (this._stderrStream) {
+      return this._stderrStream;
+    }
+    return this._process?.stderr ?? null;
+  }
+  /**
+   * The child process pid spawned by this transport.
+   *
+   * This is only available after the transport has been started.
+   */
+  get pid() {
+    return this._process?.pid ?? null;
+  }
+  processReadBuffer() {
+    while (true) {
+      try {
+        const message = this._readBuffer.readMessage();
+        if (message === null) {
+          break;
+        }
+        this.onmessage?.(message);
+      } catch (error2) {
+        this.onerror?.(error2);
+      }
+    }
+  }
+  async close() {
+    if (this._process) {
+      const processToClose = this._process;
+      this._process = void 0;
+      const closePromise = new Promise((resolve) => {
+        processToClose.once("close", () => {
+          resolve();
+        });
+      });
+      try {
+        processToClose.stdin?.end();
+      } catch {
+      }
+      await Promise.race([closePromise, new Promise((resolve) => setTimeout(resolve, 2e3).unref())]);
+      if (processToClose.exitCode === null) {
+        try {
+          processToClose.kill("SIGTERM");
+        } catch {
+        }
+        await Promise.race([closePromise, new Promise((resolve) => setTimeout(resolve, 2e3).unref())]);
+      }
+      if (processToClose.exitCode === null) {
+        try {
+          processToClose.kill("SIGKILL");
+        } catch {
+        }
+      }
+    }
+    this._readBuffer.clear();
+  }
+  send(message) {
+    return new Promise((resolve) => {
+      if (!this._process?.stdin) {
+        throw new Error("Not connected");
+      }
+      const json = serializeMessage(message);
+      if (this._process.stdin.write(json)) {
+        resolve();
+      } else {
+        this._process.stdin.once("drain", resolve);
+      }
+    });
+  }
+};
+
 // server.ts
-import { spawn } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs8 from "fs";
@@ -18154,144 +18995,169 @@ var server = new Server(
     }
   }
 );
+var notebookClient = null;
+var vizClient = null;
+var LOCAL_TOOLS = [
+  {
+    name: "list_cells",
+    description: "List all cells in a notebook",
+    inputSchema: {
+      type: "object",
+      properties: {
+        notebookPath: {
+          type: "string",
+          description: "Path to the notebook file"
+        },
+        maxLength: {
+          type: "number",
+          description: "Maximum length of the preview snippet for each cell (optional, defaults to 100)"
+        }
+      },
+      required: ["notebookPath"]
+    }
+  },
+  {
+    name: "read_cell",
+    description: "Read the content of a specific cell in a notebook",
+    inputSchema: {
+      type: "object",
+      properties: {
+        notebookPath: {
+          type: "string",
+          description: "Path to the notebook file"
+        },
+        cellIndex: {
+          type: "number",
+          description: "0-based index of the cell"
+        }
+      },
+      required: ["notebookPath", "cellIndex"]
+    }
+  },
+  {
+    name: "insert_cell",
+    description: "Insert a new cell into a notebook",
+    inputSchema: {
+      type: "object",
+      properties: {
+        notebookPath: {
+          type: "string",
+          description: "Path to the notebook file"
+        },
+        cellIndex: {
+          type: "number",
+          description: "Index at which to insert the cell (omitted to append)"
+        },
+        cellType: {
+          type: "string",
+          enum: ["code", "markdown"],
+          description: "Type of cell"
+        },
+        content: { type: "string", description: "Content of the cell" }
+      },
+      required: ["notebookPath", "cellType", "content"]
+    }
+  },
+  {
+    name: "replace_cell",
+    description: "Replace the content of a specific cell in a notebook",
+    inputSchema: {
+      type: "object",
+      properties: {
+        notebookPath: {
+          type: "string",
+          description: "Path to the notebook file"
+        },
+        cellIndex: {
+          type: "number",
+          description: "0-based index of the cell to replace"
+        },
+        content: { type: "string", description: "New content of the cell" }
+      },
+      required: ["notebookPath", "cellIndex", "content"]
+    }
+  },
+  {
+    name: "delete_cell",
+    description: "Delete a specific cell from a notebook",
+    inputSchema: {
+      type: "object",
+      properties: {
+        notebookPath: {
+          type: "string",
+          description: "Path to the notebook file"
+        },
+        cellIndex: {
+          type: "number",
+          description: "0-based index of the cell to delete"
+        }
+      },
+      required: ["notebookPath", "cellIndex"]
+    }
+  },
+  {
+    name: "get_notebook_info",
+    description: "Get summary information about a notebook",
+    inputSchema: {
+      type: "object",
+      properties: {
+        notebookPath: {
+          type: "string",
+          description: "Path to the notebook file"
+        }
+      },
+      required: ["notebookPath"]
+    }
+  },
+  {
+    name: "search_cells",
+    description: "Search for text within cells of a notebook",
+    inputSchema: {
+      type: "object",
+      properties: {
+        notebookPath: {
+          type: "string",
+          description: "Path to the notebook file"
+        },
+        query: {
+          type: "string",
+          description: "Text to search for"
+        },
+        caseSensitive: {
+          type: "boolean",
+          description: "Whether search is case sensitive (optional)"
+        }
+      },
+      required: ["notebookPath", "query"]
+    }
+  }
+];
+var toolOwnerMap = /* @__PURE__ */ new Map();
 server.setRequestHandler(ListToolsRequestSchema, async () => {
-  return {
-    tools: [
-      {
-        name: "list_cells",
-        description: "List all cells in a notebook",
-        inputSchema: {
-          type: "object",
-          properties: {
-            notebookPath: {
-              type: "string",
-              description: "Path to the notebook file"
-            },
-            maxLength: {
-              type: "number",
-              description: "Maximum length of the preview snippet for each cell (optional, defaults to 100)"
-            }
-          },
-          required: ["notebookPath"]
-        }
-      },
-      {
-        name: "read_cell",
-        description: "Read the content of a specific cell in a notebook",
-        inputSchema: {
-          type: "object",
-          properties: {
-            notebookPath: {
-              type: "string",
-              description: "Path to the notebook file"
-            },
-            cellIndex: {
-              type: "number",
-              description: "0-based index of the cell"
-            }
-          },
-          required: ["notebookPath", "cellIndex"]
-        }
-      },
-      {
-        name: "insert_cell",
-        description: "Insert a new cell into a notebook",
-        inputSchema: {
-          type: "object",
-          properties: {
-            notebookPath: {
-              type: "string",
-              description: "Path to the notebook file"
-            },
-            cellIndex: {
-              type: "number",
-              description: "Index at which to insert the cell (omitted to append)"
-            },
-            cellType: {
-              type: "string",
-              enum: ["code", "markdown"],
-              description: "Type of cell"
-            },
-            content: { type: "string", description: "Content of the cell" }
-          },
-          required: ["notebookPath", "cellType", "content"]
-        }
-      },
-      {
-        name: "replace_cell",
-        description: "Replace the content of a specific cell in a notebook",
-        inputSchema: {
-          type: "object",
-          properties: {
-            notebookPath: {
-              type: "string",
-              description: "Path to the notebook file"
-            },
-            cellIndex: {
-              type: "number",
-              description: "0-based index of the cell to replace"
-            },
-            content: { type: "string", description: "New content of the cell" }
-          },
-          required: ["notebookPath", "cellIndex", "content"]
-        }
-      },
-      {
-        name: "delete_cell",
-        description: "Delete a specific cell from a notebook",
-        inputSchema: {
-          type: "object",
-          properties: {
-            notebookPath: {
-              type: "string",
-              description: "Path to the notebook file"
-            },
-            cellIndex: {
-              type: "number",
-              description: "0-based index of the cell to delete"
-            }
-          },
-          required: ["notebookPath", "cellIndex"]
-        }
-      },
-      {
-        name: "get_notebook_info",
-        description: "Get summary information about a notebook",
-        inputSchema: {
-          type: "object",
-          properties: {
-            notebookPath: {
-              type: "string",
-              description: "Path to the notebook file"
-            }
-          },
-          required: ["notebookPath"]
-        }
-      },
-      {
-        name: "search_cells",
-        description: "Search for text within cells of a notebook",
-        inputSchema: {
-          type: "object",
-          properties: {
-            notebookPath: {
-              type: "string",
-              description: "Path to the notebook file"
-            },
-            query: {
-              type: "string",
-              description: "Text to search for"
-            },
-            caseSensitive: {
-              type: "boolean",
-              description: "Whether search is case sensitive (optional)"
-            }
-          },
-          required: ["notebookPath", "query"]
-        }
-      }
-    ]
-  };
+  let aggregatedTools = [];
+  toolOwnerMap.clear();
+  if (notebookClient) {
+    try {
+      const response = await notebookClient.listTools();
+      response.tools.forEach((t) => toolOwnerMap.set(t.name, "notebook"));
+      aggregatedTools.push(...response.tools);
+    } catch (e) {
+      console.error("Error listing tools from notebook client:", e);
+    }
+  } else {
+    LOCAL_TOOLS.forEach((t) => toolOwnerMap.set(t.name, "notebook"));
+    aggregatedTools.push(...LOCAL_TOOLS);
+  }
+  if (vizClient) {
+    try {
+      const response = await vizClient.listTools();
+      response.tools.forEach((t) => toolOwnerMap.set(t.name, "viz"));
+      aggregatedTools.push(...response.tools);
+    } catch (e) {
+      console.error("Error listing tools from viz client:", e);
+    }
+  }
+  return { tools: aggregatedTools };
 });
 var NotebookPathSchema = external_exports.object({
   notebookPath: external_exports.string()
@@ -18316,6 +19182,13 @@ var SearchCellsSchema = NotebookPathSchema.extend({
 });
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
+  const owner = toolOwnerMap.get(name);
+  if (owner === "notebook" && notebookClient) {
+    return await notebookClient.callTool({ name, arguments: args });
+  }
+  if (owner === "viz" && vizClient) {
+    return await vizClient.callTool({ name, arguments: args });
+  }
   try {
     switch (name) {
       case "list_cells": {
@@ -18401,23 +19274,44 @@ async function run() {
   };
   log(`Server started. DATA_CLOUD_CURR_IDE_NAME=${ideName}`);
   if (ideName) {
-    log(`IDE environment detected via env var (${ideName}). Spawning local proxy...`);
+    log(`IDE environment detected via env var (${ideName}).`);
     const proxyCmd = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../bin/mcp_proxy_bundle.cjs");
-    const proxyArgs = [`notebooks-${ideName.toLowerCase()}`];
-    log(`Spawning proxy: ${proxyCmd} ${proxyArgs.join(" ")}`);
-    const child = spawn(process.execPath, [proxyCmd, ...proxyArgs], { stdio: ["inherit", "inherit", "pipe"] });
-    child.stderr.on("data", (data) => {
-      log(`[Proxy Stderr] ${data.toString()}`);
-    });
-    child.on("exit", async (code) => {
-      log(`Proxy process exited with code ${code}`);
-      if (code !== 0) {
-        log("Proxy failed. Falling back to standalone stdio server...");
-        await startStandaloneServer();
-      } else {
-        process.exit(0);
-      }
-    });
+    try {
+      log(`Spawning Notebooks proxy...`);
+      const notebookTransport = new StdioClientTransport({
+        command: process.execPath,
+        args: [proxyCmd, `notebooks-${ideName.toLowerCase()}`],
+        env: process.env
+      });
+      notebookClient = new Client({ name: "notebook-client", version: "0.1.0" }, { capabilities: {} });
+      await notebookClient.connect(notebookTransport);
+      log("Connected to Notebooks proxy");
+    } catch (e) {
+      log(`Failed to connect to Notebooks proxy: ${e}`);
+      notebookClient = null;
+    }
+    try {
+      log(`Spawning Visualization proxy...`);
+      const vizTransport = new StdioClientTransport({
+        command: process.execPath,
+        args: [proxyCmd, `visualization-${ideName.toLowerCase()}`],
+        env: process.env
+      });
+      vizClient = new Client({ name: "viz-client", version: "0.1.0" }, { capabilities: {} });
+      await vizClient.connect(vizTransport);
+      log("Connected to Visualization proxy");
+    } catch (e) {
+      log(`Failed to connect to Visualization proxy: ${e}`);
+      vizClient = null;
+    }
+    if (!notebookClient && !vizClient) {
+      log("Both proxies failed. Falling back to standalone server");
+      await startStandaloneServer();
+      return;
+    }
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    log("Master aggregator server running on stdio");
     return;
   }
   await startStandaloneServer();
