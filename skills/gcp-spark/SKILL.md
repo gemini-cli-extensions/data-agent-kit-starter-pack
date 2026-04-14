@@ -2,7 +2,7 @@
 name: gcp-spark
 description: |
   Develops and executes Spark code on Dataproc Serverless.
-  Read and write data using BigLake Iceberg catalogs, BigQuery and spanner.
+  Read and write data using BigLake Iceberg catalogs, BigQuery and Spanner.
   Debugs execution failures.
   Use when:
   - Writing Spark ETL pipelines on GCP.
@@ -10,7 +10,7 @@ description: |
   Don't use when:
   - Writing generic Python scripts that don't use Spark.
   - Performing simple SQL queries that can be done directly in BigQuery.
-license: TBD
+license: Apache-2.0
 metadata:
   version: v1
   publisher: google
@@ -18,8 +18,8 @@ metadata:
 
 # Spark on Dataproc Serverless
 
-> [!IMPORTANT]
-> You MUST ALWAYS follow the Task Execution Workflow when writing spark code.
+> [!IMPORTANT] You MUST ALWAYS follow the Task Execution Workflow when writing
+> spark code.
 
 ## Task Execution Workflow
 
@@ -52,7 +52,7 @@ metadata:
 
 ## Common Mistakes Checklist
 
-![CAUTION] Ensure you verify this checklist to avoid mistakes
+> [!CAUTION] Ensure you verify this checklist to avoid mistakes
 
 Before submitting a job, verify:
 
@@ -74,10 +74,8 @@ Before submitting a job, verify:
 
 The Dataproc service account needs:
 
-Role                         | For
----------------------------- | ------------------------
-`roles/dataproc.worker`      | Job execution
-`roles/biglake.admin`        | Iceberg table management
-`roles/bigquery.jobUser`     | Query materialization
-`roles/storage.objectUser`   | Read/write GCS
-`roles/spanner.databaseUser` | Spanner writes
+*   `roles/dataproc.worker`: Job execution
+*   `roles/biglake.admin`: Iceberg table management
+*   `roles/bigquery.jobUser`: Query materialization
+*   `roles/storage.objectUser`: Read/write GCS
+*   `roles/spanner.databaseUser`: Spanner writes

@@ -7,7 +7,7 @@ description: |
   - SQL: DROP TABLE/VIEW/SCHEMA/DATABASE, TRUNCATE, or broad DELETE (missing WHERE or using 1=1).
   - Cloud Storage: gsutil rm or gcloud storage rm targeting production data or critical buckets.
   - Infrastructure: gcloud projects delete, deleting Spanner/BigQuery/Dataproc resources, deleting secrets, or KMS key destruction.
-license: TBD
+license: Apache-2.0
 metadata:
   version: v1
   publisher: google
@@ -16,7 +16,9 @@ metadata:
 # Accidental Data Loss Prevention
 
 > [!CAUTION]
-> **STOP AND VERIFY**: Before running any command or tool that results in irreversible data loss, you **MUST** obtain explicit user consent.
+>
+> **STOP AND VERIFY**: Before running any command or tool that results in
+> irreversible data loss, you **MUST** obtain explicit user consent.
 
 ## Mandatory Procedure
 

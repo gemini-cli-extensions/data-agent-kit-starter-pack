@@ -9,7 +9,7 @@ description: |
     2. Python packages or dependencies need to be added or modified.
     3. Initiating a new Python project.
     4. Creating a new notebook, even if just using BigQuery cells.
-license: TBD
+license: Apache-2.0
 metadata:
   version: v1
   publisher: google
