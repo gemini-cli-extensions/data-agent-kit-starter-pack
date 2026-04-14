@@ -6,7 +6,7 @@ description: 'Provides expert guidance for troubleshooting Cloud Composer (Apach
   environment and generate RCA report.
 
   '
-license: TBD
+license: Apache-2.0
 metadata:
   version: v1
   publisher: google

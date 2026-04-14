@@ -1,15 +1,15 @@
 ---
 name: notebook-guidance
 description: |-
-  This skill guides the use of Jupyter notebooks for data analysis, exploration, and visualization, particularly with BigQuery. It outlines best practices for cell-by-cell execution and validation, library installation, and structuring notebooks for clarity. It also covers specific rules for data cleaning, plotting, and integrating with BigQuery SQL and machine learning workflows.
+  This skill guides the use of Jupyter notebooks for data analysis, exploration, and visualization, particularly with BigQuery. It outlines best practices for notebook execution and validation (supporting both cell-by-cell execution and full notebook generation depending on tool availability), library installation, and structuring notebooks for clarity. It also covers specific rules for data cleaning, plotting, and integrating with BigQuery SQL and machine learning workflows.
   Relevant when any of the following conditions are true:
     1. The user request involves a data analysis, data exploration, data visualization, or data insights task that requires multiple steps, queries, or visualizations to answer.
     2. The user explicitly requests a notebook (.ipynb).
     3. You are creating, editing, or executing cells in a Jupyter notebook.
     4. You need to query BigQuery from within a notebook. DO NOT use the Python BigQuery client library; instead, you MUST use the BigQuery SQL cells feature explained in this skill.
-license: TBD
+license: Apache-2.0
 metadata:
-  version: v1
+  version: v3
   publisher: google
 ---
 
@@ -40,14 +40,24 @@ comparison is involved, favor a notebook and a visualization. A notebook is the
 
 ## Notebook Best Practices
 
-The golden rule: **STEP BY STEP GENERATE CELL -> EXECUTE CELL -> VALIDATE
-OUTPUT**, do not generate the entire notebook all at once.
+> [!IMPORTANT]
+> **Agent execution rules**: Your behavior MUST depend on whether the `notebook_execute_cell` tool is available in your current context:
+> *   **If notebook `execute_cell` tool is available**: You MUST follow the incremental GENERATE CELL -> EXECUTE CELL -> VALIDATE flow.
+> *   **If notebook `execute_cell` tool is NOT available**: You MUST generate the complete notebook and request user execution.
 
-1.  **EXECUTE-AND-VALIDATE LOOP**: Generate ONE cell, execute it, then verify
-    the output. If the output is data (e.g. a dataframe), you MUST inspect it to
-    confirm the logic is correct before generating the next step. Batch
-    generation of an entire notebook is strictly prohibited because error
-    propagation in notebooks is expensive to fix.
+1.  **CONDITIONAL EXECUTION FLOW**:
+    *   **If notebook `execute_cell` tool is available**: Follow the **STEP BY
+        STEP GENERATE CELL -> EXECUTE CELL -> VALIDATE OUTPUT** flow. Generate
+        ONE cell, execute it, then verify the output. If the output is data
+        (e.g. a dataframe), you MUST inspect it to confirm the logic is correct
+        before generating the next step. Batch generation of an entire notebook
+        is strictly prohibited because error propagation in notebooks is
+        expensive to fix.
+    *   **If notebook `execute_cell` tool is NOT available**:
+        *   Create the whole notebook at once.
+        *   Tell the user to run the notebook.
+        *   Tell the user to let you know once the notebook run is completed so
+            you can check the outputs to verify it's correct and fix any errors.
 2.  **IDENTIFY DATA EARLY**: Use `@skill:discovering-gcp-data-assets` or
     BigQuery list tools to find the correct `project.dataset.table` before
     writing ANY code. If the table ID is missing, ask the user.
@@ -90,11 +100,20 @@ kernel’s Python environment contains the necessary libraries (`bigframes`,
             calls, lean towards **Local Python**.
     -   **Ask when Ambiguous**: If multiple options fit, ask if they prefer a
         **Local Python** or a **Cloud/Remote Kernel** (e.g., Colab, Spark).
-2.  **For Local Setup**: Use `@skill:managing-python-dependencies` to verify
-    if a virtual environment exists. If not, create one. Ensure `ipykernel` is
+2.  **For Local Setup**: Use `@skill:managing-python-dependencies` to verify if
+    a virtual environment exists. If not, create one. Ensure `ipykernel` is
     installed in that environment. Install any other relevant libraries.
 3.  **For Remote Setup**: Advise the user to use the UI to select the
     appropriate remote kernel.
+
+> [!IMPORTANT]
+>
+> **HARD STOP on kernel failure**: If a cell execution returns "no active
+> kernel" or any kernel-not-found error, you MUST **stop immediately**. Do NOT
+> scaffold, generate, or insert any further cells. Inform the user which kernel
+> is needed (e.g., PySpark / Dataproc Serverless) and wait for explicit
+> confirmation that a kernel is active before proceeding with notebook
+> execution.
 
 ### Proper Library Installation
 
@@ -108,9 +127,12 @@ managed in the project.
 
 Since these are often ephemeral or managed by GCP:
 
-*   Use `%pip install <package>` in the first cell if it's the only way to
-    modify the runtime.
-*   Check if the library is already available in the pre-installed stack.
+*   **Check first (REQUIRED)**: Before writing any `%pip install` cell, run
+    `%pip list` or `import <package>` to confirm the package is not already
+    present. Managed runtimes (Dataproc Serverless, Colab) pre-install many
+    common packages. Only install what is confirmed missing.
+*   Use `%pip install <package>` in the first cell if a package is confirmed
+    missing and it's the only way to modify the runtime.
 
 When in doubt about the kernel type or preferred installation method, ask the
 user for clarification.
@@ -160,8 +182,8 @@ key is to keep them grouped logically and separated by Markdown headers.*
         *   ### Insights or Next Steps Provide 1-2 concise insights or next
             steps in bullet points.
 
-2.  **Next Steps**: After you are done generating and executing the entire
-    notebook successfully, and the summary is complete, notify the user and
+2.  **Next Steps**: After the notebook has been successfully executed and 
+    verified, and the summary is complete, notify the user and
     propose next step suggestions.
 
 ### Plotting Rules
@@ -195,8 +217,8 @@ Refer to the following resources for guidance on specific notebook topics:
 Standards for using BigQuery SQL in notebooks and accessing results in Python.
 
 -   **Guide**:
-    [bigquery_sql_in_notebooks.md](resources/bigquery_sql_in_notebooks.md)
-    and the BigQuery skills.
+    [bigquery_sql_in_notebooks.md](resources/bigquery_sql_in_notebooks.md) and
+    the BigQuery skills.
 -   **MUST READ WHEN**: You are writing BigQuery SQL queries in a notebook or
     processing query results in Python.
 

@@ -2,17 +2,20 @@
 
 **Verified patterns** for ML training:
 - **XGBoost**: Use `SparkXGBClassifier`
-- **Native Spark ML**: `GBTClassifier`, `RandomForestClassifier`, `LogisticRegression`
+- **Native Spark ML**: `GBTClassifier`, `RandomForestClassifier`,
+  `LogisticRegression`
 
 ## LightGBM on Dataproc
 
 > [!WARNING]
-> **LightGBM has dependency conflicts on Dataproc Serverless.** The SynapseML LightGBM wrapper conflicts with Dataproc's internal libraries.
+> **LightGBM has dependency conflicts on Dataproc Serverless.** The SynapseML
+> LightGBM wrapper conflicts with Dataproc's internal libraries.
 
 **Alternatives:**
 1. **Use XGBoost** — Similar performance, native Spark support.
 2. **Use Native Spark ML** — `GBTClassifier` provides similar gradient boosting
-3. **Use Vertex AI** — Train LightGBM on Vertex, export model, load in Spark for inference
+3. **Use Vertex AI** — Train LightGBM on Vertex, export model, load in Spark
+   for inference
 4. **Use Dataproc Cluster** (not Serverless) — More control over dependencies
 
 **If you must use LightGBM**, consider:
@@ -49,4 +52,6 @@ xgb = SparkXGBClassifier(
 )
 ```
 
-See [XGBoost PySpark documentation](https://xgboost.readthedocs.io/en/stable/python/python_api.html#module-xgboost.spark) for allowed parameters.
+See [XGBoost PySpark documentation]
+(https://xgboost.readthedocs.io/en/stable/python/python_api.html#module-xgboost.spark)
+for allowed parameters.

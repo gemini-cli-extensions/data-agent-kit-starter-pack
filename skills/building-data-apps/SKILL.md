@@ -14,7 +14,7 @@ description: |
     1. The request is for building backend-only services.
     2. The request is for simple CLI scripts or command-line applications.
     3. The web application is not data-centric or does not involve visualizing/querying data from GCP sources.
-license: TBD
+license: Apache-2.0
 metadata:
   version: v1
   publisher: google
@@ -125,18 +125,22 @@ the shift smooth.
     text white). Update parent state so the table reflects the action instantly.
 -   **AI Chat Interface (Optional Feature):**
 
-    > [!IMPORTANT] If the user does not explicitly request a chat interface, you
-    > SHOULD proactively ask them: "Would you like to include a Gemini-powered
-    > chat interface to enable natural language queries against your data?" OR
-    > if there is an implementation plan: "Would you like to include a
+    > [!IMPORTANT]
+    >
+    > If the user does not explicitly request a chat interface, you SHOULD
+    > proactively ask them: "Would you like to include a Gemini-powered chat
+    > interface to enable natural language queries against your data?" OR if
+    > there is an implementation plan: "Would you like to include a
     > Gemini-powered chat interface to enable natural language queries against
     > your data? Let me know and I'll update the plan!".
 
     If the user requests or agrees to the chat interface:
 
-    > [!CAUTION] Adding the chat interface is a significant change. Implicit
-    > approval of the implementation plan for including the chat interface MUST
-    > never be assumed.
+    > [!CAUTION]
+    >
+    > Adding the chat interface is a significant change. Implicit approval of
+    > the implementation plan for including the chat interface MUST never be
+    > assumed.
 
     1.  **Gather Technical Details**: You MUST read
         `resources/chat_integration.md` for the technical requirements.
@@ -247,14 +251,17 @@ the shift smooth.
 ## Acceptance Criteria
 
 > [!CAUTION]
+>
 > If available, you MUST use browser testing capabilities (such as
-> `browser_subagent`, Puppeteer, Playwright, or an equivalent available tool)
-> to visually verify the frontend application is working correctly *before*
+> `browser_subagent`, Puppeteer, Playwright, or an equivalent available tool) to
+> visually verify the frontend application is working correctly *before*
 > notifying the user that the task is complete.
 
-> [!IMPORTANT] The following checklist represents the strict requirements for
-> this task. You must include these items in whatever format you use to track
-> your work (e.g., your task list, implementation plan, or internal checklist).
+> [!IMPORTANT]
+>
+> The following checklist represents the strict requirements for this task. You
+> must include these items in whatever format you use to track your work (e.g.,
+> your task list, implementation plan, or internal checklist).
 
 -   [ ] Are CSS hover transitions smooth?
 -   [ ] Are date fields formatted readably? (e.g., `MMM dd, yyyy`)

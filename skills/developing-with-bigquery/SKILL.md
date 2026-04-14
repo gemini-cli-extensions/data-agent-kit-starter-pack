@@ -6,7 +6,7 @@ description: |
     1. BigQuery query optimization
     2. BigFrames Python code
     3. BigQuery ML/AI functions.
-license: TBD
+license: Apache-2.0
 metadata:
   version: v1
   publisher: google

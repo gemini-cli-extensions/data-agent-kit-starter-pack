@@ -17,7 +17,7 @@ description: |
        superior approach.
   Don't use when:
     - Assets are outside Google Cloud
-license: TBD
+license: Apache-2.0
 metadata:
   version: v1
   publisher: google

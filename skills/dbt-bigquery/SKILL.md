@@ -5,7 +5,7 @@ description: Expert guidance for creating, modifying, and optimizing dbt pipelin
   model or project. Activate this skill when the user - Creates, modifies, or troubleshoots
   **dbt models or pipelines** - Needs to **optimize SQL** within a dbt project - Is
   **setting up a new dbt project** or configuring existing one
-license: TBD
+license: Apache-2.0
 metadata:
   version: v1
   publisher: google
@@ -34,8 +34,8 @@ Follow these steps when fulfilling dbt-related requests:
 
 1.  Ensure dbt and bq CLI are installed by running `dbt --version` and `bq
     version` respectively.
-2.  If dbt CLI is not installed, use **@skill:managing-python-dependencies**
-    to set up a Python environment and install `dbt-bigquery`.
+2.  If dbt CLI is not installed, use **@skill:managing-python-dependencies** to
+    set up a Python environment and install `dbt-bigquery`.
 3.  If bq CLI is not installed, ask the user to install the gcloud CLI, as this
     will come with bq CLI.
 4.  If no GCP project ID is provided in the user's request, determine the
@@ -80,7 +80,8 @@ Follow these steps when fulfilling dbt-related requests:
     -   If cleaning is not applied, provide **strong evidence** in the response.
     -   Include an **"Automatic Cleaning Summary"** section in every response.
 -   **SQL Optimizations:**
-    -   Follow the optimization protocol in **@skill:developing-with-bigquery** strictly.
+    -   Follow the optimization protocol in **@skill:developing-with-bigquery**
+        strictly.
     -   Include an **"Optimization Summary"** section when applied.
 
 ### 4. Implement Changes
@@ -201,14 +202,19 @@ Every new dbt model **must** include a `config` block e.g.:
 
 ## BigLake Iceberg Support (4-Part Naming)
 
-The `dbt-bigquery` adapter does not natively support 4-part `Project.Catalog.Dataset.Table` queries (it is hardcoded to 3 parts).
+The `dbt-bigquery` adapter does not natively support 4-part
+`Project.Catalog.Dataset.Table` queries (it is hardcoded to 3 parts).
 
 ### Concatenating Catalog and Namespace Into Schema
 
-If you don't use environment prefixes for schemas, you can concatenate the `catalog` and `namespace` (dataset) into the `schema` field.
+If you don't use environment prefixes for schemas, you can concatenate the
+`catalog` and `namespace` (dataset) into the `schema` field.
 
 > [!WARNING]
-> This approach breaks standard dbt environment management (e.g., `generate_schema_name`) if it attempts to prefix the combined string (e.g., `dev_my_catalog.my_namespace` is invalid in BigQuery).
+>
+> This approach breaks standard dbt environment management (e.g.,
+> `generate_schema_name`) if it attempts to prefix the combined string (e.g.,
+> `dev_my_catalog.my_namespace` is invalid in BigQuery).
 
 ```yaml
 version: 2
@@ -222,12 +228,15 @@ sources:
 ```
 
 Usage in models:
+
 ```sql
 SELECT * FROM {{ source('my_biglake_source', 'my_iceberg_table') }}
 ```
 
 > [!WARNING]
-> You cannot create a BigQuery view directly from a source BigLake table (using 4-part naming). It needs to be a native BigQuery table.
+>
+> You cannot create a BigQuery view directly from a source BigLake table (using
+> 4-part naming). It needs to be a native BigQuery table.
 
 ### Folder Structure
 
@@ -274,6 +283,7 @@ Follow these steps when adding new unit tests:
 
 ## Operational Rules
 
--   **Autocleaning is required for data cleaning tasks** — check @skill:data-autocleaning protocol.
+-   **Autocleaning is required for data cleaning tasks** — check
+    @skill:data-autocleaning protocol.
 -   **Execution Constraints** — do not execute `dbt run` without explicit user
     confirmation.
