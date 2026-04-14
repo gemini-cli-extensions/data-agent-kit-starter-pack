@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.6](https://github.com/gemini-cli-extensions/data-cloud-extension/compare/0.1.5...0.1.6) (2026-04-14)
+
+
+### Features
+
+* add notebook MCP configuration for Gemini, Codex, and Claude plugins ([#19](https://github.com/gemini-cli-extensions/data-cloud-extension/issues/19)) ([c3f2d4d](https://github.com/gemini-cli-extensions/data-cloud-extension/commit/c3f2d4d3d2cea1b3563f6dcc99e84e46e8456da8))
+* Bundle IDE Proxy and Implement Resilience Fallback ([#16](https://github.com/gemini-cli-extensions/data-cloud-extension/issues/16)) ([6b160e5](https://github.com/gemini-cli-extensions/data-cloud-extension/commit/6b160e58cf16a7cf870436d88dafa9839509b2b0))
+* Syncing data cloud skills ([#24](https://github.com/gemini-cli-extensions/data-cloud-extension/issues/24)) ([152832e](https://github.com/gemini-cli-extensions/data-cloud-extension/commit/152832ea769663884df7a43c090175e9134a1c9c))
+* viz mcp aggregator ([#21](https://github.com/gemini-cli-extensions/data-cloud-extension/issues/21)) ([400b33b](https://github.com/gemini-cli-extensions/data-cloud-extension/commit/400b33b968c839dccb0daa67c3737db73c5cf44b))
+
 ## [0.1.5](https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit/compare/0.1.4...0.1.5) (2026-04-08)
 
 
