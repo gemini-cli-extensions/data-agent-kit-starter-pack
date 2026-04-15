@@ -21,7 +21,7 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import fs from 'fs';
+
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -339,23 +339,12 @@ async function startStandaloneServer() {
 
 async function run() {
   const ideName = process.env.DATA_CLOUD_CURR_IDE_NAME;
-  const logPath = '/tmp/mcp_debug.log';
-
-  const log = (msg: string) => {
-    fs.appendFileSync(logPath, `[${new Date().toISOString()}] ${msg}\n`);
-    console.error(msg);
-  };
-
-  log(`Server started. DATA_CLOUD_CURR_IDE_NAME=${ideName}`);
-
   if (ideName) {
-    log(`IDE environment detected via env var (${ideName}).`);
 
     const proxyCmd = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../bin/mcp_proxy_bundle.cjs');
     
     // Connect to Notebooks proxy
     try {
-      log(`Spawning Notebooks proxy...`);
       const notebookTransport = new StdioClientTransport({
         command: process.execPath,
         args: [proxyCmd, `notebooks-${ideName.toLowerCase()}`],
@@ -363,15 +352,12 @@ async function run() {
       });
       notebookClient = new Client({ name: 'notebook-client', version: '0.1.0' }, { capabilities: {} });
       await notebookClient.connect(notebookTransport);
-      log('Connected to Notebooks proxy');
     } catch (e) {
-      log(`Failed to connect to Notebooks proxy: ${e}`);
       notebookClient = null;
     }
 
     // Connect to Visualization proxy
     try {
-      log(`Spawning Visualization proxy...`);
       const vizTransport = new StdioClientTransport({
         command: process.execPath,
         args: [proxyCmd, `visualization-${ideName.toLowerCase()}`],
@@ -379,15 +365,12 @@ async function run() {
       });
       vizClient = new Client({ name: 'viz-client', version: '0.1.0' }, { capabilities: {} });
       await vizClient.connect(vizTransport);
-      log('Connected to Visualization proxy');
     } catch (e) {
-      log(`Failed to connect to Visualization proxy: ${e}`);
       vizClient = null;
     }
 
     // Fallback strategy Scenario 4: Both fail -> Standalone
     if (!notebookClient && !vizClient) {
-      log('Both proxies failed. Falling back to standalone server');
       await startStandaloneServer();
       return;
     }
@@ -395,7 +378,6 @@ async function run() {
     // Start the master server on stdio
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    log('Master aggregator server running on stdio');
     return;
   }
 
