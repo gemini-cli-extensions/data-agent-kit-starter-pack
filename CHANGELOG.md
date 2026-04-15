@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.7](https://github.com/gemini-cli-extensions/data-cloud-extension/compare/0.1.6...0.1.7) (2026-04-15)
+
+
+### Features
+
+* Add create_notebook and get_cell_outputs tools ([#27](https://github.com/gemini-cli-extensions/data-cloud-extension/issues/27)) ([06d5e67](https://github.com/gemini-cli-extensions/data-cloud-extension/commit/06d5e679479cd604a2cc98c1878064a55df9e24a))
+
 ## [0.1.6](https://github.com/gemini-cli-extensions/data-cloud-extension/compare/0.1.5...0.1.6) (2026-04-14)
 
 

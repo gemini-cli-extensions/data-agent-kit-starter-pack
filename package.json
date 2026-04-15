@@ -1,6 +1,6 @@
 {
   "name": "data-cloud-ai-dev-kit",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Developer toolkit for Data Cloud and AI integrations",
   "bin": {
     "notebook-tools": "mcp/dist/index.js"
