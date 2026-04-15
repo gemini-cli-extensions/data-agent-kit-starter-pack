@@ -15,6 +15,7 @@ environments:
         definition:
           labels:
             env: dev
+            datacloud: __REQUIRED_LABEL__
       - type: bigquery.table
         name: my_table
         parent: my_dataset
@@ -27,6 +28,7 @@ environments:
                 type: INTEGER
           labels:
             env: dev
+            datacloud: __REQUIRED_LABEL__
       - type: bigquerydatatransfer.transferConfig
         name: my_dts_config
         metadata:
@@ -46,6 +48,7 @@ environments:
         definition:
           labels:
             env: dev
+            datacloud: __REQUIRED_LABEL__
       - type: dataform.repository.releaseConfig
         name: my-release-config
         parent: {{ REPO_NAME }}
