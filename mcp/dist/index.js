@@ -6801,12 +6801,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs9, exportName) {
+    function addFormats(ajv, list, fs8, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs9[f]);
+        ajv.addFormat(f, fs8[f]);
     }
     module.exports = exports = formatsPlugin;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -18782,7 +18782,6 @@ var StdioClientTransport = class {
 // server.ts
 import path from "path";
 import { fileURLToPath } from "url";
-import fs8 from "fs";
 
 // tools/delete_cell.ts
 import * as fs from "fs/promises";
@@ -19266,18 +19265,9 @@ async function startStandaloneServer() {
 }
 async function run() {
   const ideName = process.env.DATA_CLOUD_CURR_IDE_NAME;
-  const logPath = "/tmp/mcp_debug.log";
-  const log = (msg) => {
-    fs8.appendFileSync(logPath, `[${(/* @__PURE__ */ new Date()).toISOString()}] ${msg}
-`);
-    console.error(msg);
-  };
-  log(`Server started. DATA_CLOUD_CURR_IDE_NAME=${ideName}`);
   if (ideName) {
-    log(`IDE environment detected via env var (${ideName}).`);
     const proxyCmd = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../bin/mcp_proxy_bundle.cjs");
     try {
-      log(`Spawning Notebooks proxy...`);
       const notebookTransport = new StdioClientTransport({
         command: process.execPath,
         args: [proxyCmd, `notebooks-${ideName.toLowerCase()}`],
@@ -19285,13 +19275,10 @@ async function run() {
       });
       notebookClient = new Client({ name: "notebook-client", version: "0.1.0" }, { capabilities: {} });
       await notebookClient.connect(notebookTransport);
-      log("Connected to Notebooks proxy");
     } catch (e) {
-      log(`Failed to connect to Notebooks proxy: ${e}`);
       notebookClient = null;
     }
     try {
-      log(`Spawning Visualization proxy...`);
       const vizTransport = new StdioClientTransport({
         command: process.execPath,
         args: [proxyCmd, `visualization-${ideName.toLowerCase()}`],
@@ -19299,19 +19286,15 @@ async function run() {
       });
       vizClient = new Client({ name: "viz-client", version: "0.1.0" }, { capabilities: {} });
       await vizClient.connect(vizTransport);
-      log("Connected to Visualization proxy");
     } catch (e) {
-      log(`Failed to connect to Visualization proxy: ${e}`);
       vizClient = null;
     }
     if (!notebookClient && !vizClient) {
-      log("Both proxies failed. Falling back to standalone server");
       await startStandaloneServer();
       return;
     }
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    log("Master aggregator server running on stdio");
     return;
   }
   await startStandaloneServer();
