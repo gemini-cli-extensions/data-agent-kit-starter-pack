@@ -6,7 +6,7 @@ description: |
   Analytics chat integration for data analytics.
 
   Relevant when any of the following conditions are true:
-    1. The user explicitly requests to build a data dashboard, data application, or visualization UI, and the UI pulls data from a GCP database (e.g., BigQuery, Spanner).
+    1. The user explicitly requests to build a data dashboard, data application, or visualization UI, and the UI pulls data from a GCP database (defaulting to BigQuery unless an alternative is specified).
     2. You need to generate a frontend web application to interact with, query, and visualize data from GCP data sources.
     3. The user wants to build a "chat with your data" experience or integrate the Gemini Data Analytics chat API into a web interface.
 
@@ -16,7 +16,7 @@ description: |
     3. The web application is not data-centric or does not involve visualizing/querying data from GCP sources.
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 
@@ -26,6 +26,8 @@ metadata:
 
 -   **Framework:** React in Vite
 -   **Styling:** Tailwind CSS (Dark Mode by default)
+-   **Database:** BigQuery (Default database unless the user specifies an
+    alternative)
 -   **Icons:** `lucide-react`
 -   **Date Formatting:** `date-fns`
 -   **Data Fetching:** Axios (REST API calls)
