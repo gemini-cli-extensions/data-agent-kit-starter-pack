@@ -27,12 +27,12 @@ metadata:
 
 ## Step 1: Handle Public Datasets or Proceed to Search
 
-Dataplex Context Lookup provides the richest metadata for data assets. You MUST
+Dataplex Entries Lookup provides the richest metadata for data assets. You MUST
 prioritize using it for all Google Cloud assets, even if you already know their
 IDs.
 
 -   **Public Datasets (Direct Inspection)**: If the requested asset belongs to
-    the `bigquery-public-data` project, Dataplex Context Lookup will fail. You
+    the `bigquery-public-data` project, Dataplex Entries Lookup will fail. You
     MUST skip Steps 2 and 3 and inspect the table directly using the `bq` CLI or
     BigQuery MCP tools instead.
 -   **All Other Assets (Proceed to Step 2)**: For all other BigQuery, Cloud
@@ -129,23 +129,23 @@ gcloud dataplex entries search "<KEYWORD_SEARCH_QUERY>" \
 *Criteria*: Once candidate assets are returned, proceed to Step 3 using the
 **full entry names** from the search results.
 
-## Step 3: Lookup High-Fidelity Context
+## Step 3: Lookup Entry
 
-You MUST use the **Context Lookup** command to fetch schema and deep metadata
+You MUST use the **Entries Lookup** command to fetch schema and deep metadata
 for the relevant results obtained from Step 2.
 
-> [!IMPORTANT] The `--resources` parameter MUST be the **full name** (starting
-> with `projects/`) returned by the search result. Passing short table IDs, GCS
-> URIs, or fully qualified `bigquery:` prefixes is PROHIBITED and will fail.
+> [!IMPORTANT] The argument MUST be the **name** (starting with `projects/`)
+> returned by the search result. Passing short table IDs, GCS URIs, or fully
+> qualified `bigquery:` prefixes is PROHIBITED and will fail.
 
 ### Command Execution
 
-Use the `lookup_context` MCP tool
+Use the `lookup_entry` MCP tool
 
 OR
 
 ```bash
-gcloud dataplex context lookup --resources="<FULL_ENTRY_NAME>" --location="<LOCATION>"
+gcloud dataplex entries lookup "<FULL_ENTRY_NAME>"
 ```
 
 *Completion Criteria*: The command returns the detailed schema and business
@@ -157,10 +157,9 @@ context.
 
 ### Lookup Fails or "Resource not found"
 
--   **Cause**: Short table names were used improperly, or the `--location` flag
-    did not match the entry's regionality.
--   **Fix**: Ensure you use the correct `--resources` format and provide the
-    correct `--location`.
+-   **Cause**: Short table names were used improperly.
+-   **Fix**: Ensure you use the correct entry name format from the search
+    results (starting with `projects/`).
 
 ### Search Returns No Results
 
@@ -172,7 +171,7 @@ context.
 
 -   **Cause**: The table belongs to a project (e.g., `bigquery-public-data`)
     that has not fully synchronized its metadata with the Dataplex Universal
-    Catalog. While the entry appears in search, `context lookup` is unavailable.
+    Catalog. While the entry appears in search, `entries lookup` is unavailable.
 -   **Fix**: Fall back to direct inspection using native tools (e.g., `bq` CLI).
 
 ### Search Fails with "--project: Must be specified."

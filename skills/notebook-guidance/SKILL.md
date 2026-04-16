@@ -6,10 +6,10 @@ description: |-
     1. The user request involves a data analysis, data exploration, data visualization, or data insights task that requires multiple steps, queries, or visualizations to answer.
     2. The user explicitly requests a notebook (.ipynb).
     3. You are creating, editing, or executing cells in a Jupyter notebook.
-    4. You need to query BigQuery from within a notebook. DO NOT use the Python BigQuery client library; instead, you MUST use the BigQuery SQL cells feature explained in this skill.
+    4. You need to query BigQuery from within a notebook. DO NOT use the Python BigQuery client library; instead, you MUST use the `%%bqsql` magics explained in this skill.
 license: Apache-2.0
 metadata:
-  version: v3
+  version: v5
   publisher: google
 ---
 
@@ -20,18 +20,23 @@ metadata:
 Before choosing to use a notebook, evaluate the task complexity using these
 heuristics.
 
-Use a notebook if you meet at least one of these criteria: * 📈 **Data Insights &
-Storytelling**: Use a notebook for any request to "give insights", "find
-trends", "explore data", or "analyze data". These tasks benefit from using
-visualizations to present the data. * 📊 **Visualizations are requested**: The
-user explicitly asks for charts or plots. * 🔄 **Stateful / Iterative
-Exploration**: You need to run a query, inspect results, and decide the next
-query based on those results while keeping state in memory.
+Use a notebook if you meet at least one of these criteria:
 
-Do NOT use a notebook ONLY if: * 📝 **Simple Fact/Status**: The request only
-requires a single number (e.g., "how many rows") or a status check (e.g., "when
-was this table updated"). * 🏃‍♂️ **Schema Preview**: The request is only about
-the schema or field types.
+*   📈 **Data Insights & Storytelling**: Use a notebook for any request to "give
+    insights", "find trends", "explore data", or "analyze data". These tasks
+    benefit from using visualizations to present the data.
+*   📊 **Visualizations are requested**: The user explicitly asks for charts or
+    plots.
+*   🔄 **Stateful / Iterative Exploration**: You need to run a query, inspect
+    results, and decide the next query based on those results while keeping
+    state in memory.
+
+Do NOT use a notebook ONLY if:
+
+*   📝 **Simple Fact/Status**: The request only requires a single number (e.g.,
+    "how many rows") or a status check (e.g., "when was this table updated").
+*   🏃‍♂️ **Schema Preview**: The request is only about the schema or field
+    types.
 
 **Golden Rule of Data Storytelling:** If any analytical insight, trend, or
 comparison is involved, favor a notebook and a visualization. A notebook is the
@@ -66,8 +71,8 @@ comparison is involved, favor a notebook and a visualization. A notebook is the
     failed attempts before you present the notebook to the user.
 4.  **LOGICAL CHUNK FIDELITY**: Keep cells small. One logical transformation or
     visualization per cell. Group related cells into logical units (e.g., a
-    BigQuery SQL query cell followed immediately by a Python visualization cell
-    for those results). Use descriptive **markdown cells** to separate and
+    BigQuery `%%bqsql` magic cell followed immediately by a Python visualization
+    cell for those results). Use descriptive **markdown cells** to separate and
     document different logical sections.
 5.  **GENERATE VISUALIZATIONS**: Always accompany data insights with
     visualizations; charts are often more effective than raw numbers for
@@ -152,7 +157,7 @@ other), aim for this general flow:
     *   What is this notebook for? (e.g., `# Retention Analysis`)
 2.  **Section Header** (Markdown Cell)
     *   What are we looking at now? (e.g., `## Exploring User Retention`)
-3.  **Data Acquisition/Transformation** (SQL or Python Cell)
+3.  **Data Acquisition/Transformation** (Python cell, may contain `%%bqsql` magics)
     *   Query BigQuery or transform data.
 4.  **Verification (Optional but Recommended)** (Python Cell)
     *   `df.head()` or assert sanity checks.
@@ -182,9 +187,9 @@ key is to keep them grouped logically and separated by Markdown headers.*
         *   ### Insights or Next Steps Provide 1-2 concise insights or next
             steps in bullet points.
 
-2.  **Next Steps**: After the notebook has been successfully executed and 
-    verified, and the summary is complete, notify the user and
-    propose next step suggestions.
+2.  **Next Steps**: After the notebook has been successfully executed and
+    verified, and the summary is complete, notify the user and propose next step
+    suggestions.
 
 ### Plotting Rules
 
@@ -214,13 +219,87 @@ Refer to the following resources for guidance on specific notebook topics:
 
 ### 1. BigQuery in Notebooks
 
-Standards for using BigQuery SQL in notebooks and accessing results in Python.
+Use BigFrames magics `%%bqsql` for BigQuery SQL queries. These cells support
+native BigQuery SQL execution and data export to BigFrames dataframes.
 
--   **Guide**:
-    [bigquery_sql_in_notebooks.md](resources/bigquery_sql_in_notebooks.md) and
-    the BigQuery skills.
--   **MUST READ WHEN**: You are writing BigQuery SQL queries in a notebook or
-    processing query results in Python.
+> [!IMPORTANT]
+>
+> *   Unless specified by the user, **always use SQL for querying BigQuery.**
+> *   DO NOT use the standard BigQuery Python client library
+>     (`google.cloud.bigquery`) or `pandas.read_gbq`.
+> *   **Mandatory dataframe export**: Always provide a dataframe name e.g.
+>     `%%bqsql <df_name>`. This makes it easy to use results in follow up
+>     Python cells.
+> *   Verify that `bigframes` version number `2.38.0` and above is installed in
+>     the notebook runtime environment. If it is missing,  ask the user if they
+>     would like you to upgrade for them.
+
+**Example %%bqsql magic usage:**
+
+```python
+# Initialize BigFrames and load %%bqsql magics
+import bigframes
+import bigframes.pandas as bpd
+%load_ext bigframes
+```
+
+> [!CAUTION] Always use `%load_ext bigframes` exactly as shown. Do not load
+> submodules — for example, `%load_ext bigframes.magics` or `%load_ext
+> bigframes.bigquery` are not valid and must not be used.
+
+> [!IMPORTANT] The `bigframes` library must be installed. Determine if bigframes
+> needs to be installed by following @skill:managing-python-dependencies.
+
+```python
+%%bqsql df_sample
+SELECT * FROM `project.dataset.table` LIMIT 10
+```
+
+#### Anti-patterns (NEVER DO THESE)
+
+> [!CAUTION] 1. **NO Python SDK for Queries**: Do not switch to
+> `client.query(sql).to_dataframe()` if SQL fails. Fix the SQL syntax instead.
+> 2. **NO Mixing Logic**: Do not put Python code in the same cell as `%%bqsql`
+> magics.
+
+#### Working with SQL Results in Python
+
+Magic cells with `%%bqsql <df_name>` produce a **BigQuery DataFrame**. In
+subsequent cells, you can use `<df_name>` directly.
+
+> [!IMPORTANT] You MUST use BigFrames for data exploration, manipulation,
+> splitting etc. You MUST use BQML SQL or bigframes.ml for machine learning
+> tasks. You MUST NOT use pandas or Scikit-learn.
+
+##### BigQuery DataFrame Tips
+
+*   **Avoid `.to_pandas()`**: You MUST NOT use `.to_pandas()` to download the
+    entire dataset into memory. There are some exceptions:
+    *   An error message explicitly requests you to use `to_pandas()`
+    *   You are going to visualize the data, **and** the visualization library
+        does not accept BigFrames Dataframe/Series instances. In this case,
+        reduce the amount of data you are going to download before calling
+        `.to_pandas()`
+*   **Avoid `read_gbq()` for SQL**: Do not write SQL queries and execute them
+    with `read_gbq()`. Use BigFrames Dataframe/Series methods instead.
+*   **Use BigFrames ML package for Machine Learning Tasks**: Do not use
+    Scikit-learn or other ML libraries with BigFrames dataframes. Import your
+    tools/classes from `bigframes.ml`.
+*   **Stay in the Cloud**: Perform data cleaning, transformation, and analysis
+    via BigFrames methods to leverage BigQuery's scale.
+*   **Accessors over UDFs/Lambdas**:
+    *   Prefer built-in accessors (e.g., `df.col.str.*`, `df.col.dt.*`) over
+        remote UDFs.
+    *   **Do not use lambdas** with `Series.map()` or `DataFrame.apply()`.
+*   **Schema Verification**: Do not assume schema of intermediate outputs. Check
+    `.dtypes` after loading, and use `display()` with `.head()` or `.peek()`.
+*   **Visualization**: BigFrames Dataframe mostly works directly with
+    Matplotlib, Seaborn, and other plotting libraries. If your attempt didn't
+    work, try using the "plot" accessor. If that didn't work either, you MUST
+    sample or aggregate your data to make it small enough before calling
+    "to_pandas()".
+*   **Model Persistence**: To persist a model. use `model.to_gbq()`. To load a
+    persisted model, use `bpd.read_gbq_model()`.
 
 ### 2. Machine Learning in Notebooks
 

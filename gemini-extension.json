@@ -1,15 +1,165 @@
 {
   "name": "data-cloud-ai-dev-kit",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "description": "This plugin provides a specialized suite of skills for data engineers and database practitioners working on Google Cloud. It acts as an expert assistant, allowing you to use natural language prompts in your preferred coding agent to architect complex data pipelines, transform data with dbt, write Spark and BigQuery SQL notebooks, and orchestrate end-to-end workflows across GCP's data ecosystem.",
   "mcpServers": {
-    "notebook": {
+    "notebook_and_visualization": {
       "command": "npx",
       "args": [
         "-y",
         "git+https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit.git"
       ],
       "env": {}
+    },
+    "datacloud_bigquery_toolbox": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "bigquery",
+        "--stdio",
+        "--user-agent-metadata",
+        "google-cloud-data-agent-kit-gemini-cli"
+      ],
+      "env": {
+        "BIGQUERY_LOCATION": "",
+        "BIGQUERY_PROJECT": ""
+      }
+    },
+    "datacloud_spanner_toolbox": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "spanner",
+        "--stdio",
+        "--user-agent-metadata",
+        "google-cloud-data-agent-kit-gemini-cli"
+      ],
+      "env": {
+        "SPANNER_DATABASE": "",
+        "SPANNER_DIALECT": "",
+        "SPANNER_INSTANCE": "",
+        "SPANNER_PROJECT": ""
+      }
+    },
+    "datacloud_alloydb-postgres-admin_toolbox": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "alloydb-postgres-admin",
+        "--stdio",
+        "--user-agent-metadata",
+        "google-cloud-data-agent-kit-gemini-cli"
+      ],
+      "env": {}
+    },
+    "datacloud_alloydb-postgres_toolbox": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "alloydb-postgres",
+        "--stdio",
+        "--user-agent-metadata",
+        "google-cloud-data-agent-kit-gemini-cli"
+      ],
+      "env": {
+        "ALLOYDB_POSTGRES_CLUSTER": "",
+        "ALLOYDB_POSTGRES_DATABASE": "",
+        "ALLOYDB_POSTGRES_INSTANCE": "",
+        "ALLOYDB_POSTGRES_IP_TYPE": "",
+        "ALLOYDB_POSTGRES_PASSWORD": "",
+        "ALLOYDB_POSTGRES_PROJECT": "",
+        "ALLOYDB_POSTGRES_REGION": "",
+        "ALLOYDB_POSTGRES_USER": ""
+      }
+    },
+    "datacloud_cloud-sql-postgresql-admin_toolbox": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "cloud-sql-postgres-admin",
+        "--stdio",
+        "--user-agent-metadata",
+        "google-cloud-data-agent-kit-gemini-cli"
+      ],
+      "env": {}
+    },
+    "datacloud_cloud-sql-postgresql_toolbox": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "cloud-sql-postgres",
+        "--stdio",
+        "--user-agent-metadata",
+        "google-cloud-data-agent-kit-gemini-cli"
+      ],
+      "env": {
+        "CLOUD_SQL_POSTGRES_DATABASE": "",
+        "CLOUD_SQL_POSTGRES_INSTANCE": "",
+        "CLOUD_SQL_POSTGRES_IP_TYPE": "",
+        "CLOUD_SQL_POSTGRES_PASSWORD": "",
+        "CLOUD_SQL_POSTGRES_PROJECT": "",
+        "CLOUD_SQL_POSTGRES_REGION": "",
+        "CLOUD_SQL_POSTGRES_USER": ""
+      }
+    },
+    "datacloud_knowledge_catalog_toolbox": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "dataplex",
+        "--stdio",
+        "--user-agent-metadata",
+        "google-cloud-data-agent-kit-gemini-cli"
+      ],
+      "env": {
+        "DATAPLEX_PROJECT": ""
+      }
+    },
+    "datacloud_dataproc_toolbox": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "dataproc",
+        "--stdio",
+        "--user-agent-metadata",
+        "google-cloud-data-agent-kit-gemini-cli"
+      ],
+      "env": {
+        "DATAPROC_PROJECT": "",
+        "DATAPROC_REGION": ""
+      }
+    },
+    "datacloud_serverless-spark_toolbox": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "serverless-spark",
+        "--stdio",
+        "--user-agent-metadata",
+        "google-cloud-data-agent-kit-gemini-cli"
+      ],
+      "env": {
+        "SERVERLESS_SPARK_PROJECT": "",
+        "SERVERLESS_SPARK_LOCATION": ""
+      }
     }
   }
 }

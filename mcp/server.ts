@@ -34,6 +34,8 @@ import {readCell} from './tools/read_cell.js';
 import {replaceCell} from './tools/replace_cell.js';
 import {getNotebookInfo} from './tools/get_notebook_info.js';
 import {searchCells} from './tools/search_cells.js';
+import {createNotebook} from './tools/create_notebook.js';
+import {getCellOutputs} from './tools/get_cell_outputs.js';
 
 const server = new Server(
   {
@@ -185,6 +187,42 @@ const LOCAL_TOOLS = [
       required: ['notebookPath', 'query'],
     },
   },
+  {
+    name: 'create_notebook',
+    description: 'Create a new notebook file in the workspace',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        directory: {
+          type: 'string',
+          description: 'Absolute path to the directory where the notebook should be created',
+        },
+        filename: {
+          type: 'string',
+          description: 'Name of the notebook file (without extension)',
+        },
+      },
+      required: ['directory', 'filename'],
+    },
+  },
+  {
+    name: 'get_cell_outputs',
+    description: 'Read outputs from a code cell by index',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        notebookPath: {
+          type: 'string',
+          description: 'Path to the notebook file',
+        },
+        cellIndex: {
+          type: 'number',
+          description: '0-based index of the cell to inspect',
+        },
+      },
+      required: ['notebookPath', 'cellIndex'],
+    },
+  },
 ];
 
 const toolOwnerMap = new Map<string, 'notebook' | 'viz'>();
@@ -245,6 +283,11 @@ const ReplaceCellSchema = CellIndexSchema.extend({
 const SearchCellsSchema = NotebookPathSchema.extend({
   query: z.string(),
   caseSensitive: z.boolean().optional(),
+});
+
+const CreateNotebookSchema = z.object({
+  directory: z.string(),
+  filename: z.string(),
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
@@ -318,6 +361,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const result = await searchCells(parsed.notebookPath, parsed.query, parsed.caseSensitive);
         return {
           content: [{type: 'text', text: JSON.stringify(result, null, 2)}],
+        };
+      }
+      case 'create_notebook': {
+        const parsed = CreateNotebookSchema.parse(args);
+        const result = await createNotebook(parsed.directory, parsed.filename);
+        return {
+          content: [{type: 'text', text: JSON.stringify(result, null, 2)}],
+        };
+      }
+      case 'get_cell_outputs': {
+        const parsed = CellIndexSchema.parse(args);
+        const result = await getCellOutputs(parsed.notebookPath, parsed.cellIndex);
+        return {
+          content: result,
         };
       }
       default:

@@ -3,8 +3,8 @@ name: gcp-pipeline-orchestration
 description: This skill helps the agent generate or update orchestration pipeline
   definitions for Google Cloud Composer to initialize orchestration pipeline or update
   the orchestration definition for orchestration of various data pipelines, like dbt
-  pipelines, notebooks, Spark jobs, or Dataform etc on Google Cloud Dataproc clusters.
-  This skill also helps deploy and trigger orchestration pipelines.
+  pipelines, notebooks, Spark jobs, Dataform, Python scripts or inline BigQuery SQL
+  queries. This skill also helps deploy and trigger orchestration pipelines.
 license: Apache-2.0
 metadata:
   version: v1
@@ -66,7 +66,7 @@ Examine the repository's root directory for a `deployment.yaml` file.
 5.  **Execute Initialization**: Once you have the pipeline name, run the
     following command:
 
-```bash
+```
 # Replace <ORCHESTRATION_PIPELINE_NAME> with the actual name
 # Replace <ENV_NAME> with the actual environment name
 gcloud beta orchestration-pipelines init <ORCHESTRATION_PIPELINE_NAME> --environment=<ENV_NAME>
@@ -109,7 +109,7 @@ following fields:
 -   `region` (string): The Google Cloud region (e.g., 'us-central1').
 -   `composer_environment` (string): The Cloud Composer environment name.
 -   `artifact_storage`
-    -   `bucket` (string): gcs bucket
+    -   `bucket` (string): GCS bucket
     -   `path_prefix`(string):prefix of path that we want to put in bucket
 -   `pipelines`
     -   `- source` (string): orchestration pipeline yaml file names. It can be
@@ -119,7 +119,7 @@ following fields:
 
 > [!TIP] If the user doesn't provide specific paths for scripts, dbt projects,
 > or GCP details (Project ID, Region), use tools like `find_by_name` to search
-> the repository and `gcloud` commands (e.g., `gcloud config get project`) to
+> the repository and `gcloud` commands (e.g., `gcloud config get-value project`) to
 > retrieve the necessary information.
 
 ### Step 3: Generate the pipeline files
@@ -134,7 +134,7 @@ following fields:
     dataproc environments for the user's project. This avoids using placeholder
     values to run the jobs.
 
-    ```bash
+    ```
     # Replace <PROJECT_ID> with the actual project_id
     # Replace <REGION> with the actual region
     gcloud dataproc clusters list \
@@ -155,7 +155,7 @@ following fields:
     > `sparkHistoryServerConfig`. It is better to omit this configuration if a
     > dedicated Spark History Server is not available.
 
--   If you want to schedule the python job, please check the content of py
+-   If you want to schedule the python job, check the content of Python
     content to determine if it's a spark job. If it is, use `pyspark` as type
     instead of script as type.
 
@@ -163,7 +163,7 @@ following fields:
     run the following command to get the list of available Composer environments
     for the user's project.
 
-    ```bash
+    ```
     # Replace <PROJECT_ID> with the actual project_id
     # Replace <REGION> with the actual region
     gcloud composer environments list \
@@ -175,7 +175,7 @@ following fields:
     environment to ensure it has the necessary `orchestration-pipelines` package
     installed. Run the following command for each environment:
 
-    ```bash
+    ```
     # Replace <ENVIRONMENT_NAME> with the Composer environment name
     # Replace <REGION> with the region
     gcloud composer environments describe <ENVIRONMENT_NAME> \
@@ -222,7 +222,7 @@ After creating or editing pipeline files, you **MUST** validate them using the
 `deployment.yaml` file to identify all defined environments. b. Run the
 `validate` command below for **each** environment found in `deployment.yaml`.
 
-```bash
+```
 # Replace <ENV_NAME> with the identified environment name
 gcloud beta orchestration-pipelines validate --environment=<ENV_NAME>
 ```
@@ -274,7 +274,7 @@ If requested to **deploy** the orchestration pipeline:
 
 3.  Deploy with `--local`. This uploads the DAG without running it:
 
-    ```bash
+    ```
     # Replace <ENV_NAME> with the target environment
     # Replace <PIPELINE_SOURCE> with the orchestration YAML filename
     gcloud beta orchestration-pipelines deploy \
@@ -303,7 +303,7 @@ Deploy → Poll → Trigger flow.
     `pipelineId` from the orchestration YAML.
 
 3.  **Poll for DAG readiness**: Wait for the DAG to be registered in Composer.
-    ```bash
+    ```
 
     # Initial delay: wait 30 seconds after deploy
 
@@ -315,22 +315,28 @@ Deploy → Poll → Trigger flow.
 
     gcloud beta orchestration-pipelines list \
     --environment=<ENV_NAME> \
-    --bundle=<BUNDLE_ID> ``` The pipeline is ready when it appears in the list
+    --bundle=<BUNDLE_ID> 
+    ``` 
+    The pipeline is ready when it appears in the list
     output. If it does not appear after 2 minutes, report failure and advise the
     user to check YAML validity.
 
-4.  **Trigger the pipeline**: ```bash
-
+4.  **Trigger the pipeline**: 
+```
     # Replace <ENV_NAME>, <BUNDLE_ID>, <PIPELINE_ID> with actual values
 
     gcloud beta orchestration-pipelines trigger \
     --environment=<ENV_NAME> \
     --bundle=<BUNDLE_ID> \
-    --pipeline=<PIPELINE_ID> ```
+    --pipeline=<PIPELINE_ID> 
+```
 
-5.  **Verify the run started**: `bash gcloud beta orchestration-pipelines runs
+5.  **Verify the run started**: 
+```
+gcloud beta orchestration-pipelines runs
     list \ --environment=<ENV_NAME> \ --bundle=<BUNDLE_ID> \
     --pipeline=<PIPELINE_ID>`
+```
 
 > [!TIP] **Trigger-only (no deploy):** If the user wants to trigger an
 > already-deployed pipeline, skip Step 6. Use `gcloud beta
@@ -338,14 +344,17 @@ Deploy → Poll → Trigger flow.
 > then trigger directly with Step 7.4.
 
 > [!IMPORTANT] **Fallback:** If `gcloud trigger` fails, use the bundled script:
-> `bash python scripts/trigger/airflow_trigger.py \ --project <PROJECT_ID>
-> --location <REGION> \ --environment <COMPOSER_ENV> --dag_id <PIPELINE_ID>` Get
-> `project`, `region`, and `composer_environment` from `deployment.yaml`.
+> Run script with -- help to discover and learn the interface.
+```
+python scripts/trigger/airflow_trigger.py \ --project <PROJECT_ID>
+--location <REGION> \ --environment <COMPOSER_ENV> --dag_id <PIPELINE_ID>
+```
+> Get `project`, `region`, and `composer_environment` from `deployment.yaml`.
 
 ## Definition of done
 
 -   `deployment.yaml` file is created successfully.
--   The orchestration pipeline file (e.g., `orchestration_pipeline.yaml`) file
+-   The orchestration pipeline file (e.g., `orchestration_pipeline.yaml`)
     is created successfully, includes a mandatory `endTime` for every schedule,
     and passes the validation command: `gcloud beta orchestration-pipelines
     validate --environment=<ENV_NAME>`
@@ -357,3 +366,23 @@ Deploy → Poll → Trigger flow.
     2.  DAG appeared in `gcloud beta orchestration-pipelines list` within 2 min
     3.  `gcloud beta orchestration-pipelines trigger` returned success
     4.  Run is visible in `gcloud beta orchestration-pipelines runs list`
+
+## Other actions
+If requested to pause/stop the orchestration pipeline, use
+ ```bash
+    # Replace <ENV_NAME>, <BUNDLE_ID>, <PIPELINE_ID> with actual values
+    gcloud beta orchestration-pipelines pause \
+    --environment=<ENV_NAME> \
+    --bundle=<BUNDLE_ID> \
+    --pipeline=<PIPELINE_ID> 
+```
+
+If requested to unpause/resume the orchestration pipeline, use
+ ```bash
+    # Replace <ENV_NAME>, <BUNDLE_ID>, <PIPELINE_ID> with actual values
+    gcloud beta orchestration-pipelines unpause \
+    --environment=<ENV_NAME> \
+    --bundle=<BUNDLE_ID> \
+    --pipeline=<PIPELINE_ID> 
+```
+

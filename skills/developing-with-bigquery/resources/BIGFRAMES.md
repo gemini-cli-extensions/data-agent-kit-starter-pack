@@ -27,3 +27,4 @@ Guidelines for generating valid code with the BigFrames (BigQuery DataFrame) lib
     - Sort data chronologically and split around a timepoint before training.
     - Prediction horizon must be less than or equal to training horizon.
 * **PCA**: BigFrames' PCA class lacks simple `transform()` method. Use `predict()` instead.
+* **Model Persistence**: To persist a model. use `model.to_gbq()`. To load a persisted model, use `bpd.read_gbq_model()`.
