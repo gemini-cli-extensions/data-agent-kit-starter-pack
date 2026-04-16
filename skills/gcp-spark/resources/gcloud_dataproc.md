@@ -27,25 +27,38 @@ Serverless Batches.
 
 ## Setup
 
--   Use `gcloud` to interact with Dataproc. Assume users have gcloud installed.
+## Project and region/location preferences
 
--   Users should configure gcloud to point at their desired project and
-    region/location. You may look up the configuration with:
+Users configure `gcloud` to point at their desired project and region/location.
+Assume gcloud is already installed.
 
-    ```
-    gcloud config get project
-    gcloud config get dataproc/region
-    gcloud config get dataproc/location
-    ```
+Look up the configuration with:
 
-    -   If `dataproc/region` or `dataproc/location` is not set, you must pass
-        `--region` or `--location` depending on the command:
+```
+gcloud config get project
+gcloud config get dataproc/region
+gcloud config get dataproc/location
+gcloud config get compute/region
+```
 
-        -   Dataproc Clusters and Serverless Batches commands accept `--region`.
-        -   Dataproc Serverless Sessions commands accept `--location`.
+If region and location are not set, you may suggest using the compute region.
 
-    -   If not set, you may suggest a region based on
-        `gcloud config get compute/region`.
+### Prefer MCP if possible
+
+> [!IMPORTANT] If you have access to one or more MCP servers related to Dataproc
+> or Serverless Spark, you MUST use those MCP tools rather than gcloud. ONLY
+> fall back to gcloud if MCP tools are not available.
+
+When using MCP, the ONLY thing you use gcloud for is looking up
+project/region/location to pass as arguments to the MCP tools.
+
+### gcloud as backup
+
+If MCP servers are not available or there are no tools that can be used for your
+use case, use `gcloud` to interact with Dataproc.
+
+In general, Dataproc Clusters and Serverless Batches commands accept `--region`.
+Dataproc Serverless Sessions commands accept `--location`.
 
 ## Dataproc Clusters
 
@@ -55,7 +68,7 @@ user requests "serverless jobs", "serverless batches", or "batches".
 
 ### Listing clusters
 
-Use this command template:
+Prefer MCP if available. If using gcloud, use this command template:
 
 ```
 gcloud dataproc clusters list \
@@ -79,7 +92,7 @@ Tips:
 
 ### Listing jobs
 
-Use this command template:
+Prefer MCP if available. If using gcloud, use this command template:
 
 ```
 gcloud dataproc jobs list \
@@ -114,7 +127,7 @@ user that they are using Serverless.
 
 ### Listing batches
 
-Use this command template:
+Prefer MCP if available. If using gcloud, use this command template:
 
 ```
 gcloud dataproc batches list \
@@ -136,12 +149,16 @@ Tips:
 > [!IMPORTANT] Refer to this guide when executing **PySpark Script (.py)** ONLY.
 
 Determine the properties and configuration required by the pyspark script before
- executing the command for Job Submission
+executing the command for Job Submission
 
-#### Basic Job submission command
+#### Basic batch submission command
+
+Prefer MCP if available. If using gcloud, use this command template:
+
 Augment the basic command with iceberg, spanner or xgboost related arguments as
- needed by the script to be executed.
-```bash
+needed by the script to be executed.
+
+```
 gcloud dataproc batches submit pyspark <SCRIPT_PATH.py> \
     --project=<PROJECT_ID> \
     --region=<GCP_REGION> \
@@ -201,7 +218,7 @@ or more.
 
 ### Listing sessions
 
-Use this command template:
+Prefer MCP if available. If using gcloud, use this command template:
 
 ```
 gcloud beta dataproc sessions list \

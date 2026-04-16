@@ -67,3 +67,14 @@ Interact with your coding agent using natural language prompts to perform comple
 
 * **Plugin Not Found:** Ensure you have restarted your agent (e.g., Gemini CLI or Codex) after installation.
 * **Authentication Errors:** Many GCP skills require an active authenticated session. Ensure you have run `gcloud auth login` and `gcloud auth application-default login` on your machine.
+
+## Security Reminder: Agent Environment Hardening
+
+Your agent has the power to
+execute tools and commands on your behalf. Protect your GCP resources by
+enforcing **Strict Least Privilege** across all CLIs, MCP servers and other
+resources available to your agents. For example, use scoped Service Accounts
+(read more
+[here](https://docs.cloud.google.com/docs/authentication/use-service-account-impersonation))
+for tasks accessing your cloud resources and conducting regular permission and
+agent settings audits to minimize your attack surface.

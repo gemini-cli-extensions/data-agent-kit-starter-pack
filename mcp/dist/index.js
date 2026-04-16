@@ -3238,8 +3238,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path2) {
-      let input = path2;
+    function removeDotSegments(path3) {
+      let input = path3;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -3438,8 +3438,8 @@ var require_schemes = __commonJS({
         wsComponent.secure = void 0;
       }
       if (wsComponent.resourceName) {
-        const [path2, query] = wsComponent.resourceName.split("?");
-        wsComponent.path = path2 && path2 !== "/" ? path2 : void 0;
+        const [path3, query] = wsComponent.resourceName.split("?");
+        wsComponent.path = path3 && path3 !== "/" ? path3 : void 0;
         wsComponent.query = query;
         wsComponent.resourceName = void 0;
       }
@@ -6801,12 +6801,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs8, exportName) {
+    function addFormats(ajv, list, fs10, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs8[f]);
+        ajv.addFormat(f, fs10[f]);
     }
     module.exports = exports = formatsPlugin;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -7292,8 +7292,8 @@ function getErrorMap() {
 
 // node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
-  const { data, path: path2, errorMaps, issueData } = params;
-  const fullPath = [...path2, ...issueData.path || []];
+  const { data, path: path3, errorMaps, issueData } = params;
+  const fullPath = [...path3, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -7409,11 +7409,11 @@ var errorUtil;
 
 // node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
-  constructor(parent, value, path2, key) {
+  constructor(parent, value, path3, key) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path2;
+    this._path = path3;
     this._key = key;
   }
   get path() {
@@ -11050,10 +11050,10 @@ function assignProp(target, prop, value) {
     configurable: true
   });
 }
-function getElementAtPath(obj, path2) {
-  if (!path2)
+function getElementAtPath(obj, path3) {
+  if (!path3)
     return obj;
-  return path2.reduce((acc, key) => acc?.[key], obj);
+  return path3.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -11373,11 +11373,11 @@ function aborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path2, issues) {
+function prefixIssues(path3, issues) {
   return issues.map((iss) => {
     var _a;
     (_a = iss).path ?? (_a.path = []);
-    iss.path.unshift(path2);
+    iss.path.unshift(path3);
     return iss;
   });
 }
@@ -18780,7 +18780,7 @@ var StdioClientTransport = class {
 };
 
 // server.ts
-import path from "path";
+import path2 from "path";
 import { fileURLToPath } from "url";
 
 // tools/delete_cell.ts
@@ -18982,6 +18982,132 @@ async function searchCells(notebookPath, query, caseSensitive = false) {
   }
 }
 
+// tools/create_notebook.ts
+import * as fs8 from "fs/promises";
+import * as path from "path";
+async function createNotebook(directory, filename) {
+  try {
+    const extension = "ipynb";
+    const fullFilename = filename.endsWith(`.${extension}`) ? filename : `${filename}.${extension}`;
+    const notebookPath = path.join(directory, fullFilename);
+    try {
+      await fs8.stat(notebookPath);
+      throw new Error(`Notebook already exists at ${notebookPath}`);
+    } catch (err) {
+      if (err.code !== "ENOENT") {
+        throw err;
+      }
+    }
+    const minimalNotebook = {
+      cells: [],
+      metadata: {},
+      nbformat: 4,
+      nbformat_minor: 2
+    };
+    await fs8.writeFile(notebookPath, JSON.stringify(minimalNotebook, null, 2), "utf8");
+    return {
+      success: true,
+      message: `Created Jupyter notebook at ${notebookPath}`,
+      notebookPath
+    };
+  } catch (error2) {
+    throw new Error(`Failed to create notebook: ${error2.message}`);
+  }
+}
+
+// tools/get_cell_outputs.ts
+import * as fs9 from "fs/promises";
+async function getCellOutputs(notebookPath, cellIndex) {
+  try {
+    const data = await fs9.readFile(notebookPath, "utf8");
+    const notebook = JSON.parse(data);
+    if (!notebook.cells || !Array.isArray(notebook.cells)) {
+      throw new Error("Invalid notebook format: missing cells array");
+    }
+    if (cellIndex < 0 || cellIndex >= notebook.cells.length) {
+      throw new Error(`Cell index out of bounds: ${cellIndex}. Total cells: ${notebook.cells.length}`);
+    }
+    const cell = notebook.cells[cellIndex];
+    if (cell.cell_type !== "code") {
+      throw new Error(`Cell at index ${cellIndex} is not a code cell; it has no execution outputs.`);
+    }
+    const prefixText = `Outputs for cell ${cellIndex} in ${notebookPath}:`;
+    const contentPayload = parseCellOutputs(cell, cellIndex, notebookPath, prefixText);
+    return contentPayload;
+  } catch (error2) {
+    throw new Error(`Failed to get cell outputs: ${error2.message}`);
+  }
+}
+function parseCellOutputs(cell, index, path3, prefixText) {
+  const contentPayload = [];
+  let textBuffer = `${prefixText}
+`;
+  const executionCount = cell.execution_count ?? null;
+  textBuffer += `Execution Count: ${executionCount ?? "N/A"}
+`;
+  if (cell.outputs && cell.outputs.length > 0) {
+    textBuffer += `
+Outputs:
+`;
+    for (const o of cell.outputs) {
+      const outputType = o.output_type;
+      if (outputType === "stream") {
+        const text = Array.isArray(o.text) ? o.text.join("") : o.text || "";
+        const textPreview = text.length > 3e3 ? `${text.slice(0, 3e3)}
+...[Truncated]` : text;
+        textBuffer += `
+[stream:${o.name}]
+${textPreview}
+`;
+      } else if (outputType === "execute_result" || outputType === "display_data") {
+        for (const mime in o.data) {
+          const data = o.data[mime];
+          const textData = Array.isArray(data) ? data.join("") : data || "";
+          if (mime.startsWith("text/") || mime.includes("json")) {
+            const textPreview = textData.length > 3e3 ? `${textData.slice(0, 3e3)}
+...[Truncated]` : textData;
+            textBuffer += `
+[${mime}]
+${textPreview}
+`;
+          } else if (mime === "image/png" || mime === "image/jpeg") {
+            if (textBuffer.trim().length > 0) {
+              contentPayload.push({ type: "text", text: textBuffer });
+              textBuffer = "";
+            }
+            if (typeof textData !== "string") {
+              textBuffer += `
+[${mime}]
+(Warning: Image data is not a string. Type: ${typeof textData})
+`;
+            } else {
+              contentPayload.push({
+                type: "image",
+                data: textData,
+                mimeType: mime
+              });
+            }
+          }
+        }
+      } else if (outputType === "error") {
+        const traceback = Array.isArray(o.traceback) ? o.traceback.join("\n") : o.traceback || "";
+        textBuffer += `
+[error]
+${traceback}
+`;
+      }
+    }
+  } else {
+    textBuffer += `
+(No output generated)
+`;
+  }
+  if (textBuffer.length > 0) {
+    contentPayload.push({ type: "text", text: textBuffer });
+  }
+  return contentPayload;
+}
+
 // server.ts
 var server = new Server(
   {
@@ -19129,6 +19255,42 @@ var LOCAL_TOOLS = [
       },
       required: ["notebookPath", "query"]
     }
+  },
+  {
+    name: "create_notebook",
+    description: "Create a new notebook file in the workspace",
+    inputSchema: {
+      type: "object",
+      properties: {
+        directory: {
+          type: "string",
+          description: "Absolute path to the directory where the notebook should be created"
+        },
+        filename: {
+          type: "string",
+          description: "Name of the notebook file (without extension)"
+        }
+      },
+      required: ["directory", "filename"]
+    }
+  },
+  {
+    name: "get_cell_outputs",
+    description: "Read outputs from a code cell by index",
+    inputSchema: {
+      type: "object",
+      properties: {
+        notebookPath: {
+          type: "string",
+          description: "Path to the notebook file"
+        },
+        cellIndex: {
+          type: "number",
+          description: "0-based index of the cell to inspect"
+        }
+      },
+      required: ["notebookPath", "cellIndex"]
+    }
   }
 ];
 var toolOwnerMap = /* @__PURE__ */ new Map();
@@ -19178,6 +19340,10 @@ var ReplaceCellSchema = CellIndexSchema.extend({
 var SearchCellsSchema = NotebookPathSchema.extend({
   query: external_exports.string(),
   caseSensitive: external_exports.boolean().optional()
+});
+var CreateNotebookSchema = external_exports.object({
+  directory: external_exports.string(),
+  filename: external_exports.string()
 });
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
@@ -19248,6 +19414,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
         };
       }
+      case "create_notebook": {
+        const parsed = CreateNotebookSchema.parse(args);
+        const result = await createNotebook(parsed.directory, parsed.filename);
+        return {
+          content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
+        };
+      }
+      case "get_cell_outputs": {
+        const parsed = CellIndexSchema.parse(args);
+        const result = await getCellOutputs(parsed.notebookPath, parsed.cellIndex);
+        return {
+          content: result
+        };
+      }
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
@@ -19266,7 +19446,7 @@ async function startStandaloneServer() {
 async function run() {
   const ideName = process.env.DATA_CLOUD_CURR_IDE_NAME;
   if (ideName) {
-    const proxyCmd = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../bin/mcp_proxy_bundle.cjs");
+    const proxyCmd = path2.resolve(path2.dirname(fileURLToPath(import.meta.url)), "../bin/mcp_proxy_bundle.cjs");
     try {
       const notebookTransport = new StdioClientTransport({
         command: process.execPath,

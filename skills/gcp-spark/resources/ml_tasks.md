@@ -19,7 +19,10 @@
 4. **Use Dataproc Cluster** (not Serverless) — More control over dependencies
 
 **If you must use LightGBM**, consider:
-- Training on a dedicated Dataproc cluster with custom initialization actions
+- Training on a dedicated Dataproc cluster created with LightGBM spark packages
+  set in the cluster properties:
+  `spark:spark.jars.packages=com.microsoft.azure:synapseml_2.12:1.1.3`
+- **MUST** disable Dataproc Autoscaling on the cluster
 - Using ONNX model export for inference
 
 ---
