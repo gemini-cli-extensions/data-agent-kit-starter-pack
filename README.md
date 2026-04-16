@@ -18,10 +18,12 @@ This plugin provides a specialized suite of skills and MCP tools for data engine
 
 ## Prerequisites
 
-Ensure you have one of the following coding agents installed:
-* [Gemini CLI](https://github.com/google-gemini/gemini-cli) (v0.6.0+)
-* [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview)
-* Codex CLI
+Ensure you have the following installed:
+* **Node.js and npm** (Latest version recommended)
+* One of the following coding agents:
+    * [Gemini CLI](https://github.com/google-gemini/gemini-cli) (v0.6.0+)
+    * [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview)
+    * Codex CLI
 
 ## Getting Started
 
@@ -40,9 +42,15 @@ gemini extensions install https://github.com/gemini-cli-extensions/data-cloud-ai
 /plugin install data-cloud-ai-dev-kit@data-cloud-ai-dev-kit-marketplace
 ```
 
-#### Codex (One-Liner)
+#### Codex
+**macOS / Linux:**
 ```bash
-curl -sSL https://raw.githubusercontent.com/gemini-cli-extensions/data-cloud-ai-dev-kit/main/codex-install.sh | bash
+gh api repos/gemini-cli-extensions/data-cloud-ai-dev-kit/contents/codex-install.sh -H "Accept: application/vnd.github.raw" | bash
+```
+
+**Windows:**
+```powershell
+gh api repos/gemini-cli-extensions/data-cloud-extension/contents/codex-install.ps1 -H "Accept: application/vnd.github.raw" | powershell -ExecutionPolicy Bypass -
 ```
 
 ## Usage Examples
@@ -67,3 +75,4 @@ Interact with your coding agent using natural language prompts to perform comple
 
 * **Plugin Not Found:** Ensure you have restarted your agent (e.g., Gemini CLI or Codex) after installation.
 * **Authentication Errors:** Many GCP skills require an active authenticated session. Ensure you have run `gcloud auth login` and `gcloud auth application-default login` on your machine.
+* **MCP Connection Issues:** Update the MCP server configurations such as project, region etc. needed by MCP toolboxes in order to connect successfully to them.
