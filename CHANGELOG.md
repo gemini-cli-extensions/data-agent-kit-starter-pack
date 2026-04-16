@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.8](https://github.com/gemini-cli-extensions/data-cloud-extension/compare/0.1.7...0.1.8) (2026-04-16)
+
+
+### Features
+
+* Add codex-install.ps1 script for Windows installation ([#33](https://github.com/gemini-cli-extensions/data-cloud-extension/issues/33)) ([85de74d](https://github.com/gemini-cli-extensions/data-cloud-extension/commit/85de74d9d7f70b82964fbab88f58961d8e788b09))
+* Sync data cloud skills ([#31](https://github.com/gemini-cli-extensions/data-cloud-extension/issues/31)) ([1ff456e](https://github.com/gemini-cli-extensions/data-cloud-extension/commit/1ff456eee57ddafcf03aa5ab8d600b221a3166c2))
+
 ## [0.1.7](https://github.com/gemini-cli-extensions/data-cloud-extension/compare/0.1.6...0.1.7) (2026-04-15)
 
 
