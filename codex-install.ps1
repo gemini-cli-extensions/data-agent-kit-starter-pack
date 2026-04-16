@@ -58,7 +58,7 @@ if (Test-Path $installDir) {
 
 if (-not (Test-Path $marketplaceFile)) {
     Write-Host "Creating new personal marketplace..."
-    '{"name":"personal","plugins":[]}' | Set-Content -LiteralPath $marketplaceFile -Encoding utf8
+    '{"name":"personal","plugins":[]}' | Set-Content -LiteralPath $marketplaceFile -Encoding ascii
 }
 
 Write-Host "Registering plugin in $marketplaceFile..."
@@ -90,6 +90,7 @@ if ($null -eq $marketplace.plugins) {
 }
 
 $marketplace.plugins += $newPlugin
-$marketplace | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $marketplaceFile -Encoding utf8
+$marketplaceJson = $marketplace | ConvertTo-Json -Depth 10
+$marketplaceJson | Set-Content -LiteralPath $marketplaceFile -Encoding ascii
 
 Write-Host "Done! Restart Codex to use the $pluginName plugin."
