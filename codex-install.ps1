@@ -32,6 +32,25 @@ function Invoke-GitCommand {
     }
 }
 
+function Write-TextFileNoBom {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $Path,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Content
+    )
+
+    if ($PSVersionTable.PSVersion.Major -ge 6) {
+        $Content | Set-Content -LiteralPath $Path -Encoding utf8NoBOM
+        return
+    }
+
+    # Windows PowerShell 5.1 lacks utf8NoBOM. For this file we only emit ASCII JSON,
+    # so ASCII preserves valid JSON bytes while avoiding a UTF-8 BOM.
+    $Content | Set-Content -LiteralPath $Path -Encoding ascii
+}
+
 Write-Host "--- $pluginName Installer for Codex ---"
 
 New-Item -ItemType Directory -Force -Path $pluginsRoot | Out-Null
@@ -58,7 +77,7 @@ if (Test-Path $installDir) {
 
 if (-not (Test-Path $marketplaceFile)) {
     Write-Host "Creating new personal marketplace..."
-    '{"name":"personal","plugins":[]}' | Set-Content -LiteralPath $marketplaceFile -Encoding utf8
+    Write-TextFileNoBom -Path $marketplaceFile -Content '{"name":"personal","plugins":[]}'
 }
 
 Write-Host "Registering plugin in $marketplaceFile..."
@@ -90,6 +109,8 @@ if ($null -eq $marketplace.plugins) {
 }
 
 $marketplace.plugins += $newPlugin
-$marketplace | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $marketplaceFile -Encoding utf8
+$marketplaceJson = $marketplace | ConvertTo-Json -Depth 10
+$marketplaceJson = $marketplaceJson -replace '":\s+', '": '
+Write-TextFileNoBom -Path $marketplaceFile -Content $marketplaceJson
 
 Write-Host "Done! Restart Codex to use the $pluginName plugin."
