@@ -20,16 +20,40 @@ $pluginsRoot = Join-Path $HOME ".agents\plugins"
 $installDir = Join-Path $pluginsRoot $pluginName
 $marketplaceFile = Join-Path $pluginsRoot "marketplace.json"
 
+function Invoke-GitCommand {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string[]] $Arguments
+    )
+
+    & git @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "git command failed: git $($Arguments -join ' ')"
+    }
+}
+
 Write-Host "--- $pluginName Installer for Codex ---"
 
 New-Item -ItemType Directory -Force -Path $pluginsRoot | Out-Null
 
 if (Test-Path $installDir) {
-    Write-Host "Updating existing plugin at $installDir..."
-    git -C $installDir pull
+    try {
+        & git -C $installDir rev-parse --is-inside-work-tree 2>$null | Out-Null
+    } catch {
+    }
+
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "Updating existing plugin at $installDir..."
+        Invoke-GitCommand -Arguments @("-C", $installDir, "pull")
+    } else {
+        Write-Host "Existing directory at $installDir is not a valid git checkout. Reinstalling..."
+        Remove-Item -LiteralPath $installDir -Recurse -Force
+        Write-Host "Cloning plugin to $installDir..."
+        Invoke-GitCommand -Arguments @("clone", $repoUrl, $installDir)
+    }
 } else {
     Write-Host "Cloning plugin to $installDir..."
-    git clone $repoUrl $installDir
+    Invoke-GitCommand -Arguments @("clone", $repoUrl, $installDir)
 }
 
 if (-not (Test-Path $marketplaceFile)) {
@@ -56,34 +80,16 @@ $pluginJson = @"
 }
 "@
 
-$marketplaceText = Get-Content -LiteralPath $marketplaceFile -Raw
+$marketplace = Get-Content -LiteralPath $marketplaceFile -Raw | ConvertFrom-Json
+$newPlugin = $pluginJson | ConvertFrom-Json
 
-# Remove any existing entry for this plugin before appending a fresh one.
-$escapedName = [regex]::Escape($pluginName)
-$marketplaceText = [regex]::Replace(
-    $marketplaceText,
-    "(?s),?\s*\{[^{}]*""name""\s*:\s*""$escapedName""(?:[^{}]|\{[^{}]*\})*\}",
-    ""
-)
-
-if ($marketplaceText -match '"plugins"\s*:\s*\[\s*\]') {
-    $marketplaceText = [regex]::Replace(
-        $marketplaceText,
-        '"plugins"\s*:\s*\[\s*\]',
-        ('"plugins": [' + [Environment]::NewLine + $pluginJson + [Environment]::NewLine + ']'),
-        1
-    )
-} elseif ($marketplaceText -match '"plugins"\s*:\s*\[') {
-    $marketplaceText = [regex]::Replace(
-        $marketplaceText,
-        '"plugins"\s*:\s*\[',
-        ('"plugins": [' + [Environment]::NewLine + $pluginJson + ',' + [Environment]::NewLine),
-        1
-    )
+if ($null -eq $marketplace.plugins) {
+    $marketplace | Add-Member -MemberType NoteProperty -Name plugins -Value @()
 } else {
-    throw "marketplace.json does not contain a plugins array"
+    $marketplace.plugins = @($marketplace.plugins | Where-Object { $_.name -ne $pluginName })
 }
 
-$marketplaceText | Set-Content -LiteralPath $marketplaceFile -Encoding utf8
+$marketplace.plugins += $newPlugin
+$marketplace | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $marketplaceFile -Encoding utf8
 
 Write-Host "Done! Restart Codex to use the $pluginName plugin."
