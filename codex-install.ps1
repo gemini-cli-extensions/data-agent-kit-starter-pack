@@ -91,6 +91,7 @@ if ($null -eq $marketplace.plugins) {
 
 $marketplace.plugins += $newPlugin
 $marketplaceJson = $marketplace | ConvertTo-Json -Depth 10
+$marketplaceJson = $marketplaceJson -replace '":\s+', '": '
 $marketplaceJson | Set-Content -LiteralPath $marketplaceFile -Encoding ascii
 
 Write-Host "Done! Restart Codex to use the $pluginName plugin."
