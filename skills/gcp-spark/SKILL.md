@@ -1,22 +1,23 @@
 ---
 name: gcp-spark
 description: |
-  Develops and executes Spark code on Dataproc Serverless.
-  Read and write data using BigLake Iceberg catalogs, BigQuery and Spanner.
+  Develops and executes Spark code on Dataproc Clusters and Serverless.
+  Reads and writes data using BigLake Iceberg catalogs, BigQuery and Spanner.
   Debugs execution failures.
   Use when:
   - Writing Spark ETL pipelines on GCP.
   - Training or running inference with ML models with spark on GCP.
+  - Managing Spark clusters, jobs, batches, and interactive sessions.
   Don't use when:
   - Writing generic Python scripts that don't use Spark.
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 
-# Spark on Dataproc Serverless
+# Spark on Dataproc
 
 > [!IMPORTANT] You MUST ALWAYS follow the Task Execution Workflow when writing
 > spark code.
@@ -79,3 +80,10 @@ The Dataproc service account needs:
 *   `roles/bigquery.jobUser`: Query materialization
 *   `roles/storage.objectUser`: Read/write GCS
 *   `roles/spanner.databaseUser`: Spanner writes
+
+--------------------------------------------------------------------------------
+
+## Spark resource management
+
+Refer to `resources/gcloud_dataproc.md` for detailed guidelines on managing
+Spark clusters, jobs, batches, and interactive sessions.

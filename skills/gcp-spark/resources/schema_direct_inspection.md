@@ -1,6 +1,4 @@
 # Direct Inspection of table schema
-> [!CAUTION]
-> Proceed with direct inspection ONLY if you have all the details.
 
 ## For BigQuery, Spanner and BigLake Iceberg tables and views
 Use `@skill:discovering-gcp-data-assets` skill to find and lookup schema.

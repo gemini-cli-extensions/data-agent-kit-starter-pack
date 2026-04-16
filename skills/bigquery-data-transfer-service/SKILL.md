@@ -31,7 +31,24 @@ metadata related to ingestion when needed.
 
 ## Workflow
 
-### Step 0: Check for Existing Transfers
+### Step 0: Discover Environment Parameters
+
+Before generating configurations, discover the actual values for the target
+project and region.
+
+> [!TIP]
+> If `deployment.yaml` already exists in the repository root, prioritize
+> extracting `project` and `region` from the target environment configuration
+> (e.g., `dev`).
+
+1.  **Project**: `gcloud config get project`
+2.  **Region**: `gcloud config get compute/region`
+
+> [!TIP]
+> Use these commands to replace placeholders like `<PROJECT_ID>` with actual
+> values. Always remove associated comments that start with TODO once replaced.
+
+### Step 1: Check for Existing Transfers
 
 Before assuming a new transfer is needed, check for existing ones in the target
 region.
@@ -40,18 +57,19 @@ region.
 
     ```bash
     bq ls --transfer_config \
-      --transfer_location=[LOCATION] \
-      --project_id=[PROJECT_ID]
+      --transfer_location=<REGION> \
+      --project_id=<PROJECT_ID>
     ```
 
-2.  **Evaluate Results**:
+2.  **Analyze Existing Transfers**:
 
     -   **Single Transfer Found**:
 
         -   Check if the transfer has at least one successful run: `bq ls
-            --transfer_run --transfer_config=[RESOURCE_NAME]`
-        -   If found: Use existing or manage via deployment framework.
-        -   If not found: Guess tables from config.
+            --transfer_run --transfer_config=<RESOURCE_NAME>`
+        -   If found: Use existing transfer config.
+        -   If not found: Confirm with user if it's ok to trigger
+            the transfer run.
 
     -   **Multiple Transfers Found**:
 
@@ -61,58 +79,76 @@ region.
     -   **Disabled Transfers Found**:
 
         -   Ask user if they want to enable it or create a new one.
-        -   Enable: `bq update --disabled=false
-            --transfer_config=[RESOURCE_NAME]`
+        -   To Enable: Instruct the user to update the transfer configuration
+            within their `deployment.yaml` file by setting the `disabled`
+            field to `false` for the specific transfer resource.
 
     -   **No Transfers Found**: Proceed to create new if needed.
 
-### Step 1: Discover & Validate Parameters (New Transfers)
+### Step 2: Discover & Validate Parameters (New Transfers)
 
 If creating a new transfer, discover the required parameters using the REST API
 and validate them with the user.
 
-> [!TIP] If `DATA_SOURCE_ID` is unknown, run `bq show --transfer_data_sources`
-> `--location=[LOCATION] --project_id=[PROJECT_ID]` to list available source IDs
-> (e.g., `google_cloud_storage`, `salesforce`).
+> [!TIP] If `<DATA_SOURCE_ID>` is unknown, run the discovery script
+> without `<DATA_SOURCE_ID>` argument to list available source IDs
+> (e.g., `google_cloud_storage`).
+> It uses the derived project and location from Step 0.
+> ```bash
+> python3 scripts/bigquery_dts.py --project_id=<PROJECT_ID>
+> ```
 
 1.  **Run Discovery Script**: Use the `bigquery_dts.py` script to inspect Data
     Source parameters via the REST API.
 
     ```bash
-    # Use the path to the script in your workspace
-    python3 scripts/bigquery_dts.py --project_id [PROJECT_ID] [DATA_SOURCE_ID] [LOCATION]
+    # Passes the derived project and region to the script.
+    python3 scripts/bigquery_dts.py --project_id=<PROJECT_ID> <DATA_SOURCE_ID> <REGION>
     ```
 
     > [!IMPORTANT] Run this command every time a new transfer is being planned.
 
-2.  **Mandatory User Questionnaire (CRITICAL)**:
+2.  > [!CAUTION] **Mandatory User Questionnaire (CRITICAL)**:
 
-    -   Identify mandatory parameters.
-    -   Present them to the user BEFORE generating config files.
-    -   Ask for verification of assets/tables.
+    -   **Explicitly identify ALL specific parameters** returned by the
+        discovery script. **You MUST NOT generalize or vaguely summarize them.**
+    -   **OAuth Authorization (Google Data Sources)**: For Google ecosystem data
+        sources (Google Ads, Youtube, etc.), if the user is not using a service
+        account to configure the DTS transfer config (meaning the user is using
+        End User Credentials or EUC to configure the transfer config), then
+        generate an OAuth URI. Ask the user to visit this URL to authorize.
+        Once the user provides the versionInfo code, use the code as
+        `definition.versionInfo` in `deployment.yaml` and then you can proceed.
+    -   If any parameters are related to authentication,
+        explicitly ask the user to provide the Secret Manager Resource ID
+        (e.g., projects/my-project/secrets/my-secret) for these parameters
+    -   Present every required parameter to the user BEFORE generating
+        config files.
+    -   Ask for verification of assets/tables to be ingested.
 
-3.  **Wait for User Response**: Do NOT proceed until parameters are confirmed.
+3.  **Wait for User Response**: You **MUST NOT** proceed until parameters are
+    confirmed.
 
-### Step 2: Extract Transfer Config Data
+### Step 3: Extract Transfer Config Data
 
 Retrieve the configuration details for the selected transfer.
 
 ```bash
-bq show --format=prettyjson --transfer_config [RESOURCE_NAME]
+bq show --format=prettyjson --transfer_config <RESOURCE_NAME>
 ```
 
-### Step 3: Trigger and Verify Transfer
+### Step 4: Trigger and Verify Transfer
 
 After the transfer is deployed via the resource provisioning framework, you MUST
 ensure there is at least a single successful run before proceeding with the rest
 of the tasks.
 
-1.  **Trigger a Manual Run**: If no successful runs are found, or the transfer
-    was just created, trigger a manual run for the current time.
+1.  **Trigger a Manual Run**: If no successful runs or ongoing runs are found,
+    or the transfer was just created, trigger a manual run for the current time.
 
     ```bash
     bq mk --transfer_run \
-      --transfer_config=[RESOURCE_NAME] \
+      --transfer_config=<RESOURCE_NAME> \
       --run_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
     ```
 
@@ -120,7 +156,7 @@ of the tasks.
     run every 30-60 seconds for up to **5 minutes**.
 
     ```bash
-    bq ls --transfer_run --transfer_config=[RESOURCE_NAME]
+    bq ls --format=prettyjson --transfer_run --transfer_config=<RESOURCE_NAME>
     ```
 
     -   **Success**: If the run completes successfully, proceed with the rest of

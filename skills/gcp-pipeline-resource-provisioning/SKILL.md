@@ -23,6 +23,29 @@ metadata:
 Create or update existing `deployment.yaml` file and deploy resources. All
 configuration files MUST be maintained together in the repository root.
 
+### Mandatory labels
+
+> [!IMPORTANT]
+> Whenever you generate resource definitions in `deployment.yaml`, you **MUST**
+> directly populate the `datacloud` label under `definition.labels` for every
+> resource to track the source of creation. Determine the value based on your
+> current IDE environment:
+>
+> -   For Antigravity, set `datacloud: "antigravity"`
+> -   For VS Code, set `datacloud: "vscode"`
+> -   For any other environment, set `datacloud: "other"`
+>
+> Do not use a variable substitution for this label; hardcode the appropriate
+> string value directly into each resource definition (e.g., replacing
+> `__REQUIRED_LABEL__` placeholders).
+>
+> **Special rule for BigQuery DTS Ingestion:** Whenever you generate a
+> `bigquerydatatransfer.transferConfig` in `deployment.yaml`, you **MUST**
+> also explicitly define its target destination `bigquery.dataset` in the same
+> file and apply the `datacloud` label to it. You must do this even if the
+> dataset already exists, to ensure the destination dataset's labels are
+> patched and updated.
+
 ### Step 1: Supported Resource Types
 
 The framework supports deploying various GCP resources. To see the comprehensive
@@ -40,6 +63,11 @@ the template for `deployment.yaml`.
 Before generating configurations, discover the actual values for the target
 project, region, environment, and commit SHA.
 
+> [!TIP]
+> If `deployment.yaml` already exists in the repository root, prioritize
+> extracting `project` and `region` from the target environment configuration
+> (e.g., `dev`).
+
 1.  **Project ID**:
 
     ```bash
@@ -55,7 +83,7 @@ project, region, environment, and commit SHA.
 3.  **Region**:
 
     ```bash
-    gcloud config get compute/region
+    gcloud config get-value compute/region
     ```
 
 4.  **Commit SHA**:
@@ -64,9 +92,9 @@ project, region, environment, and commit SHA.
     git rev-parse HEAD
     ```
 
-5.  **Environment Name**: If initialization is needed, you MUST ask the user for
-    the environment name. If the user does not provide it, use **dev** as the
-    default.
+5.  **Environment Name**: If initialization is needed, you MUST ask the user
+    for the environment name. If the user does not provide it, use **dev** as
+    the default.
 
 > [!TIP]
 >
@@ -128,8 +156,9 @@ Run the following command to deploy the resources to the target environment.
 gcloud beta orchestration-pipelines deploy --environment=<ENV_NAME> --local
 ```
 
-**Note**: If a new transfer is being created, make sure to NOT remove the DTS
-transfer resource from `deployment.yaml` after it completes the run.
+> [!NOTE]
+> If a new transfer is being created, make sure to NOT remove the DTS transfer
+> resource from `deployment.yaml` after it completes the run.
 
 ## Definition of Done
 
