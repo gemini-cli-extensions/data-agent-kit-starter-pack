@@ -3238,8 +3238,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path3) {
-      let input = path3;
+    function removeDotSegments(path4) {
+      let input = path4;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -3438,8 +3438,8 @@ var require_schemes = __commonJS({
         wsComponent.secure = void 0;
       }
       if (wsComponent.resourceName) {
-        const [path3, query] = wsComponent.resourceName.split("?");
-        wsComponent.path = path3 && path3 !== "/" ? path3 : void 0;
+        const [path4, query] = wsComponent.resourceName.split("?");
+        wsComponent.path = path4 && path4 !== "/" ? path4 : void 0;
         wsComponent.query = query;
         wsComponent.resourceName = void 0;
       }
@@ -6801,12 +6801,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs10, exportName) {
+    function addFormats(ajv, list, fs11, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs10[f]);
+        ajv.addFormat(f, fs11[f]);
     }
     module.exports = exports = formatsPlugin;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -7292,8 +7292,8 @@ function getErrorMap() {
 
 // node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
-  const { data, path: path3, errorMaps, issueData } = params;
-  const fullPath = [...path3, ...issueData.path || []];
+  const { data, path: path4, errorMaps, issueData } = params;
+  const fullPath = [...path4, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -7409,11 +7409,11 @@ var errorUtil;
 
 // node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
-  constructor(parent, value, path3, key) {
+  constructor(parent, value, path4, key) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path3;
+    this._path = path4;
     this._key = key;
   }
   get path() {
@@ -11050,10 +11050,10 @@ function assignProp(target, prop, value) {
     configurable: true
   });
 }
-function getElementAtPath(obj, path3) {
-  if (!path3)
+function getElementAtPath(obj, path4) {
+  if (!path4)
     return obj;
-  return path3.reduce((acc, key) => acc?.[key], obj);
+  return path4.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -11373,11 +11373,11 @@ function aborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path3, issues) {
+function prefixIssues(path4, issues) {
   return issues.map((iss) => {
     var _a;
     (_a = iss).path ?? (_a.path = []);
-    iss.path.unshift(path3);
+    iss.path.unshift(path4);
     return iss;
   });
 }
@@ -18780,14 +18780,280 @@ var StdioClientTransport = class {
 };
 
 // server.ts
-import path2 from "path";
-import { fileURLToPath } from "url";
+import path3 from "path";
+import { fileURLToPath as fileURLToPath2 } from "url";
+
+// node_modules/ps-list/index.js
+import process4 from "node:process";
+import fs from "node:fs";
+import { promisify } from "node:util";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import childProcess from "node:child_process";
+var __dirname = path.dirname(fileURLToPath(import.meta.url));
+var DEFAULT_MAX_BUFFER = 64e6;
+var MAXIMUM_PATH_COMBINATION_ATTEMPTS = 6;
+var execFile = promisify(childProcess.execFile);
+var PROCESS_FIELDS = {
+  CPU_PERCENT: "%cpu",
+  MEMORY_PERCENT: "%mem",
+  PROCESS_ID: "pid",
+  PARENT_PROCESS_ID: "ppid",
+  USER_ID: "uid",
+  START_TIME: "lstart",
+  COMMAND_NAME: "comm",
+  ARGUMENTS: "args"
+};
+var buildProcessCommandFlags = (includeAllUsersProcesses) => (includeAllUsersProcesses === false ? "" : "a") + "wwxo";
+var makeStartTime = (startTimeString) => {
+  if (!startTimeString) {
+    return void 0;
+  }
+  const parsedDate = new Date(startTimeString);
+  return Number.isNaN(parsedDate.getTime()) ? void 0 : parsedDate;
+};
+var extractExecutablePath = (commandLine) => {
+  if (!commandLine) {
+    return "";
+  }
+  if (!commandLine.startsWith("/") && !commandLine.startsWith('"')) {
+    return "";
+  }
+  if (commandLine.startsWith('"')) {
+    const quotedPathMatch = commandLine.match(/^"([^"]+)"/);
+    if (quotedPathMatch && fs.existsSync(quotedPathMatch[1])) {
+      return quotedPathMatch[1];
+    }
+    return "";
+  }
+  const commandParts = commandLine.split(" ");
+  const firstCommandToken = commandParts[0];
+  if (fs.existsSync(firstCommandToken)) {
+    return firstCommandToken;
+  }
+  const maximumCombinationAttempts = Math.min(commandParts.length, MAXIMUM_PATH_COMBINATION_ATTEMPTS);
+  for (let tokenCount = 2; tokenCount <= maximumCombinationAttempts; tokenCount++) {
+    const candidateExecutablePath = commandParts.slice(0, tokenCount).join(" ");
+    if (fs.existsSync(candidateExecutablePath)) {
+      return candidateExecutablePath;
+    }
+  }
+  return "";
+};
+var resolveExecutablePath = (operatingSystemPlatform, processId, commandLine) => {
+  if (operatingSystemPlatform === "linux" && processId) {
+    try {
+      const symbolicLink = fs.readlinkSync(`/proc/${processId}/exe`);
+      return symbolicLink.replace(/\s+\(deleted\)$/, "");
+    } catch {
+    }
+  }
+  return extractExecutablePath(commandLine);
+};
+var parseNumericField = (fieldValue, parserFunction = Number.parseInt, defaultValue = 0) => {
+  if (!fieldValue) {
+    return defaultValue;
+  }
+  const parsedValue = parserFunction(fieldValue, 10);
+  return Number.isNaN(parsedValue) ? defaultValue : parsedValue;
+};
+var parseIntegerOrUndefined = (fieldValue) => {
+  if (fieldValue === void 0 || fieldValue === "") {
+    return void 0;
+  }
+  const parsedValue = Number.parseInt(fieldValue, 10);
+  return Number.isNaN(parsedValue) ? void 0 : parsedValue;
+};
+var parseProcessFields = ({ processId, parentProcessId, userId, cpuUsage, memoryUsage, commandName, startTimeString, command }) => {
+  const parsedProcessId = parseNumericField(processId);
+  const parsedParentProcessId = parseNumericField(parentProcessId);
+  const parsedUserId = parseIntegerOrUndefined(userId);
+  const parsedCpuUsagePercentage = parseNumericField(cpuUsage, Number.parseFloat);
+  const parsedMemoryUsagePercentage = parseNumericField(memoryUsage, Number.parseFloat);
+  const resolvedExecutablePath = resolveExecutablePath(process4.platform, parsedProcessId, command);
+  const derivedProcessName = resolvedExecutablePath ? path.basename(resolvedExecutablePath) : commandName || "";
+  return {
+    pid: parsedProcessId,
+    ppid: parsedParentProcessId,
+    uid: parsedUserId,
+    // Undefined when uid can't be parsed (avoid conflating with root)
+    cpu: parsedCpuUsagePercentage,
+    memory: parsedMemoryUsagePercentage,
+    name: derivedProcessName,
+    path: resolvedExecutablePath,
+    startTime: makeStartTime(startTimeString),
+    cmd: command || ""
+  };
+};
+var windows = async () => {
+  let binary;
+  switch (process4.arch) {
+    case "x64": {
+      binary = "fastlist-0.3.0-x64.exe";
+      break;
+    }
+    case "ia32": {
+      binary = "fastlist-0.3.0-x86.exe";
+      break;
+    }
+    case "arm64": {
+      throw new Error("Windows ARM64 is not supported yet.");
+    }
+    default: {
+      throw new Error(`Unsupported architecture: ${process4.arch}`);
+    }
+  }
+  const binaryPath = path.join(__dirname, "vendor", binary);
+  const { stdout } = await execFile(binaryPath, {
+    maxBuffer: DEFAULT_MAX_BUFFER,
+    windowsHide: true,
+    encoding: "utf8"
+  });
+  return stdout.trim().split(/\r?\n/).map((line) => line.split("	")).map(([processId, parentProcessId, processName]) => ({
+    pid: Number.parseInt(processId, 10),
+    ppid: Number.parseInt(parentProcessId, 10),
+    name: processName
+  }));
+};
+var nonWindowsFallbackMultipleCalls = async (options = {}) => {
+  const processDataByProcessId = {};
+  const processCommandFlags = buildProcessCommandFlags(options.all);
+  const fields = [
+    PROCESS_FIELDS.COMMAND_NAME,
+    PROCESS_FIELDS.ARGUMENTS,
+    PROCESS_FIELDS.PARENT_PROCESS_ID,
+    PROCESS_FIELDS.USER_ID,
+    PROCESS_FIELDS.CPU_PERCENT,
+    PROCESS_FIELDS.MEMORY_PERCENT,
+    PROCESS_FIELDS.START_TIME
+  ];
+  await Promise.all(fields.map(async (fieldName) => {
+    const { stdout } = await execFile("ps", [processCommandFlags, `${PROCESS_FIELDS.PROCESS_ID}=,${fieldName}=`], {
+      maxBuffer: DEFAULT_MAX_BUFFER,
+      encoding: "utf8",
+      env: {
+        ...process4.env,
+        LC_ALL: "C",
+        LANG: "C"
+      }
+    });
+    for (const line of stdout.trim().split("\n")) {
+      const trimmedLine = line.trim();
+      const spaceIndex = trimmedLine.indexOf(" ");
+      if (spaceIndex === -1) {
+        const processId2 = trimmedLine;
+        const fieldValue2 = "";
+        processDataByProcessId[processId2] ??= {};
+        processDataByProcessId[processId2][fieldName] = fieldValue2;
+        continue;
+      }
+      const processId = trimmedLine.slice(0, spaceIndex);
+      const fieldValue = trimmedLine.slice(spaceIndex + 1).trim();
+      processDataByProcessId[processId] ??= {};
+      processDataByProcessId[processId][fieldName] = fieldValue;
+    }
+  }));
+  return Object.entries(processDataByProcessId).filter(([, data]) => data[PROCESS_FIELDS.COMMAND_NAME] && data[PROCESS_FIELDS.PARENT_PROCESS_ID] !== void 0).map(([processId, data]) => parseProcessFields({
+    processId,
+    parentProcessId: data[PROCESS_FIELDS.PARENT_PROCESS_ID],
+    userId: data[PROCESS_FIELDS.USER_ID],
+    cpuUsage: data[PROCESS_FIELDS.CPU_PERCENT],
+    memoryUsage: data[PROCESS_FIELDS.MEMORY_PERCENT],
+    commandName: data[PROCESS_FIELDS.COMMAND_NAME],
+    startTimeString: data[PROCESS_FIELDS.START_TIME],
+    command: data[PROCESS_FIELDS.ARGUMENTS] ?? ""
+  }));
+};
+var nonWindowsCall = async (options = {}) => {
+  const processCommandFlags = buildProcessCommandFlags(options.all);
+  const executeFileOptions = {
+    maxBuffer: DEFAULT_MAX_BUFFER,
+    encoding: "utf8",
+    env: {
+      ...process4.env,
+      LC_ALL: "C",
+      LANG: "C"
+    }
+  };
+  const processFieldCommaSeparatedList = [
+    PROCESS_FIELDS.PROCESS_ID,
+    PROCESS_FIELDS.PARENT_PROCESS_ID,
+    PROCESS_FIELDS.USER_ID,
+    PROCESS_FIELDS.CPU_PERCENT,
+    PROCESS_FIELDS.MEMORY_PERCENT,
+    PROCESS_FIELDS.START_TIME,
+    PROCESS_FIELDS.COMMAND_NAME
+  ].map((fieldName) => `${fieldName}=`).join(",");
+  const commandFieldCommaSeparatedList = [
+    PROCESS_FIELDS.PROCESS_ID,
+    PROCESS_FIELDS.ARGUMENTS
+  ].map((fieldName) => `${fieldName}=`).join(",");
+  const processListingPromises = [
+    execFile("ps", [processCommandFlags, processFieldCommaSeparatedList], executeFileOptions),
+    execFile("ps", [processCommandFlags, commandFieldCommaSeparatedList], executeFileOptions)
+  ];
+  const [processOutput, commandOutput] = await Promise.all(processListingPromises);
+  const processLines = processOutput.stdout.trim().split("\n");
+  const commandLines = commandOutput.stdout.trim().split("\n");
+  const commandLinesByProcessId = {};
+  for (const line of commandLines) {
+    const trimmedLine = line.trim();
+    const spaceIndex = trimmedLine.indexOf(" ");
+    if (spaceIndex === -1) {
+      const processId2 = trimmedLine;
+      commandLinesByProcessId[processId2] = "";
+      continue;
+    }
+    const processId = trimmedLine.slice(0, spaceIndex);
+    const command = trimmedLine.slice(spaceIndex + 1).trim();
+    commandLinesByProcessId[processId] = command;
+  }
+  const processes = [];
+  for (const line of processLines) {
+    const trimmedLine = line.trim();
+    if (!trimmedLine) {
+      continue;
+    }
+    const processLineRegexMatch = trimmedLine.match(/^(\d+)\s+(\d+)\s+(\d+)\s+([\d.]+)\s+([\d.]+)\s+(.+)/);
+    if (!processLineRegexMatch) {
+      continue;
+    }
+    const [, processId, parentProcessId, userId, cpuUsage, memoryUsage, dateAndCommandPortion] = processLineRegexMatch;
+    const startTimeRegexMatch = dateAndCommandPortion.match(/^((?:\w{3}\s+){2}\d{1,2}\s+(?:\d{2}:){2}\d{2}\s+\d{4})\s+(.*)$/);
+    let startTimeString = "";
+    let processCommandName = dateAndCommandPortion;
+    if (startTimeRegexMatch) {
+      startTimeString = startTimeRegexMatch[1];
+      processCommandName = startTimeRegexMatch[2] || "";
+    }
+    processes.push(parseProcessFields({
+      processId,
+      parentProcessId,
+      userId,
+      cpuUsage,
+      memoryUsage,
+      commandName: processCommandName,
+      startTimeString,
+      command: commandLinesByProcessId[processId] ?? ""
+    }));
+  }
+  return processes;
+};
+var nonWindows = async (options = {}) => {
+  try {
+    return await nonWindowsCall(options);
+  } catch {
+    return nonWindowsFallbackMultipleCalls(options);
+  }
+};
+var psList = process4.platform === "win32" ? windows : nonWindows;
+var ps_list_default = psList;
 
 // tools/delete_cell.ts
-import * as fs from "fs/promises";
+import * as fs2 from "fs/promises";
 async function deleteCell(notebookPath, cellIndex) {
   try {
-    const data = await fs.readFile(notebookPath, "utf8");
+    const data = await fs2.readFile(notebookPath, "utf8");
     const notebook = JSON.parse(data);
     if (!notebook.cells || !Array.isArray(notebook.cells)) {
       throw new Error("Invalid notebook format: missing cells array");
@@ -18796,7 +19062,7 @@ async function deleteCell(notebookPath, cellIndex) {
       throw new Error(`Cell index out of bounds: ${cellIndex}. Total cells: ${notebook.cells.length}`);
     }
     notebook.cells.splice(cellIndex, 1);
-    await fs.writeFile(notebookPath, JSON.stringify(notebook, null, 2), "utf8");
+    await fs2.writeFile(notebookPath, JSON.stringify(notebook, null, 2), "utf8");
     return {
       success: true,
       message: `Cell at index ${cellIndex} deleted`
@@ -18807,10 +19073,10 @@ async function deleteCell(notebookPath, cellIndex) {
 }
 
 // tools/insert_cell.ts
-import * as fs2 from "fs/promises";
+import * as fs3 from "fs/promises";
 async function insertCell(notebookPath, cellType, content, cellIndex) {
   try {
-    const data = await fs2.readFile(notebookPath, "utf8");
+    const data = await fs3.readFile(notebookPath, "utf8");
     const notebook = JSON.parse(data);
     if (!notebook.cells || !Array.isArray(notebook.cells)) {
       throw new Error("Invalid notebook format: missing cells array");
@@ -18832,7 +19098,7 @@ async function insertCell(notebookPath, cellType, content, cellIndex) {
     } else {
       notebook.cells.splice(cellIndex, 0, newCell);
     }
-    await fs2.writeFile(notebookPath, JSON.stringify(notebook, null, 2), "utf8");
+    await fs3.writeFile(notebookPath, JSON.stringify(notebook, null, 2), "utf8");
     return {
       success: true,
       message: `Cell inserted at index ${cellIndex !== void 0 ? cellIndex : notebook.cells.length - 1}`
@@ -18843,10 +19109,10 @@ async function insertCell(notebookPath, cellType, content, cellIndex) {
 }
 
 // tools/list_cells.ts
-import * as fs3 from "fs/promises";
+import * as fs4 from "fs/promises";
 async function listCells(notebookPath, maxLength = 100) {
   try {
-    const data = await fs3.readFile(notebookPath, "utf8");
+    const data = await fs4.readFile(notebookPath, "utf8");
     const notebook = JSON.parse(data);
     if (!notebook.cells || !Array.isArray(notebook.cells)) {
       throw new Error("Invalid notebook format: missing cells array");
@@ -18872,10 +19138,10 @@ async function listCells(notebookPath, maxLength = 100) {
 }
 
 // tools/read_cell.ts
-import * as fs4 from "fs/promises";
+import * as fs5 from "fs/promises";
 async function readCell(notebookPath, cellIndex) {
   try {
-    const data = await fs4.readFile(notebookPath, "utf8");
+    const data = await fs5.readFile(notebookPath, "utf8");
     const notebook = JSON.parse(data);
     if (!notebook.cells || !Array.isArray(notebook.cells)) {
       throw new Error("Invalid notebook format: missing cells array");
@@ -18897,10 +19163,10 @@ async function readCell(notebookPath, cellIndex) {
 }
 
 // tools/replace_cell.ts
-import * as fs5 from "fs/promises";
+import * as fs6 from "fs/promises";
 async function replaceCell(notebookPath, cellIndex, content) {
   try {
-    const data = await fs5.readFile(notebookPath, "utf8");
+    const data = await fs6.readFile(notebookPath, "utf8");
     const notebook = JSON.parse(data);
     if (!notebook.cells || !Array.isArray(notebook.cells)) {
       throw new Error("Invalid notebook format: missing cells array");
@@ -18909,7 +19175,7 @@ async function replaceCell(notebookPath, cellIndex, content) {
       throw new Error(`Cell index out of bounds: ${cellIndex}. Total cells: ${notebook.cells.length}`);
     }
     notebook.cells[cellIndex].source = [content];
-    await fs5.writeFile(notebookPath, JSON.stringify(notebook, null, 2), "utf8");
+    await fs6.writeFile(notebookPath, JSON.stringify(notebook, null, 2), "utf8");
     return {
       success: true,
       message: `Cell at index ${cellIndex} replaced`
@@ -18920,10 +19186,10 @@ async function replaceCell(notebookPath, cellIndex, content) {
 }
 
 // tools/get_notebook_info.ts
-import * as fs6 from "fs/promises";
+import * as fs7 from "fs/promises";
 async function getNotebookInfo(notebookPath) {
   try {
-    const data = await fs6.readFile(notebookPath, "utf8");
+    const data = await fs7.readFile(notebookPath, "utf8");
     const notebook = JSON.parse(data);
     if (!notebook.cells || !Array.isArray(notebook.cells)) {
       throw new Error("Invalid notebook format: missing cells array");
@@ -18949,10 +19215,10 @@ async function getNotebookInfo(notebookPath) {
 }
 
 // tools/search_cells.ts
-import * as fs7 from "fs/promises";
+import * as fs8 from "fs/promises";
 async function searchCells(notebookPath, query, caseSensitive = false) {
   try {
-    const data = await fs7.readFile(notebookPath, "utf8");
+    const data = await fs8.readFile(notebookPath, "utf8");
     const notebook = JSON.parse(data);
     if (!notebook.cells || !Array.isArray(notebook.cells)) {
       throw new Error("Invalid notebook format: missing cells array");
@@ -18983,15 +19249,15 @@ async function searchCells(notebookPath, query, caseSensitive = false) {
 }
 
 // tools/create_notebook.ts
-import * as fs8 from "fs/promises";
-import * as path from "path";
+import * as fs9 from "fs/promises";
+import * as path2 from "path";
 async function createNotebook(directory, filename) {
   try {
     const extension = "ipynb";
     const fullFilename = filename.endsWith(`.${extension}`) ? filename : `${filename}.${extension}`;
-    const notebookPath = path.join(directory, fullFilename);
+    const notebookPath = path2.join(directory, fullFilename);
     try {
-      await fs8.stat(notebookPath);
+      await fs9.stat(notebookPath);
       throw new Error(`Notebook already exists at ${notebookPath}`);
     } catch (err) {
       if (err.code !== "ENOENT") {
@@ -19004,7 +19270,7 @@ async function createNotebook(directory, filename) {
       nbformat: 4,
       nbformat_minor: 2
     };
-    await fs8.writeFile(notebookPath, JSON.stringify(minimalNotebook, null, 2), "utf8");
+    await fs9.writeFile(notebookPath, JSON.stringify(minimalNotebook, null, 2), "utf8");
     return {
       success: true,
       message: `Created Jupyter notebook at ${notebookPath}`,
@@ -19016,10 +19282,10 @@ async function createNotebook(directory, filename) {
 }
 
 // tools/get_cell_outputs.ts
-import * as fs9 from "fs/promises";
+import * as fs10 from "fs/promises";
 async function getCellOutputs(notebookPath, cellIndex) {
   try {
-    const data = await fs9.readFile(notebookPath, "utf8");
+    const data = await fs10.readFile(notebookPath, "utf8");
     const notebook = JSON.parse(data);
     if (!notebook.cells || !Array.isArray(notebook.cells)) {
       throw new Error("Invalid notebook format: missing cells array");
@@ -19038,7 +19304,7 @@ async function getCellOutputs(notebookPath, cellIndex) {
     throw new Error(`Failed to get cell outputs: ${error2.message}`);
   }
 }
-function parseCellOutputs(cell, index, path3, prefixText) {
+function parseCellOutputs(cell, index, path4, prefixText) {
   const contentPayload = [];
   let textBuffer = `${prefixText}
 `;
@@ -19438,15 +19704,50 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     throw error2;
   }
 });
+var IDE_MAPPING = {
+  "code": "visualstudiocode",
+  "code-insiders": "visualstudiocode",
+  "cursor": "cursor",
+  "antigravity": "antigravity"
+};
+async function inferIdeName() {
+  try {
+    const processes = await ps_list_default();
+    let currentPid = process.pid;
+    let depth = 0;
+    const maxDepth = 20;
+    while (currentPid && currentPid !== 1 && depth < maxDepth) {
+      const proc = processes.find((p) => p.pid === currentPid);
+      if (!proc) break;
+      const name = proc.name.toLowerCase();
+      for (const key in IDE_MAPPING) {
+        if (name.includes(key)) {
+          return IDE_MAPPING[key];
+        }
+      }
+      currentPid = proc.ppid;
+      depth++;
+    }
+  } catch (error2) {
+    console.error("Error parsing process tree:", error2);
+  }
+  return null;
+}
 async function startStandaloneServer() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("Standalone Notebook MCP server running on stdio");
 }
 async function run() {
-  const ideName = process.env.DATA_CLOUD_CURR_IDE_NAME;
+  let ideName = process.env.DATA_CLOUD_CURR_IDE_NAME;
+  if (!ideName) {
+    ideName = await inferIdeName();
+    if (ideName) {
+      console.error(`Inferred IDE name from process tree: ${ideName}`);
+    }
+  }
   if (ideName) {
-    const proxyCmd = path2.resolve(path2.dirname(fileURLToPath(import.meta.url)), "../bin/mcp_proxy_bundle.cjs");
+    const proxyCmd = path3.resolve(path3.dirname(fileURLToPath2(import.meta.url)), "../bin/mcp_proxy_bundle.cjs");
     try {
       const notebookTransport = new StdioClientTransport({
         command: process.execPath,

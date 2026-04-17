@@ -21,6 +21,7 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import psList from 'ps-list';
 
 import {
   CallToolRequestSchema,
@@ -388,6 +389,40 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
+const IDE_MAPPING: Record<string, string> = {
+  'code': 'visualstudiocode',
+  'code-insiders': 'visualstudiocode',
+  'cursor': 'cursor',
+  'antigravity': 'antigravity'
+};
+
+async function inferIdeName(): Promise<string | null> {
+  try {
+    const processes = await psList();
+    let currentPid = process.pid;
+    let depth = 0;
+    const maxDepth = 20;
+    
+    while (currentPid && currentPid !== 1 && depth < maxDepth) {
+      const proc = processes.find(p => p.pid === currentPid);
+      if (!proc) break;
+      
+      const name = proc.name.toLowerCase();
+      for (const key in IDE_MAPPING) {
+        if (name.includes(key)) {
+          return IDE_MAPPING[key];
+        }
+      }
+      
+      currentPid = proc.ppid;
+      depth++;
+    }
+  } catch (error) {
+    console.error('Error parsing process tree:', error);
+  }
+  return null;
+}
+
 async function startStandaloneServer() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
@@ -395,7 +430,14 @@ async function startStandaloneServer() {
 }
 
 async function run() {
-  const ideName = process.env.DATA_CLOUD_CURR_IDE_NAME;
+  let ideName = process.env.DATA_CLOUD_CURR_IDE_NAME;
+  if (!ideName) {
+    ideName = await inferIdeName();
+    if (ideName) {
+      console.error(`Inferred IDE name from process tree: ${ideName}`);
+    }
+  }
+
   if (ideName) {
 
     const proxyCmd = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../bin/mcp_proxy_bundle.cjs');
