@@ -55,7 +55,9 @@ Examine the repository's root directory for a `deployment.yaml` file.
 1.  **Check for existing setup**: The absence of `deployment.yaml` indicates
     that orchestration has not been set up.
 2.  **Determine if initialization is required**: Initialization is required if
-    `deployment.yaml` is missing.
+    `deployment.yaml` is missing. you **MUST** run the `init` command in Step 3
+    to scaffold the project if `deployment.yaml` is missing. Do NOT
+    create the files manually.
 3.  **Pipeline Name**: If initialization is needed, ask the user for the
     pipeline name. If user hasn't provided the orchestration pipeline name, name
     should be "orchestration_pipeline"
@@ -110,7 +112,7 @@ following fields:
 -   `composer_environment` (string): The Cloud Composer environment name.
 -   `artifact_storage`
     -   `bucket` (string): GCS bucket
-    -   `path_prefix`(string):prefix of path that we want to put in bucket
+    -   `path_prefix`(string): prefix of path that we want to put in bucket
 -   `pipelines`
     -   `- source` (string): orchestration pipeline yaml file names. It can be
         multiple
@@ -148,7 +150,8 @@ following fields:
 -   Then use the returned dataproc list with details to create the orchestration
     pipeline definition file based on the user's requirements for the pipeline's
     logic and schedule. **IMPORTANT:** Every schedule **must** include an
-    `endTime`.
+    `endTime`. Every schedule **must** use the current date as `startTime` if
+    the user hasn't specified.
 
     > [!IMPORTANT] A Composer environment is not a Dataproc cluster. If no
     > Dataproc clusters are available, do not use a Composer environment for the
@@ -172,20 +175,19 @@ following fields:
     ```
 
     After listing available Composer environments, you **must** check each
-    environment to ensure it has the necessary `orchestration-pipelines` package
-    installed. Run the following command for each environment:
+    environment to ensure the composer is using the right image version or has
+    installed right PyPI packages. Run the following command for each environment:
 
     ```
     # Replace <ENVIRONMENT_NAME> with the Composer environment name
     # Replace <REGION> with the region
     gcloud composer environments describe <ENVIRONMENT_NAME> \
     --location <REGION> \
-    --format="value(config.softwareConfig.pypiPackages)"
+    --format="json(config.softwareConfig.imageVersion, config.softwareConfig.pypiPackages)"
     ```
 
-    From the output, select an environment where`orchestration-pipelines` field
-    is presented listed in the PyPI packages. This ensures the environment is
-    compatible with orchestration pipelines.
+    From the output, select an environment where the imageVersion value is one of is "composer-3-airflow-3.1.7-build.x, composer-3-airflow-2.11.1-build.x, composer-3-airflow-2.10.5-build.x, composer-3-airflow-2.9.3-build.x, composer-2.16.11-airflow-2.11.1, composer-2.16.11-airflow-2.10.5, composer-2.16.11-airflow-2.9.3" or select an environment where`orchestration-pipelines` field is presented listed in the PyPI packages.
+    This ensures the selected environment is compatible with orchestration pipelines.
 
 -   Third, before generating the `deployment.yaml` file, you **must ask the
     user** to provide the `artifact_storage` bucket name. Note that the
