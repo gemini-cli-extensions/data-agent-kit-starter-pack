@@ -1,14 +1,14 @@
 ---
 name: building-data-apps
 description: |
-  Builds modern data apps, dashboards, and interactive reports using React and
-  Vite web application with Tailwind CSS, Apache ECharts, and Gemini Data
-  Analytics chat integration for data analytics.
+  Build modern data apps, dashboards, and interactive reports using either
+  React + Vite or Streamlit. Includes optional Gemini Data Analytics chat
+  integration for an AI powered "chat with your data" experience.
 
   Relevant when any of the following conditions are true:
-    1. The user explicitly requests to build a data dashboard, data application, or visualization UI, and the UI pulls data from a GCP database (defaulting to BigQuery unless an alternative is specified).
+    1. User explicitly requests to build a data dashboard, data application, or visualization UI, and the UI pulls data from a GCP database (defaulting to BigQuery unless otherwise specified).
     2. You need to generate a frontend web application to interact with, query, and visualize data from GCP data sources.
-    3. The user wants to build a "chat with your data" experience or integrate the Gemini Data Analytics chat API into a web interface.
+    3. User wants to build a "chat with your data" experience or integrate the Gemini Data Analytics chat API into a web interface.
 
   Do NOT use when any of the following conditions are true:
     1. The request is for building backend-only services.
@@ -16,239 +16,115 @@ description: |
     3. The web application is not data-centric or does not involve visualizing/querying data from GCP sources.
 license: Apache-2.0
 metadata:
-  version: v2
+  version: v1
   publisher: google
 ---
 
-# Modern GCP Data App Instructions
+# Building Data Applications
 
-## Technology Stack
+Architect high-quality data dashboards and interactive reports. You MUST select
+the appropriate framework before implementation.
 
--   **Framework:** React in Vite
--   **Styling:** Tailwind CSS (Dark Mode by default)
--   **Database:** BigQuery (Default database unless the user specifies an
-    alternative)
--   **Icons:** `lucide-react`
--   **Date Formatting:** `date-fns`
--   **Data Fetching:** Axios (REST API calls)
--   **Drag & Drop:** `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities`
-    (Used for sortable lists/swatches)
--   **Data Visualization:** `echarts` and `echarts-for-react`
+## Step 0: Framework Selection
 
-## Global Visuals & Theming
+You MUST select the framework based on the user's maintenance requirements and
+data ecosystem.
 
--   **Backgrounds:** The app must support both Light and Dark modes. Always map
-    colors to their `dark:` variant and provide a light mode equivalent.
-    -   Page Background: `bg-slate-50 dark:bg-[#121212]`
-    -   Cards / Containers: `bg-white dark:bg-[#1a1a1a]` (solid slightly lighter
-        dark)
--   **Typography:** Use sans-serif default fonts.
-    -   Primary text (headings, important data): `text-slate-900
-        dark:text-slate-100`
-    -   Secondary text (labels, dates, table headers): `text-slate-600
-        dark:text-slate-400`
-    -   Borders: Subtle separators `border-slate-200 dark:border-slate-800`
-    -   Rounded corners: Containers should use `rounded-xl`, inner graphical
-        bars should use `rounded-sm` or `rounded-md`.
--   **Theme Toggle:** Provide a simple Sun/Moon toggle icon button in the header
-    that switches the HTML class `dark` on and off.
+### Choice: Streamlit
 
-## Layout Hierarchy
+-   **User Profile**: Data Scientists / Python users.
+-   **Logic Complexity**: High Python dependency (Pandas, NumPy, local data
+    processing).
+-   **Deployment**: Single-file Python script.
+-   **Customization**: Standard layout (fast boilerplate).
 
-The application should follow a clean dashboard layout: 1. **Header Row:** A top
-title aligned left, theme toggle aligned right. `max-w-[1600px] mx-auto p-6`. 2.
-**KPI Cards Row:** A horizontal grid (`grid-cols-4` or `grid-cols-1
-md:grid-cols-4`) of summary statistics. 3. **Main Content Split:** A flex
-container containing a prominent primary element (e.g., a Data Table) and a
-conditional secondary panel (e.g., an Investigation/Details Panel). - *State
-Normal:* Table takes `w-full`. - *State Selected:* Table shrinks to `w-2/3`,
-Side panel slides/fades in as `w-1/3`. Add `transition-all duration-300` to make
-the shift smooth.
+### Choice: React + Vite
 
-## Components
+-   **User Profile**: Web Developers / Full-stack teams.
+-   **Logic Complexity**: High UI and Interactivity requirements (e.g.,
+    drag-and-drop, interactive maps).
+-   **Deployment**: Standalone Frontend + Backend API.
+-   **Customization**: Infinite (Custom CSS, specialized JS libraries).
 
-### 1. KPI Cards
+### Guidance:
 
--   Should have a subtle border (`border-[#1e293b]`).
--   Display a small icon (e.g., a trend arrow or lucide icon) next to a large
-    numeric value.
--   Small text labels for the value title (`text-[#64748b]` or
-    `text-[#94a3b8]`).
--   **Trend Indicator:** Should use a pill-style background based on value:
-    `bg-emerald-100 text-emerald-700` and `dark:bg-emerald-900/30
-    dark:text-emerald-400` for positive trends. Negative trends should use
-    `bg-rose-100 dark:bg-rose-900/30` equivalents. Include small embedded trend
-    arrows.
+-   **Check for existing stack first**: ALWAYS prefer the framework the user is
+    already using in their project (e.g., if you see a `package.json` with React
+    dependencies, use React; if you see existing Streamlit files, use
+    Streamlit).
+-   **Default to React + Vite** for production-grade applications that require
+    complex client-side state, custom branding, or integration into a larger web
+    ecosystem.
+-   **Default to Streamlit** if the user specifically mentions "Python
+    dashboard", needs to iterate on complex local Python data processing, or
+    requires a single-script deployment.
 
-### 2. Primary Data Table
+## Step 1: Implementation Plan
 
--   **Container:** The table container should be `bg-[#ffffff] dark:bg-[#1a1a1a]
-    border border-[#e2e8f0] dark:border-[#1e293b] rounded-[12px]
-    overflow-hidden`.
--   **Toolbar:** Above the table, place filtering actions (e.g., "Filter",
-    "Date") as dropdown buttons.
-    -   *Filtering Logic:* Do not delete raw data when filtering. Use local
-        component state to map/filter visibility based on the selected dropdown
-        criteria.
--   **Header:** Sticky table header (`sticky top-0 bg-[#f1f5f9]
-    dark:bg-[#1a1a1a] z-10 text-[#64748b] dark:text-[#94a3b8]`).
--   **Rows:** Standard rows (`text-[#0f172a] dark:text-[#cbd5e1] border-b
-    border-[#f1f5f9] dark:border-[#262626]`). Add hover effects
-    (`hover:bg-[#f1f5f9] dark:hover:bg-[#262626] cursor-pointer
-    transition-colors`).
--   **Selection State:** Active row should have distinct highlight (e.g.,
-    `bg-blue-50 dark:bg-blue-900/40 hover:bg-blue-100
-    dark:hover:bg-blue-900/60`).
--   **Visual Indicators (Sparklines):** For numeric scores or risk values, use
-    horizontal progress bars instead of raw text pills.
-    -   Track color: `bg-[#333333]` (dark gray)
-    -   Fill colors: `bg-emerald-500` (low risk), `bg-orange-400` (medium),
-        `bg-rose-500` (high risk). Add inline `style={{ width: score + "%" }}`
-        logic.
--   **Pagination Controls:** Place at the bottom border area.
-    -   Restrict table height optionally, or set pagination limits to roughly 30
-        rows.
-    -   Exclusively use icon-only buttons for pagination text labels
-        (`ChevronsLeft` for First Page, `ChevronLeft` for Previous,
-        `ChevronRight` for Next, `ChevronsRight` for Last).
-    -   Style disabled states visually (`disabled:opacity-50
-        disabled:cursor-not-allowed`) so users clearly know when they are on the
-        first or last page.
+You MUST propose a plan to the user that specifies the chosen framework and
+justifies the choice based on the criteria above.
 
-### 3. Investigation/Details Side Panel
+--------------------------------------------------------------------------------
 
--   Should appear to the right of the table when a row is clicked.
--   Includes a close "X" button at the top right to dismiss it.
--   **Details Section:** Use small stacked labels and visually distinct blocks
-    (e.g., Merchant info, Amount, Customer limits) styled with `bg-[#262626]
-    border-slate-800 rounded-md p-3`.
--   **Action Buttons:** At the bottom or middle, place primary and secondary
-    action buttons (e.g., "Approve" `bg-emerald-500`, "Reject" `bg-rose-500`
-    text white). Update parent state so the table reflects the action instantly.
--   **AI Chat Interface (Optional Feature):**
+## Shared Design Standards
 
-    > [!IMPORTANT]
-    >
-    > If the user does not explicitly request a chat interface, you SHOULD
-    > proactively ask them: "Would you like to include a Gemini-powered chat
-    > interface to enable natural language queries against your data?" OR if
-    > there is an implementation plan: "Would you like to include a
-    > Gemini-powered chat interface to enable natural language queries against
-    > your data? Let me know and I'll update the plan!".
+Regardless of framework, you MUST follow the principles in
+`resources/shared_design_system.md`.
 
-    If the user requests or agrees to the chat interface:
+-   **Visual Style**: Minimal chrome, zinc color palette, and card-based
+    layouts.
+-   **Typography**: `DM Sans` for content, `JetBrains Mono` for data.
 
-    > [!CAUTION]
-    >
-    > Adding the chat interface is a significant change. Implicit approval of
-    > the implementation plan for including the chat interface MUST never be
-    > assumed.
+--------------------------------------------------------------------------------
 
-    1.  **Gather Technical Details**: You MUST read
-        `resources/chat_integration.md` for the technical requirements.
-    2.  **Update the implementation plan**: If and only if there is an
-        implementation plan, you MUST update the implementation plan. This is a
-        significant change so the user must explicitly approve the updated plan.
-    3.  **Verify Prerequisites**: Ensure the user has the Gemini Data Analytics
-        API enabled and data exists in BigQuery.
-    4.  **Reference Examples**: Adapt the patterns in
-        `examples/react_chat_panel.jsx` and either `examples/fastapi_chat.py` or
-        `examples/express_chat.ts`.
+## Framework Implementation
 
-### 4. Typography & Text
+### If using Streamlit:
 
--   Use standardized semantic HTML tags and styling.
--   **Headings:** `text-slate-900 dark:text-slate-100` with `tracking-tight`.
-    `h1` is `text-4xl font-extrabold`, down to `h6` being `text-sm font-semibold
-    uppercase tracking-wider text-slate-500`.
--   **Body:** `text-slate-600 dark:text-slate-400`.
--   **Specialty:** Mono-spaced text for IDs (`font-mono text-slate-500
-    bg-slate-100 dark:bg-slate-800 rounded px-1.5`).
+1.  Read `resources/streamlit_framework.md` for detailed CSS and component
+    patterns.
+2.  Follow the "Checklist for New Dashboards" in that file.
 
-### 5. Inputs & Controls
+### If using React + Vite:
 
--   **Buttons:**
-    -   Primary: `bg-[#059669] hover:bg-[#047857] text-[#000000] rounded-[8px]
-        px-[16px] py-[8px] font-[500] transition-colors shadow-sm`.
-    -   Secondary: `bg-[#ffffff] dark:bg-[#262626] hover:bg-[#f8fafc]
-        dark:hover:bg-[#1e293b] text-[#334155] dark:text-[#e2e8f0] border
-        border-[#e2e8f0] dark:border-[#334155] rounded-[8px] px-[16px] py-[8px]
-        font-[500] transition-colors shadow-sm`.
-    -   Destructive: `bg-[#e11d48] hover:bg-[#be123c] text-[#ffffff]
-        rounded-[8px] px-[16px] py-[8px] font-[500] transition-colors
-        shadow-sm`.
-    -   Ghost: `text-[#2563eb] dark:text-[#60a5fa] hover:bg-[#eff6ff]
-        dark:hover:bg-[#1e3a8a] rounded-[8px] px-[16px] py-[8px] font-[500]
-        transition-colors bg-transparent border border-transparent shadow-none`.
--   **Inputs:** `w-full bg-[#ffffff] dark:bg-[#121212] border border-[#e2e8f0]
-    dark:border-[#1e293b] rounded-[8px] px-[12px] py-[8px] text-sm shadow-sm
-    focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
-    text-slate-900 dark:text-slate-100 transition-all`. Provide a `label` with
-    `text-xs font-medium text-slate-500 mb-1.5`.
--   **Controls (Checkboxes/Radios/Toggles):** Standardize accent color to
-    `blue-500`.
--   **Segmented Controls:** Use a pill-shaped container `bg-slate-100
-    dark:bg-[#1a1a1a] p-1 rounded-[8px]` with active states having a `bg-white
-    dark:bg-[#262626] text-[#2563eb] dark:text-[#60a5fa]` style and shadow.
+1.  Read `resources/react_framework.md` for Tailwind and ECharts setup.
+2.  Follow the detailed component guidelines for KPI cards, Tables, and Panels.
 
-### 6. Navigation & Overlays
+--------------------------------------------------------------------------------
 
--   **Tabs:** Underline-style tabs. Active tab: `border-b-2 border-[#3b82f6]
-    text-[#2563eb] dark:text-[#60a5fa]`. Inactive tab: `text-[#64748b]
-    hover:text-[#334155] dark:hover:text-[#e2e8f0] transparent border-b-2
-    hover:border-[#3b82f6]`.
--   **Dialogs/Modals:** Centered overlay with a backdrop `bg-slate-900/50
-    backdrop-blur-sm`. Modal surface: `bg-[#ffffff] dark:bg-[#1a1a1a]
-    rounded-[12px] border border-[#e2e8f0] dark:border-[#1e293b] shadow-xl
-    w-full max-w-md p-6`.
--   **Dropdown Menus:** Absolute positioned, floating menu `bg-[#ffffff]
-    dark:bg-[#1a1a1a] shadow-lg border border-[#e2e8f0] dark:border-[#1e293b]
-    rounded-[12px] py-1`.
+## AI Chat Interface (Optional Feature)
 
-### 7. Feedback & Status
+```
+> [!IMPORTANT]
+>
+> If the user does not explicitly request a chat interface, you SHOULD
+> proactively ask them: "Would you like to include a Gemini-powered chat
+> interface to enable natural language queries against your data?" OR if
+> there is an implementation plan: "Would you like to include a
+> Gemini-powered chat interface to enable natural language queries against
+> your data? Let me know and I'll update the plan!".
+```
 
--   **Alerts:** Colored containers `bg-{color}-50 dark:bg-{color}-900/20 border
-    border-{color}-200 dark:border-{color}-800/30 text-{color}-800
-    dark:text-{color}-300 rounded-lg p-4 flex gap-3`. (Colors: emerald for
-    success, rose for error, amber for warning, blue for info).
--   **Loaders:** Skeleton pulse loaders `animate-pulse bg-slate-200
-    dark:bg-slate-800 rounded`. Circular SVG spinners for inline loading.
+If the user requests or agrees to the chat interface:
 
-### 8. Data Visualization (Apache ECharts)
+```
+> [!CAUTION]
+>
+> Adding the chat interface is a significant change. Implicit approval of
+> the implementation plan for including the chat interface MUST never be
+> assumed.
+```
 
--   Do NOT try to build complex charts from scratch with divs/Tailwind.
--   Use `echarts` and `echarts-for-react`.
--   **Base Theme Integration:** Provide a standardized config object: `color`
-    arrays, `textStyle: { fontFamily: "Inter, sans-serif" }`, dark mode
-    compatible tooltips `backgroundColor: "rgba(255, 255, 255, 0.95)"`,
-    `borderColor: "#e2e8f0"`, `textStyle: { color: "#0f172a" }`, and sensible
-    grid paddings.
--   **Container Styling:** Housed inside `bg-white dark:bg-[#1a1a1a] rounded-xl
-    border border-slate-200 dark:border-slate-800 shadow-sm`.
--   **Layout Constraints:** Analytical charts should generally be presented
-    large for readability, enforcing a strict **1 Chart Per Row** design pattern
-    (`grid-cols-1`) when placed inside main content sections or galleries. Do
-    not squish them.
--   **Detail Orientation:** Dashboards should be designed to provide in-depth
-    insights. Include multiple related charts, filtering options, and drill-down
-    capabilities where appropriate to ensure the dashboard is comprehensive and
-    not just a high-level overview. Go beyond surface level results to present
-    meaningful insights.
-
-#### 9. Global State & Sortable Components (Sortable UI)
-
--   To build sortable, interactive interfaces (e.g. reorderable swatches or
-    lists), strictly use `@dnd-kit/core` and `@dnd-kit/sortable`.
--   Use a `Context` provider pattern when state applies across multiple sibling
-    components (like customizing app-wide chart colors and rendering an
-    interactive drag-and-drop sortable swatch component).
--   Follow standard DND Kit setup: wrap in `<DndContext onDragEnd={...}>`, wrap
-    sortables in `<SortableContext items={items} strategy={...}>`, and bind the
-    children elements with `useSortable({ id })`.
--   **Standard Chart Colors Array:** Establish these 10 Tailwind standard
-    500-level variables when initiating chart sets: `["#3b82f6", "#10b981",
-    "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899", "#06b6d4", "#84cc16", "#f97316",
-    "#6366f1"]`.
+1.  **Gather Technical Details**: You MUST read `resources/chat_integration.md`
+    for the technical requirements.
+2.  **Update the implementation plan**: If and only if there is an
+    implementation plan, you MUST update the implementation plan. This is a
+    significant change so the user must explicitly approve the updated plan.
+3.  **Verify Prerequisites**: Ensure the user has the Gemini Data Analytics API
+    enabled and data exists in BigQuery.
+4.  **Reference Examples**: Adapt the patterns in
+    `examples/react_chat_panel.jsx` and either `examples/fastapi_chat.py` or
+    `examples/express_chat.ts`.
 
 ## Acceptance Criteria
 
@@ -276,6 +152,6 @@ the shift smooth.
     error handling?
 -   [ ] Does the dark mode toggle function correctly and apply styles
     consistently?
--   [ ] Do all ECharts visualizations render correctly and are they interactive
-    where expected?
+-   [ ] Do all visualizations render correctly and are they interactive where
+    expected?
 -   [ ] Is the dashboard visually appealing?
