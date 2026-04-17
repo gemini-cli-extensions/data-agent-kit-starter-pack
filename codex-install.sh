@@ -15,8 +15,8 @@
 
 set -e
 
-PLUGIN_NAME="data-cloud-ai-dev-kit"
-REPO_URL="https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit"
+PLUGIN_NAME="data-agent-kit-starter-pack"
+REPO_URL="https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack"
 INSTALL_DIR="$HOME/.agents/plugins/$PLUGIN_NAME"
 MARKETPLACE_FILE="$HOME/.agents/plugins/marketplace.json"
 
@@ -53,7 +53,7 @@ data.plugins = data.plugins || [];
 data.plugins = data.plugins.filter(p => p.name !== '${PLUGIN_NAME}');
 data.plugins.push({
     name: '${PLUGIN_NAME}',
-    interface: { displayName: 'Google Data Cloud AI Dev Kit' },
+    interface: { displayName: 'Data Agent Kit Starter Pack' },
     source: { source: 'local', path: './.agents/plugins/${PLUGIN_NAME}' },
     policy: { installation: 'AVAILABLE', authentication: 'ON_INSTALL' },
     category: 'Productivity'
