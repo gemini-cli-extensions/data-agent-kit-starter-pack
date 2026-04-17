@@ -1,11 +1,11 @@
 {
-  "name": "data-cloud-ai-dev-kit-marketplace",
+  "name": "data-agent-kit-starter-pack-marketplace",
   "interface": {
-    "displayName": "data-cloud-ai-dev-kit Marketplace"
+    "displayName": "Data Agent Kit Starter Pack Marketplace"
   },
   "plugins": [
     {
-      "name": "data-cloud-ai-dev-kit",
+      "name": "data-agent-kit-starter-pack",
       "source": {
         "source": "local",
         "path": "./"

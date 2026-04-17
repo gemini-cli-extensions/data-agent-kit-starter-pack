@@ -1,49 +1,115 @@
-# Data Cloud AI Dev Kit
+# Data Agent Kit Starter Pack
 
 > [!NOTE]
 > This extension is currently in beta (pre-v1.0), and may see breaking changes until the first stable release (v1.0).
 
-This plugin provides a specialized suite of skills and MCP tools for data engineers and database practitioners working on Google Cloud. It acts as an expert assistant, allowing you to use natural language prompts in your preferred coding agent to architect complex data pipelines, transform data with dbt, write Spark and BigQuery SQL notebooks, and orchestrate end-to-end workflows across GCP's data ecosystem (BigQuery, Spanner, BigLake, Dataproc, etc.).
+This plugin provides a specialized suite of skills and MCP tools for data engineers and database practitioners working on Google Cloud. It acts as an expert assistant, allowing you to use natural language prompts in your preferred coding agent to architect complex data pipelines, transform data with dbt, write Spark and BigQuery SQL notebooks, and orchestrate end-to-end workflows across the Google Cloud data ecosystem (BigQuery, Spanner, BigLake, Dataproc, etc.).
 
 > [!IMPORTANT]
 > **We Want Your Feedback!**
 > Please share your thoughts with us by opening an issue on GitHub. Your input is invaluable and helps us improve the project for everyone.
 
-## Why Use the Data Cloud AI Dev Kit?
+## Why Use the Data Agent Kit Starter Pack?
 
-* **Seamless Workflow:** Brings Google Cloud data engineering expertise directly into your terminal or IDE via Gemini CLI, Claude Code, or Codex.
-* **End-to-End Data Pipelines:** Effortlessly generate code that reads raw data from GCS, processes it with Spark or BigQuery, transforms it through medallion architectures (bronze, silver, gold) using dbt, and exports it to serving layers like Cloud Spanner.
-* **Ecosystem Integration:** Work across boundaries—generate BigLake Iceberg catalog tables, train BigQuery ML models (XGBoost, KMEANS), and create interactive Streamlit dashboards or LookML models all from natural language.
+* **Seamless Workflow:** Bring Google Cloud data engineering expertise directly into your terminal or IDE via Gemini CLI, Claude Code, or Codex.
+* **End-to-End Data Pipelines:** Effortlessly generate code that reads raw data from Cloud Storage, processes it with Spark or BigQuery, transform it through medallion architectures (bronze, silver, gold) using dbt, and export it to serving layers like Spanner.
+* **Ecosystem Integration:** Work across boundaries—generate BigLake Iceberg catalog tables, train BigQuery ML models (XGBoost, KMEANS), and create interactive Streamlit dashboards or LookML models, all from natural language.
 * **Workflow Orchestration:** Automatically create and schedule orchestration pipelines that tie your notebooks and dbt models together into robust, scheduled jobs.
 
 ## Prerequisites
 
-Ensure you have one of the following coding agents installed:
-* [Gemini CLI](https://github.com/google-gemini/gemini-cli) (v0.6.0+)
-* [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview)
-* Codex CLI
+Ensure you have the following installed:
+* **Node.js and npm** (Latest version recommended)
+* One of the following coding agents:
+    * [Gemini CLI](https://github.com/google-gemini/gemini-cli) (v0.6.0+)
+    * [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview)
+    * Codex CLI
+* **(Optional) IDE Extension:** [Google Cloud Data Agent Kit](https://docs.cloud.google.com/data-cloud-extension/vs-code/install).
 
 ## Getting Started
 
 ### Installation
 
-Choose the installation method for your preferred coding agent.
+Choose the installation method for your preferred coding agent. Run the commands in terminal
 
-#### Gemini CLI
+<details>
+<summary><b>Gemini CLI and Gemini Code Assist</b></summary>
+
 ```bash
-gemini extensions install https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit
+gemini extensions install https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack
+```
+</details>
+
+<details>
+<summary><b>Claude Code</b></summary>
+
+Run the `claude` command to start the agent, then run:
+
+```bash
+/plugin marketplace add https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack
+/plugin install data-agent-kit-starter-pack@data-agent-kit-starter-pack-marketplace
+```
+</details>
+
+<details>
+<summary><b>Codex</b></summary>
+
+Run the following commands in your terminal:
+
+**macOS / Linux:**
+```bash
+curl -sSL https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/main/codex-install.sh | bash
 ```
 
-#### Claude Code
-```bash
-/plugin marketplace add https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit
-/plugin install data-cloud-ai-dev-kit@data-cloud-ai-dev-kit-marketplace
+**Windows:**
+```powershell
+irm https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/main/codex-install.ps1 | iex
 ```
 
-#### Codex (One-Liner)
+After running the installation script, run the `codex` command to start the agent, then run:
+
 ```bash
-curl -sSL https://raw.githubusercontent.com/gemini-cli-extensions/data-cloud-ai-dev-kit/main/codex-install.sh | bash
+/plugins
 ```
+
+Use the interactive options to install the extension with the name `Data Agent Kit Starter Pack`.
+</details>
+
+### Configuration
+
+MCP toolboxes are added to the respective agent configuration files. You must configure the MCP toolboxes in your agent's configuration files for them to start successfully.
+
+In all cases, you must restart the agent after updating the configuration files.
+
+<details>
+<summary><b>Gemini CLI and Gemini Code Assist</b></summary>
+
+Edit the configuration file:
+`~/.gemini/extensions/data-agent-kit-starter-pack/gemini-extension.json`
+</details>
+
+<details>
+<summary><b>Claude Code</b></summary>
+
+1. Edit the configuration file:
+`~/.claude/plugins/cache/data-agent-kit-starter-pack-marketplace/data-agent-kit-starter-pack/<version>/.mcp.json`
+
+2. Reinstall the plugin:
+Run `/plugin` and use interactive options to uninstall `data-agent-kit-starter-pack`. Then run `/plugin install` to add it back.
+</details>
+
+<details>
+<summary><b>Codex</b></summary>
+
+1. Edit the configuration file:
+`~/.agents/plugins/data-agent-kit-starter-pack/.mcp.json`
+
+2. Use interactive options to uninstall and install the extension:
+```bash
+/plugins
+```
+Install with name: `Data Agent Kit Starter Pack`
+</details>
 
 ## Usage Examples
 
@@ -67,14 +133,15 @@ Interact with your coding agent using natural language prompts to perform comple
 
 * **Plugin Not Found:** Ensure you have restarted your agent (e.g., Gemini CLI or Codex) after installation.
 * **Authentication Errors:** Many GCP skills require an active authenticated session. Ensure you have run `gcloud auth login` and `gcloud auth application-default login` on your machine.
+* **MCP Connection Issues:** Update the MCP server configurations such as project, region etc. needed by MCP toolboxes in order to connect successfully to them.
 
 ## Security Reminder: Agent Environment Hardening
 
-Your agent has the power to
-execute tools and commands on your behalf. Protect your GCP resources by
-enforcing **Strict Least Privilege** across all CLIs, MCP servers and other
-resources available to your agents. For example, use scoped Service Accounts
-(read more
-[here](https://docs.cloud.google.com/docs/authentication/use-service-account-impersonation))
-for tasks accessing your cloud resources and conducting regular permission and
-agent settings audits to minimize your attack surface.
+Your agent has the power to execute tools and commands on your behalf. Protect your GCP resources by enforcing **Strict Least Privilege** across all CLIs, MCP servers and other resources available to your agents.
+
+*   Use [service accounts](https://docs.cloud.google.com/docs/authentication/use-service-account-impersonation) for accessing your cloud resources.
+*   Assign the service account a role with [limited permissions](https://docs.cloud.google.com/iam/docs/roles-overview).
+*   Prevent unwanted cross-org agent access by utilizing **Principal Access Boundaries** to scope your agent to [projects](https://docs.cloud.google.com/iam/docs/principal-access-boundary-policies#use-case-one-project) you intend the agent to access.
+
+> [!NOTE]
+> The Principal Access Boundary condition should bind the policy to the service accounts you intend to restrict.

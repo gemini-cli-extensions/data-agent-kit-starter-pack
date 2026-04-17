@@ -14,8 +14,8 @@
 
 $ErrorActionPreference = "Stop"
 
-$pluginName = "data-cloud-ai-dev-kit"
-$repoUrl = "https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit"
+$pluginName = "data-agent-kit-starter-pack"
+$repoUrl = "https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack"
 $pluginsRoot = Join-Path $HOME ".agents\plugins"
 $installDir = Join-Path $pluginsRoot $pluginName
 $marketplaceFile = Join-Path $pluginsRoot "marketplace.json"
@@ -85,7 +85,7 @@ $pluginJson = @"
 {
   "name": "$pluginName",
   "interface": {
-    "displayName": "Google Data Cloud AI Dev Kit"
+    "displayName": "Data Agent Kit Starter Pack"
   },
   "source": {
     "source": "local",
