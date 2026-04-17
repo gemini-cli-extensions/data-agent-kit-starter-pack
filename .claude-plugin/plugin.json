@@ -1,6 +1,6 @@
 {
   "name": "data-cloud-ai-dev-kit",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "This plugin provides a specialized suite of skills for data engineers and database practitioners working on Google Cloud. It acts as an expert assistant, allowing you to use natural language prompts in your preferred coding agent to architect complex data pipelines, transform data with dbt, write Spark and BigQuery SQL notebooks, and orchestrate end-to-end workflows across GCP's data ecosystem.",
   "mcp": "./.mcp.json"
 }
