@@ -19716,7 +19716,7 @@ async function inferIdeName() {
     let currentPid = process.pid;
     let depth = 0;
     const maxDepth = 20;
-    while (currentPid && currentPid !== 1 && depth < maxDepth) {
+    while (currentPid && currentPid > 1 && depth < maxDepth) {
       const proc = processes.find((p) => p.pid === currentPid);
       if (!proc) break;
       const name = proc.name.toLowerCase();

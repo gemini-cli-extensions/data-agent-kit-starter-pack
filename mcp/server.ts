@@ -403,7 +403,7 @@ async function inferIdeName(): Promise<string | null> {
     let depth = 0;
     const maxDepth = 20;
     
-    while (currentPid && currentPid !== 1 && depth < maxDepth) {
+    while (currentPid && currentPid > 1 && depth < maxDepth) {
       const proc = processes.find(p => p.pid === currentPid);
       if (!proc) break;
       
