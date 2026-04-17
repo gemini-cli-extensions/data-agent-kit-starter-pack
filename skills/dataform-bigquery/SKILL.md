@@ -60,6 +60,23 @@ Follow these steps when fulfilling Dataform-related requests:
     *   **If `workflow_settings.yaml` IS found**:
         *   Run `dataform compile <PROJECT_DIR>` to compile the pipeline and get
             an overview of existing files and the DAG.
+-   Once the repository is located or initialized, check if
+    `.df-credentials.json` is present in the Dataform project directory. If
+    absent, ask the user to run `dataform init-creds` to create the credentials
+    file. If the user cannot initialize the credentials, write the
+    `.df-credentials.json` file manually, following the format below. Replace
+    `<PROJECT_ID>` with a Google Cloud project for billing (e.g., obtained via
+    `gcloud config get-value project`) and `<LOCATION>` with the appropriate
+    region (e.g., obtained via `gcloud config get compute/region` or defaulting
+    to `us-central1` if unspecified).
+
+    ```json
+    {
+        "projectId": "<PROJECT_ID>",
+        "location": "<LOCATION>"
+    }
+    ```
+
 -   Use the compiled graph as the **source of truth** for existing assets.
 
 ### 2. Gather Information
@@ -119,28 +136,23 @@ For non-trivial requests, create a clear specification before implementation:
 ### 6. Validate & Compile
 
 -   Run `dataform compile` to catch syntax and dependency errors.
--   Check if `.df-credentials.json` is present in the Dataform project
-    directory.
+-   If `.df-credentials.json` is successfully set up (from Step 1), run
+    `dataform run --dry-run` for validation.
+-   If `.df-credentials.json` could not be initialized, fall back to using
+    `dataform compile`, manual SQL inspection, and `bq query --dry_run` for
+    validation.
 
-    -   **If present:** Run `dataform run --dry-run` for validation.
-    -   **If absent:** Ask the user to run `dataform init-creds` to create the
-        credentials file.
-    -   **If credentials cannot be initialized:** Fall back to using `dataform
-        compile`, manual SQL inspection, and `bq query --dry_run` for
-        validation.
-
-        > [!IMPORTANT]
-        >
-        > If `dataform run --dry-run` fails, inspect the error message. If the
-        > failure is ONLY due to "Table not found" errors for nodes defined
-        > within the current Dataform project (which occurs when upstream
-        > dependencies haven't been materialized in BigQuery), then this
-        > specific error may be ignored. If the dry run fails for ANY other
-        > reason (such as SQL syntax errors, permission errors, or references to
-        > tables not defined in the project), these errors MUST be addressed. If
-        > only "Not found" errors for unmaterialized project tables are present,
-        > rely on `dataform compile`, manual SQL inspection, and `bq query
-        > --dry_run` for verification.
+    > [!IMPORTANT]
+    >
+    > If `dataform run --dry-run` fails, inspect the error message. If the
+    > failure is ONLY due to "Table not found" errors for nodes defined within
+    > the current Dataform project (which occurs when upstream dependencies
+    > haven't been materialized in BigQuery), then this specific error may be
+    > ignored. If the dry run fails for ANY other reason (such as SQL syntax
+    > errors, permission errors, or references to tables not defined in the
+    > project), these errors MUST be addressed. If only "Not found" errors for
+    > unmaterialized project tables are present, rely on `dataform compile`,
+    > manual SQL inspection, and `bq query --dry_run` for verification.
 
 -   Validate SQL logic of changed nodes and fix any errors.
 
@@ -153,20 +165,19 @@ For non-trivial requests, create a clear specification before implementation:
 
 -   Repeat steps 5–6 until the request is fully satisfied.
 
-## Credentials for `dataform run`
+## Credentials for `dataform run` and `dataform run --dry-run`
 
 The command `dataform run` executes your Dataform pipeline in BigQuery but
 requires credentials to be set up in a `.df-credentials.json` file in your
 project directory.
 
-Generate pipeline code and ensure it compiles via `dataform compile`. Use
-`dataform run --dry-run` for validation only if the `.df-credentials.json` file
-is present. MUST NOT execute a real `dataform run` without explicit user
-request.
+Generate pipeline code and ensure it compiles via `dataform compile`. Validate
+the pipeline using `dataform run --dry-run` once the `.df-credentials.json` file
+is successfully created (as instructed in the Understand the Current State
+step). MUST NOT execute a real `dataform run` without explicit user request.
 
-If `.df-credentials.json` is missing, instruct the user to run `dataform
-init-creds` in their terminal. If they are unable to get the credentials
-initialized, fall back on other methods of validation, such as `dataform
+If `.df-credentials.json` could not be initialized via `dataform init-creds` or
+manual creation, fall back on other methods of validation, such as `dataform
 compile`, manual SQL inspection, and `bq query --dry_run`.
 
 ## Incremental / Append Operations
