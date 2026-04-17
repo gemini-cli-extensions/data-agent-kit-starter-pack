@@ -396,7 +396,7 @@ message DataformAirflowExecution {
 
 ## Ochestration Pipeline YAML File example
 ```yaml
-modelVersion: v2
+modelVersion: 1.0
 pipelineId: sample_orchestration
 description: Orchestrate dbt after pyspark
 runner: airflow
