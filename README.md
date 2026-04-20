@@ -142,6 +142,8 @@ Edit the configuration file:
 ```
 </details>
 
+<!-- {x-release-please-end} -->
+
 ## Usage Examples
 
 Interact with your coding agent using natural language prompts to perform complex data engineering tasks:
