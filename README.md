@@ -9,6 +9,17 @@ This plugin provides a specialized suite of skills and MCP tools for data engine
 > **We Want Your Feedback!**
 > Please share your thoughts with us by opening an issue on GitHub. Your input is invaluable and helps us improve the project for everyone.
 
+## Contents
+
+- [Why Use the Data Agent Kit Starter Pack?](#why-use-the-data-agent-kit-starter-pack)
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+- [Usage Examples](#usage-examples)
+- [Troubleshooting](#troubleshooting)
+- [Security Reminder: Agent Environment Hardening](#security-reminder-agent-environment-hardening)
+
 ## Why Use the Data Agent Kit Starter Pack?
 
 * **Seamless Workflow:** Bring Google Cloud data engineering expertise directly into your terminal or IDE via Gemini CLI, Claude Code, or Codex.
@@ -20,9 +31,10 @@ This plugin provides a specialized suite of skills and MCP tools for data engine
 
 Ensure you have the following installed:
 * **Node.js and npm** (Latest version recommended)
+* **Google Cloud SDK (gcloud CLI):** [Install and initialize](https://cloud.google.com/sdk/docs/install) the gcloud CLI and ensure [Application Default Credentials (ADC)](https://cloud.google.com/docs/authentication/provide-credentials-adc) are configured.
 * One of the following coding agents:
     * [Gemini CLI](https://github.com/google-gemini/gemini-cli) (v0.6.0+)
-    * [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview)
+    * [Claude Code](https://code.claude.com/docs)
     * Codex CLI
 * **(Optional) IDE Extension:** [Google Cloud Data Agent Kit](https://docs.cloud.google.com/data-cloud-extension/vs-code/install).
 
@@ -35,18 +47,24 @@ Choose the installation method for your preferred coding agent. Run the commands
 <details>
 <summary><b>Gemini CLI and Gemini Code Assist</b></summary>
 
+Install the extension directly from GitHub:
 ```bash
-gemini extensions install https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack
+gemini extensions install https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack --consent
 ```
 </details>
 
 <details>
 <summary><b>Claude Code</b></summary>
 
-Run the `claude` command to start the agent, then run:
+Run the `claude` command to start the agent, then follow these steps:
 
+1. **Add the marketplace:**
 ```bash
 /plugin marketplace add https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack
+```
+
+2. **Install the plugin:**
+```bash
 /plugin install data-agent-kit-starter-pack@data-agent-kit-starter-pack-marketplace
 ```
 </details>
@@ -54,7 +72,7 @@ Run the `claude` command to start the agent, then run:
 <details>
 <summary><b>Codex</b></summary>
 
-Run the following commands in your terminal:
+1. **Run the installation script in your terminal:**
 
 **macOS / Linux:**
 ```bash
@@ -66,20 +84,35 @@ curl -sSL https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit
 irm https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/main/codex-install.ps1 | iex
 ```
 
-After running the installation script, run the `codex` command to start the agent, then run:
+2. **Install the plugin in Codex:**
 
+Start the Codex agent (`codex`), then run:
 ```bash
 /plugins
 ```
-
-Use the interactive options to install the extension with the name `Data Agent Kit Starter Pack`.
+Use the interactive options to install the plugin with the name `Data Agent Kit Starter Pack`.
 </details>
 
 ### Configuration
 
-MCP toolboxes are added to the respective agent configuration files. You must configure the MCP toolboxes in your agent's configuration files for them to start successfully.
+This extension brings a suite of specialized **Skills** and **MCP toolboxes**. While skills are ready to use upon installation, you **must** configure the MCP toolboxes and authenticate with Google Cloud for them to start successfully.
 
-In all cases, you must restart the agent after updating the configuration files.
+> [!NOTE]
+> If you use Gemini CLI, Claude Code, or Codex in your IDE (e.g., via VS Code extensions), they share the same underlying configuration and MCP servers as the CLI agents.
+
+#### 1. Authenticate with Google Cloud
+The MCP toolboxes require an active authenticated session to interact with your resources. Run the following commands in your terminal:
+```bash
+gcloud auth login
+gcloud auth application-default login
+```
+
+#### 2. Update Agent Configuration
+You must configure the MCP toolboxes in your agent's configuration files for them to start successfully. After updating, you must restart the agent.
+
+To verify your configuration:
+* Run the `/mcp` command to check the status of available MCP servers.
+* Ask your agent "What skills are available?" to view the list of active skills.
 
 <details>
 <summary><b>Gemini CLI and Gemini Code Assist</b></summary>
@@ -91,11 +124,8 @@ Edit the configuration file:
 <details>
 <summary><b>Claude Code</b></summary>
 
-1. Edit the configuration file:
+Edit the configuration file:
 `~/.claude/plugins/cache/data-agent-kit-starter-pack-marketplace/data-agent-kit-starter-pack/<version>/.mcp.json`
-
-2. Reinstall the plugin:
-Run `/plugin` and use interactive options to uninstall `data-agent-kit-starter-pack`. Then run `/plugin install` to add it back.
 </details>
 
 <details>
@@ -104,11 +134,10 @@ Run `/plugin` and use interactive options to uninstall `data-agent-kit-starter-p
 1. Edit the configuration file:
 `~/.agents/plugins/data-agent-kit-starter-pack/.mcp.json`
 
-2. Use interactive options to uninstall and install the extension:
+2. Use the interactive options to uninstall and install the plugin with the name `Data Agent Kit Starter Pack`:
 ```bash
 /plugins
 ```
-Install with name: `Data Agent Kit Starter Pack`
 </details>
 
 ## Usage Examples
@@ -131,9 +160,17 @@ Interact with your coding agent using natural language prompts to perform comple
 
 ## Troubleshooting
 
+Use `gemini --debug` to enable debugging.
+
+Common issues:
+
 * **Plugin Not Found:** Ensure you have restarted your agent (e.g., Gemini CLI or Codex) after installation.
-* **Authentication Errors:** Many GCP skills require an active authenticated session. Ensure you have run `gcloud auth login` and `gcloud auth application-default login` on your machine.
+* **Authentication Errors:** Many GCP skills require an active authenticated session. Ensure you have run `gcloud auth login` and `gcloud auth application-default login` on your machine. See [Set up Application Default Credentials](https://cloud.google.com/docs/authentication/provide-credentials-adc) for more information.
+* **"failed to find default credentials: google: could not find default credentials."**: Ensure Application Default Credentials (ADC) are available in your environment.
 * **MCP Connection Issues:** Update the MCP server configurations such as project, region etc. needed by MCP toolboxes in order to connect successfully to them.
+* **"✖ Error during discovery for server: MCP error -32000: Connection closed"**: The connection could not be established. Ensure your configuration is correctly set in the agent's configuration file.
+* **"✖ MCP ERROR: Error: spawn .../toolbox ENOENT"**: The Toolbox binary did not download correctly. Ensure you are using Gemini CLI v0.6.0+.
+* **"cannot execute binary file"**: The Toolbox binary did not download correctly. Ensure the correct binary for your OS/Architecture has been downloaded.
 
 ## Security Reminder: Agent Environment Hardening
 
