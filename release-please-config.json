@@ -28,6 +28,7 @@
       "release-type": "simple",
       "package-name": "data-agent-kit-starter-pack",
       "extra-files": [
+        "README.md",
         {
           "type": "json",
           "path": "gemini-extension.json",
