@@ -40,6 +40,8 @@ Ensure you have the following installed:
 
 ## Getting Started
 
+<!-- {x-release-please-start-version} -->
+
 ### Installation
 
 Choose the installation method for your preferred coding agent. Run the commands in terminal
@@ -49,7 +51,7 @@ Choose the installation method for your preferred coding agent. Run the commands
 
 Install the extension directly from GitHub:
 ```bash
-gemini extensions install https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack --consent
+gemini extensions install https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack --ref 0.1.0
 ```
 </details>
 
@@ -60,7 +62,7 @@ Run the `claude` command to start the agent, then follow these steps:
 
 1. **Add the marketplace:**
 ```bash
-/plugin marketplace add https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack
+/plugin marketplace add https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack#0.1.0 
 ```
 
 2. **Install the plugin:**
@@ -76,12 +78,12 @@ Run the `claude` command to start the agent, then follow these steps:
 
 **macOS / Linux:**
 ```bash
-curl -sSL https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/main/codex-install.sh | bash
+curl -sSL https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/0.1.0/codex-install.sh | bash
 ```
 
 **Windows:**
 ```powershell
-irm https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/main/codex-install.ps1 | iex
+irm https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/0.1.0/codex-install.ps1 | iex
 ```
 
 2. **Install the plugin in Codex:**
@@ -125,7 +127,7 @@ Edit the configuration file:
 <summary><b>Claude Code</b></summary>
 
 Edit the configuration file:
-`~/.claude/plugins/cache/data-agent-kit-starter-pack-marketplace/data-agent-kit-starter-pack/<version>/.mcp.json`
+`~/.claude/plugins/cache/data-agent-kit-starter-pack-marketplace/data-agent-kit-starter-pack/0.1.0/.mcp.json`
 </details>
 
 <details>
@@ -139,6 +141,8 @@ Edit the configuration file:
 /plugins
 ```
 </details>
+
+<!-- {x-release-please-end} -->
 
 ## Usage Examples
 
@@ -174,11 +178,24 @@ Common issues:
 
 ## Security Reminder: Agent Environment Hardening
 
-Your agent has the power to execute tools and commands on your behalf. Protect your GCP resources by enforcing **Strict Least Privilege** across all CLIs, MCP servers and other resources available to your agents.
+Your agent can execute tools and commands on your behalf. Protect your Google
+Cloud resources by enforcing **The Principle of Least Privilege** across all
+CLIs, MCP servers and other resources available to your agents.
 
-*   Use [service accounts](https://docs.cloud.google.com/docs/authentication/use-service-account-impersonation) for accessing your cloud resources.
-*   Assign the service account a role with [limited permissions](https://docs.cloud.google.com/iam/docs/roles-overview).
-*   Prevent unwanted cross-org agent access by utilizing **Principal Access Boundaries** to scope your agent to [projects](https://docs.cloud.google.com/iam/docs/principal-access-boundary-policies#use-case-one-project) you intend the agent to access.
+*   **Service Accounts:** Use
+    [service accounts](https://docs.cloud.google.com/docs/authentication/use-service-account-impersonation)
+    instead of end user credentials to access Google Cloud resources.
+*   **Limited Permissions:** Assign roles with
+    [limited permissions](https://docs.cloud.google.com/iam/docs/roles-overview)
+    to the service account that you're using for authentication.
+*   **Principal Access Boundaries:** Prevent unwanted cross-org agent access by
+    using
+    [Principal Access Boundary policies](https://docs.cloud.google.com/iam/docs/principal-access-boundary-policies#use-case-one-project)
+    to scope your agent to projects you intend it to access.
+*   [Include a condition in the policy binding](https://docs.cloud.google.com/iam/docs/principal-access-boundary-policies#use-case-one-project)
+    to ensure that the policy only applies to the service accounts that you
+    intend to restrict.
 
-> [!NOTE]
-> The Principal Access Boundary condition should bind the policy to the service accounts you intend to restrict.
+You can read more
+[here](https://docs.cloud.google.com/data-cloud-extension/vs-code/prompt-injection-risk)
+on how to mitigate prompt injection attacks with Google Cloud MCP.
