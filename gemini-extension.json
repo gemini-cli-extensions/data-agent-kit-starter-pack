@@ -1,5 +1,5 @@
 {
-  "name": "data-cloud-ai-dev-kit",
+  "name": "data-agent-kit-starter-pack",
   "version": "0.1.8",
   "description": "This plugin provides a specialized suite of skills for data engineers and database practitioners working on Google Cloud. It acts as an expert assistant, allowing you to use natural language prompts in your preferred coding agent to architect complex data pipelines, transform data with dbt, write Spark and BigQuery SQL notebooks, and orchestrate end-to-end workflows across GCP's data ecosystem.",
   "mcpServers": {
@@ -7,7 +7,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "git+https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit.git"
+        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git"
       ],
       "env": {}
     },
@@ -20,7 +20,7 @@
         "bigquery",
         "--stdio",
         "--user-agent-metadata",
-        "google-cloud-data-agent-kit-gemini-cli"
+        "datacloud.gemini-cli"
       ],
       "env": {
         "BIGQUERY_LOCATION": "",
@@ -36,7 +36,7 @@
         "spanner",
         "--stdio",
         "--user-agent-metadata",
-        "google-cloud-data-agent-kit-gemini-cli"
+        "datacloud.gemini-cli"
       ],
       "env": {
         "SPANNER_DATABASE": "",
@@ -54,7 +54,7 @@
         "alloydb-postgres-admin",
         "--stdio",
         "--user-agent-metadata",
-        "google-cloud-data-agent-kit-gemini-cli"
+        "datacloud.gemini-cli"
       ],
       "env": {}
     },
@@ -67,7 +67,7 @@
         "alloydb-postgres",
         "--stdio",
         "--user-agent-metadata",
-        "google-cloud-data-agent-kit-gemini-cli"
+        "datacloud.gemini-cli"
       ],
       "env": {
         "ALLOYDB_POSTGRES_CLUSTER": "",
@@ -89,7 +89,7 @@
         "cloud-sql-postgres-admin",
         "--stdio",
         "--user-agent-metadata",
-        "google-cloud-data-agent-kit-gemini-cli"
+        "datacloud.gemini-cli"
       ],
       "env": {}
     },
@@ -102,7 +102,7 @@
         "cloud-sql-postgres",
         "--stdio",
         "--user-agent-metadata",
-        "google-cloud-data-agent-kit-gemini-cli"
+        "datacloud.gemini-cli"
       ],
       "env": {
         "CLOUD_SQL_POSTGRES_DATABASE": "",
@@ -123,7 +123,7 @@
         "dataplex",
         "--stdio",
         "--user-agent-metadata",
-        "google-cloud-data-agent-kit-gemini-cli"
+        "datacloud.gemini-cli"
       ],
       "env": {
         "DATAPLEX_PROJECT": ""
@@ -138,7 +138,7 @@
         "dataproc",
         "--stdio",
         "--user-agent-metadata",
-        "google-cloud-data-agent-kit-gemini-cli"
+        "datacloud.gemini-cli"
       ],
       "env": {
         "DATAPROC_PROJECT": "",
@@ -154,7 +154,7 @@
         "serverless-spark",
         "--stdio",
         "--user-agent-metadata",
-        "google-cloud-data-agent-kit-gemini-cli"
+        "datacloud.gemini-cli"
       ],
       "env": {
         "SERVERLESS_SPARK_PROJECT": "",

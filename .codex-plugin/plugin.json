@@ -1,11 +1,11 @@
 {
-  "name": "data-cloud-ai-dev-kit",
+  "name": "data-agent-kit-starter-pack",
   "version": "0.1.8",
   "description": "This plugin provides a specialized suite of skills for data engineers and database practitioners working on Google Cloud. It acts as an expert assistant, allowing you to use natural language prompts in your preferred coding agent to architect complex data pipelines, transform data with dbt, write Spark and BigQuery SQL notebooks, and orchestrate end-to-end workflows across GCP's data ecosystem.",
   "skills": "./skills/",
   "interface": {
-    "displayName": "Data Cloud AI Dev Kit",
-    "shortDescription": "Data Cloud AI Dev Kit",
+    "displayName": "Data Agent Kit Starter Pack",
+    "shortDescription": "Data Agent Kit Starter Pack",
     "category": "Productivity"
   },
   "mcp": "./.mcp.json"
