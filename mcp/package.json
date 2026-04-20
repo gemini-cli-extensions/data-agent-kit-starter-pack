@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "ps-list": "^9.0.0",
     "tsx": "^4.7.0",
     "zod": "^3.22.0"
   },
