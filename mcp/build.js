@@ -38,9 +38,9 @@ esbuild.build({
   platform: 'node',
   format: 'esm',
   outfile: 'dist/index.js',
-  external: ['child_process', 'fs', 'path', 'url', 'cross-spawn'],
+  external: ['child_process', 'fs', 'path', 'url'],
   banner: {
-    js: `#!/usr/bin/env node\n${licenseHeader}\n`,
+    js: `#!/usr/bin/env node\n${licenseHeader}\nimport { createRequire } from 'module';\nconst require = createRequire(import.meta.url);\n`,
   },
 }).catch((err) => {
   console.error(err);
