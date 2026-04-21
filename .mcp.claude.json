@@ -1,15 +1,14 @@
 {
-  "name": "data-agent-kit-starter-pack",
-  "version": "0.1.0",
-  "description": "This plugin provides a specialized suite of skills for data engineers and database practitioners working on Google Cloud. It acts as an expert assistant, allowing you to use natural language prompts in your preferred coding agent to architect complex data pipelines, transform data with dbt, write Spark and BigQuery SQL notebooks, and orchestrate end-to-end workflows across GCP's data ecosystem.",
   "mcpServers": {
     "notebook_and_visualization": {
       "command": "node",
       "args": [
-        "${extensionPath}/mcp/dist/index.js"
+        "${CLAUDE_PLUGIN_ROOT}/mcp/dist/index.js"
       ],
-      "cwd": "${extensionPath}/mcp",
-      "env": {}
+      "env": {},
+      "env_vars": [
+        "DATA_CLOUD_CURR_IDE_NAME"
+      ]
     },
     "datacloud_bigquery_toolbox": {
       "command": "npx",
@@ -20,7 +19,7 @@
         "bigquery",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.gemini-cli"
+        "datacloud.claude-and-codex"
       ],
       "env": {
         "BIGQUERY_LOCATION": "",
@@ -36,7 +35,7 @@
         "spanner",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.gemini-cli"
+        "datacloud.claude-and-codex"
       ],
       "env": {
         "SPANNER_DATABASE": "",
@@ -54,7 +53,7 @@
         "alloydb-postgres-admin",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.gemini-cli"
+        "datacloud.claude-and-codex"
       ],
       "env": {}
     },
@@ -67,7 +66,7 @@
         "alloydb-postgres",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.gemini-cli"
+        "datacloud.claude-and-codex"
       ],
       "env": {
         "ALLOYDB_POSTGRES_CLUSTER": "",
@@ -89,7 +88,7 @@
         "cloud-sql-postgres-admin",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.gemini-cli"
+        "datacloud.claude-and-codex"
       ],
       "env": {}
     },
@@ -102,7 +101,7 @@
         "cloud-sql-postgres",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.gemini-cli"
+        "datacloud.claude-and-codex"
       ],
       "env": {
         "CLOUD_SQL_POSTGRES_DATABASE": "",
@@ -123,7 +122,7 @@
         "dataplex",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.gemini-cli"
+        "datacloud.claude-and-codex"
       ],
       "env": {
         "DATAPLEX_PROJECT": ""
@@ -138,7 +137,7 @@
         "dataproc",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.gemini-cli"
+        "datacloud.claude-and-codex"
       ],
       "env": {
         "DATAPROC_PROJECT": "",
@@ -154,7 +153,7 @@
         "serverless-spark",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.gemini-cli"
+        "datacloud.claude-and-codex"
       ],
       "env": {
         "SERVERLESS_SPARK_PROJECT": "",
