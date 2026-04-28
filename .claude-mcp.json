@@ -20,7 +20,7 @@
         "bigquery",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.codex"
+        "datacloud.claude"
       ],
       "env": {
         "BIGQUERY_LOCATION": "",
@@ -36,7 +36,7 @@
         "spanner",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.codex"
+        "datacloud.claude"
       ],
       "env": {
         "SPANNER_DATABASE": "",
@@ -54,7 +54,7 @@
         "alloydb-postgres-admin",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.codex"
+        "datacloud.claude"
       ],
       "env": {}
     },
@@ -67,7 +67,7 @@
         "alloydb-postgres",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.codex"
+        "datacloud.claude"
       ],
       "env": {
         "ALLOYDB_POSTGRES_CLUSTER": "",
@@ -89,7 +89,7 @@
         "cloud-sql-postgres-admin",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.codex"
+        "datacloud.claude"
       ],
       "env": {}
     },
@@ -102,7 +102,7 @@
         "cloud-sql-postgres",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.codex"
+        "datacloud.claude"
       ],
       "env": {
         "CLOUD_SQL_POSTGRES_DATABASE": "",
@@ -123,7 +123,7 @@
         "dataplex",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.codex"
+        "datacloud.claude"
       ],
       "env": {
         "DATAPLEX_PROJECT": ""
@@ -138,7 +138,7 @@
         "dataproc",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.codex"
+        "datacloud.claude"
       ],
       "env": {
         "DATAPROC_PROJECT": "",
@@ -154,7 +154,7 @@
         "serverless-spark",
         "--stdio",
         "--user-agent-metadata",
-        "datacloud.codex"
+        "datacloud.claude"
       ],
       "env": {
         "SERVERLESS_SPARK_PROJECT": "",
