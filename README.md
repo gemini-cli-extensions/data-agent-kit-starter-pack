@@ -51,7 +51,7 @@ Choose the installation method for your preferred coding agent. Run the commands
 
 Install the extension directly from GitHub:
 ```bash
-gemini extensions install https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack --ref 0.1.0
+gemini extensions install https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack --ref 0.1.1
 ```
 </details>
 
@@ -62,7 +62,7 @@ Run the `claude` command to start the agent, then follow these steps:
 
 1. **Add the marketplace:**
 ```bash
-/plugin marketplace add https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack#0.1.0 
+/plugin marketplace add https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack#0.1.1 
 ```
 
 2. **Install the plugin:**
@@ -78,12 +78,12 @@ Run the `claude` command to start the agent, then follow these steps:
 
 **macOS / Linux:**
 ```bash
-curl -sSL https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/0.1.0/codex-install.sh | bash
+curl -sSL https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/0.1.1/codex-install.sh | bash
 ```
 
 **Windows:**
 ```powershell
-irm https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/0.1.0/codex-install.ps1 | iex
+irm https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/0.1.1/codex-install.ps1 | iex
 ```
 
 2. **Install the plugin in Codex:**
@@ -127,7 +127,7 @@ Edit the configuration file:
 <summary><b>Claude Code</b></summary>
 
 Edit the configuration file:
-`~/.claude/plugins/cache/data-agent-kit-starter-pack-marketplace/data-agent-kit-starter-pack/0.1.0/.mcp.json`
+`~/.claude/plugins/cache/data-agent-kit-starter-pack-marketplace/data-agent-kit-starter-pack/0.1.1/.mcp.json`
 </details>
 
 <details>
