@@ -19575,7 +19575,7 @@ var toolOwnerMap = /* @__PURE__ */ new Map();
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   let aggregatedTools = [];
   toolOwnerMap.clear();
-  if (!mode || mode === "notebook") {
+  if (mode === "notebook") {
     if (notebookClient) {
       try {
         const response = await notebookClient.listTools();
@@ -19595,7 +19595,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       aggregatedTools.push(...LOCAL_TOOLS);
     }
   }
-  if (!mode || mode === "visualization") {
+  if (mode === "visualization") {
     if (vizClient) {
       try {
         const response = await vizClient.listTools();
@@ -19779,7 +19779,7 @@ async function run() {
   }
   if (ideName) {
     const proxyCmd = path3.resolve(path3.dirname(fileURLToPath2(import.meta.url)), "../bin/mcp_proxy_bundle.cjs");
-    if (!mode || mode === "notebook") {
+    if (mode === "notebook") {
       try {
         const notebookTransport = new StdioClientTransport({
           command: process.execPath,
@@ -19792,7 +19792,7 @@ async function run() {
         notebookClient = null;
       }
     }
-    if (!mode || mode === "visualization") {
+    if (mode === "visualization") {
       try {
         const vizTransport = new StdioClientTransport({
           command: process.execPath,
