@@ -22,6 +22,8 @@ import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import psList from 'ps-list';
+import fs from 'fs';
+import os from 'os';
 
 import {
   CallToolRequestSchema,
@@ -41,8 +43,13 @@ import {getCellOutputs} from './tools/get_cell_outputs.js';
 const args = process.argv.slice(2);
 const mode = args.find(a => a.startsWith('--mode='))?.split('=')[1];
 
-console.error(`[MCP Server] process.argv: ${JSON.stringify(process.argv)}`);
-console.error(`[MCP Server] parsed mode: ${mode}`);
+const logPath = path.join(os.tmpdir(), 'mcp_debug.log');
+try {
+  fs.appendFileSync(logPath, `[${new Date().toISOString()}] process.argv: ${JSON.stringify(process.argv)}\n`);
+  fs.appendFileSync(logPath, `[${new Date().toISOString()}] parsed mode: ${mode}\n`);
+} catch (e) {
+  console.error('Failed to write to log file:', e);
+}
 
 const server = new Server(
   {
