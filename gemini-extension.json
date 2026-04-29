@@ -7,19 +7,21 @@
       "command": "npx",
       "args": [
         "-y",
-        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
-        "--mode=notebook"
+        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git"
       ],
-      "env": {}
+      "env": {
+        "MCP_MODE": "notebook"
+      }
     },
     "visualization": {
       "command": "npx",
       "args": [
         "-y",
-        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
-        "--mode=visualization"
+        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git"
       ],
-      "env": {}
+      "env": {
+        "MCP_MODE": "visualization"
+      }
     },
     "datacloud_bigquery_toolbox": {
       "command": "npx",

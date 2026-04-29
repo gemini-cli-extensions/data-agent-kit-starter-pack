@@ -4,10 +4,11 @@
       "command": "npx",
       "args": [
         "-y",
-        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
-        "--mode=notebook"
+        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git"
       ],
-      "env": {},
+      "env": {
+        "MCP_MODE": "notebook"
+      },
       "env_vars": [
         "DATA_CLOUD_CURR_IDE_NAME"
       ]
@@ -16,10 +17,11 @@
       "command": "npx",
       "args": [
         "-y",
-        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
-        "--mode=visualization"
+        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git"
       ],
-      "env": {},
+      "env": {
+        "MCP_MODE": "visualization"
+      },
       "env_vars": [
         "DATA_CLOUD_CURR_IDE_NAME"
       ]
