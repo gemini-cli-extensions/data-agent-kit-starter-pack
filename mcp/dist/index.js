@@ -6801,12 +6801,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs12, exportName) {
+    function addFormats(ajv, list, fs11, exportName) {
       var _a;
       var _b;
       (_a = (_b = ajv.opts.code).formats) !== null && _a !== void 0 ? _a : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs12[f]);
+        ajv.addFormat(f, fs11[f]);
     }
     module.exports = exports = formatsPlugin;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -19049,10 +19049,6 @@ var nonWindows = async (options = {}) => {
 var psList = process4.platform === "win32" ? windows : nonWindows;
 var ps_list_default = psList;
 
-// server.ts
-import fs11 from "fs";
-import os from "os";
-
 // tools/delete_cell.ts
 import * as fs2 from "fs/promises";
 async function deleteCell(notebookPath, cellIndex) {
@@ -19381,15 +19377,6 @@ ${traceback}
 // server.ts
 var args = process.argv;
 var mode = args.find((a) => a.startsWith("--mode="))?.split("=")[1];
-var logPath = path3.join(os.tmpdir(), "mcp_debug.log");
-try {
-  fs11.appendFileSync(logPath, `[${(/* @__PURE__ */ new Date()).toISOString()}] process.argv: ${JSON.stringify(process.argv)}
-`);
-  fs11.appendFileSync(logPath, `[${(/* @__PURE__ */ new Date()).toISOString()}] parsed mode: ${mode}
-`);
-} catch (e) {
-  console.error("Failed to write to log file:", e);
-}
 var server = new Server(
   {
     name: mode === "visualization" ? "visualization" : "notebook",
@@ -19582,12 +19569,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     if (notebookClient) {
       try {
         const response = await notebookClient.listTools();
-        try {
-          fs11.appendFileSync(logPath, `[${(/* @__PURE__ */ new Date()).toISOString()}] [Notebook Mode] Socket returned tools: ${JSON.stringify(response.tools.map((t) => t.name))}
-`);
-        } catch (e) {
-          console.error("Failed to write to log file:", e);
-        }
         response.tools.forEach((t) => toolOwnerMap.set(t.name, "notebook"));
         aggregatedTools.push(...response.tools);
       } catch (e) {
@@ -19602,12 +19583,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     if (vizClient) {
       try {
         const response = await vizClient.listTools();
-        try {
-          fs11.appendFileSync(logPath, `[${(/* @__PURE__ */ new Date()).toISOString()}] [Viz Mode] Socket returned tools: ${JSON.stringify(response.tools.map((t) => t.name))}
-`);
-        } catch (e) {
-          console.error("Failed to write to log file:", e);
-        }
         response.tools.forEach((t) => toolOwnerMap.set(t.name, "viz"));
         aggregatedTools.push(...response.tools);
       } catch (e) {

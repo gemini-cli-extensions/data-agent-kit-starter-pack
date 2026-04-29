@@ -22,8 +22,7 @@ import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import psList from 'ps-list';
-import fs from 'fs';
-import os from 'os';
+
 
 import {
   CallToolRequestSchema,
@@ -43,13 +42,7 @@ import {getCellOutputs} from './tools/get_cell_outputs.js';
 const args = process.argv;
 const mode = args.find(a => a.startsWith('--mode='))?.split('=')[1];
 
-const logPath = path.join(os.tmpdir(), 'mcp_debug.log');
-try {
-  fs.appendFileSync(logPath, `[${new Date().toISOString()}] process.argv: ${JSON.stringify(process.argv)}\n`);
-  fs.appendFileSync(logPath, `[${new Date().toISOString()}] parsed mode: ${mode}\n`);
-} catch (e) {
-  console.error('Failed to write to log file:', e);
-}
+
 
 const server = new Server(
   {
@@ -249,11 +242,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     if (notebookClient) {
       try {
         const response = await notebookClient.listTools();
-        try {
-          fs.appendFileSync(logPath, `[${new Date().toISOString()}] [Notebook Mode] Socket returned tools: ${JSON.stringify(response.tools.map((t: any) => t.name))}\n`);
-        } catch (e) {
-          console.error('Failed to write to log file:', e);
-        }
         response.tools.forEach((t: any) => toolOwnerMap.set(t.name, 'notebook'));
         aggregatedTools.push(...response.tools);
       } catch (e) {
@@ -269,11 +257,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     if (vizClient) {
       try {
         const response = await vizClient.listTools();
-        try {
-          fs.appendFileSync(logPath, `[${new Date().toISOString()}] [Viz Mode] Socket returned tools: ${JSON.stringify(response.tools.map((t: any) => t.name))}\n`);
-        } catch (e) {
-          console.error('Failed to write to log file:', e);
-        }
         response.tools.forEach((t: any) => toolOwnerMap.set(t.name, 'viz'));
         aggregatedTools.push(...response.tools);
       } catch (e) {
