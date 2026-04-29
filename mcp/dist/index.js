@@ -19569,8 +19569,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     if (notebookClient) {
       try {
         const response = await notebookClient.listTools();
-        response.tools.forEach((t) => toolOwnerMap.set(t.name, "notebook"));
-        aggregatedTools.push(...response.tools);
+        const filteredTools = response.tools.filter((t) => t.name !== "render_chart");
+        filteredTools.forEach((t) => toolOwnerMap.set(t.name, "notebook"));
+        aggregatedTools.push(...filteredTools);
       } catch (e) {
         console.error("Error listing tools from notebook client:", e);
       }
@@ -19583,8 +19584,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     if (vizClient) {
       try {
         const response = await vizClient.listTools();
-        response.tools.forEach((t) => toolOwnerMap.set(t.name, "viz"));
-        aggregatedTools.push(...response.tools);
+        const filteredTools = response.tools.filter((t) => t.name === "render_chart");
+        filteredTools.forEach((t) => toolOwnerMap.set(t.name, "viz"));
+        aggregatedTools.push(...filteredTools);
       } catch (e) {
         console.error("Error listing tools from viz client:", e);
       }
