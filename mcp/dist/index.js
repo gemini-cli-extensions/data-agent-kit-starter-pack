@@ -102,23 +102,23 @@ var require_code = __commonJS({
     };
     exports._Code = _Code;
     exports.nil = new _Code("");
-    function _(strs, ...args) {
+    function _(strs, ...args2) {
       const code = [strs[0]];
       let i = 0;
-      while (i < args.length) {
-        addCodeArg(code, args[i]);
+      while (i < args2.length) {
+        addCodeArg(code, args2[i]);
         code.push(strs[++i]);
       }
       return new _Code(code);
     }
     exports._ = _;
     var plus = new _Code("+");
-    function str(strs, ...args) {
+    function str(strs, ...args2) {
       const expr = [safeStringify(strs[0])];
       let i = 0;
-      while (i < args.length) {
+      while (i < args2.length) {
         expr.push(plus);
-        addCodeArg(expr, args[i]);
+        addCodeArg(expr, args2[i]);
         expr.push(plus, safeStringify(strs[++i]));
       }
       optimize(expr);
@@ -673,10 +673,10 @@ var require_codegen = __commonJS({
       }
     };
     var Func = class extends BlockNode {
-      constructor(name, args, async) {
+      constructor(name, args2, async) {
         super();
         this.name = name;
-        this.args = args;
+        this.args = args2;
         this.async = async;
       }
       render(opts) {
@@ -951,8 +951,8 @@ var require_codegen = __commonJS({
         return this;
       }
       // `function` heading (or definition if funcBody is passed)
-      func(name, args = code_1.nil, async, funcBody) {
-        this._blockNode(new Func(name, args, async));
+      func(name, args2 = code_1.nil, async, funcBody) {
+        this._blockNode(new Func(name, args2, async));
         if (funcBody)
           this.code(funcBody).endFunc();
         return this;
@@ -1046,13 +1046,13 @@ var require_codegen = __commonJS({
     }
     exports.not = not;
     var andCode = mappend(exports.operators.AND);
-    function and(...args) {
-      return args.reduce(andCode);
+    function and(...args2) {
+      return args2.reduce(andCode);
     }
     exports.and = and;
     var orCode = mappend(exports.operators.OR);
-    function or(...args) {
-      return args.reduce(orCode);
+    function or(...args2) {
+      return args2.reduce(orCode);
     }
     exports.or = or;
     function mappend(op) {
@@ -1219,11 +1219,11 @@ var require_util = __commonJS({
       return jsPropertySyntax ? (0, codegen_1.getProperty)(dataProp).toString() : "/" + escapeJsonPointer(dataProp);
     }
     exports.getErrorPath = getErrorPath;
-    function checkStrictMode(it, msg, mode = it.opts.strictSchema) {
-      if (!mode)
+    function checkStrictMode(it, msg, mode2 = it.opts.strictSchema) {
+      if (!mode2)
         return;
       msg = `strict mode: ${msg}`;
-      if (mode === true)
+      if (mode2 === true)
         throw new Error(msg);
       it.self.logger.warn(msg);
     }
@@ -1785,8 +1785,8 @@ var require_code2 = __commonJS({
       ];
       if (it.opts.dynamicRef)
         valCxt.push([names_1.default.dynamicAnchors, names_1.default.dynamicAnchors]);
-      const args = (0, codegen_1._)`${dataAndSchema}, ${gen.object(...valCxt)}`;
-      return context !== codegen_1.nil ? (0, codegen_1._)`${func}.call(${context}, ${args})` : (0, codegen_1._)`${func}(${args})`;
+      const args2 = (0, codegen_1._)`${dataAndSchema}, ${gen.object(...valCxt)}`;
+      return context !== codegen_1.nil ? (0, codegen_1._)`${func}.call(${context}, ${args2})` : (0, codegen_1._)`${func}(${args2})`;
     }
     exports.callValidateCode = callValidateCode;
     var newRegExp = (0, codegen_1._)`new RegExp`;
@@ -6794,8 +6794,8 @@ var require_dist = __commonJS({
         (0, limit_1.default)(ajv);
       return ajv;
     };
-    formatsPlugin.get = (name, mode = "full") => {
-      const formats = mode === "fast" ? formats_1.fastFormats : formats_1.fullFormats;
+    formatsPlugin.get = (name, mode2 = "full") => {
+      const formats = mode2 === "fast" ? formats_1.fastFormats : formats_1.fullFormats;
       const f = formats[name];
       if (!f)
         throw new Error(`Unknown format "${name}"`);
@@ -7770,24 +7770,24 @@ var base64Regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=)
 var base64urlRegex = /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/;
 var dateRegexSource = `((\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01])|(0[469]|11)-(0[1-9]|[12]\\d|30)|(02)-(0[1-9]|1\\d|2[0-8])))`;
 var dateRegex = new RegExp(`^${dateRegexSource}$`);
-function timeRegexSource(args) {
+function timeRegexSource(args2) {
   let secondsRegexSource = `[0-5]\\d`;
-  if (args.precision) {
-    secondsRegexSource = `${secondsRegexSource}\\.\\d{${args.precision}}`;
-  } else if (args.precision == null) {
+  if (args2.precision) {
+    secondsRegexSource = `${secondsRegexSource}\\.\\d{${args2.precision}}`;
+  } else if (args2.precision == null) {
     secondsRegexSource = `${secondsRegexSource}(\\.\\d+)?`;
   }
-  const secondsQuantifier = args.precision ? "+" : "?";
+  const secondsQuantifier = args2.precision ? "+" : "?";
   return `([01]\\d|2[0-3]):[0-5]\\d(:${secondsRegexSource})${secondsQuantifier}`;
 }
-function timeRegex(args) {
-  return new RegExp(`^${timeRegexSource(args)}$`);
+function timeRegex(args2) {
+  return new RegExp(`^${timeRegexSource(args2)}$`);
 }
-function datetimeRegex(args) {
-  let regex = `${dateRegexSource}T${timeRegexSource(args)}`;
+function datetimeRegex(args2) {
+  let regex = `${dateRegexSource}T${timeRegexSource(args2)}`;
   const opts = [];
-  opts.push(args.local ? `Z?` : `Z`);
-  if (args.offset)
+  opts.push(args2.local ? `Z?` : `Z`);
+  if (args2.offset)
     opts.push(`([+-]\\d{2}:?\\d{2})`);
   regex = `${regex}(${opts.join("|")})`;
   return new RegExp(`^${regex}$`);
@@ -10095,9 +10095,9 @@ var ZodFunction = class _ZodFunction extends ZodType {
       });
       return INVALID;
     }
-    function makeArgsIssue(args, error2) {
+    function makeArgsIssue(args2, error2) {
       return makeIssue({
-        data: args,
+        data: args2,
         path: ctx.path,
         errorMaps: [ctx.common.contextualErrorMap, ctx.schemaErrorMap, getErrorMap(), en_default].filter((x) => !!x),
         issueData: {
@@ -10121,10 +10121,10 @@ var ZodFunction = class _ZodFunction extends ZodType {
     const fn = ctx.data;
     if (this._def.returns instanceof ZodPromise) {
       const me = this;
-      return OK(async function(...args) {
+      return OK(async function(...args2) {
         const error2 = new ZodError([]);
-        const parsedArgs = await me._def.args.parseAsync(args, params).catch((e) => {
-          error2.addIssue(makeArgsIssue(args, e));
+        const parsedArgs = await me._def.args.parseAsync(args2, params).catch((e) => {
+          error2.addIssue(makeArgsIssue(args2, e));
           throw error2;
         });
         const result = await Reflect.apply(fn, this, parsedArgs);
@@ -10136,10 +10136,10 @@ var ZodFunction = class _ZodFunction extends ZodType {
       });
     } else {
       const me = this;
-      return OK(function(...args) {
-        const parsedArgs = me._def.args.safeParse(args, params);
+      return OK(function(...args2) {
+        const parsedArgs = me._def.args.safeParse(args2, params);
         if (!parsedArgs.success) {
-          throw new ZodError([makeArgsIssue(args, parsedArgs.error)]);
+          throw new ZodError([makeArgsIssue(args2, parsedArgs.error)]);
         }
         const result = Reflect.apply(fn, this, parsedArgs.data);
         const parsedReturns = me._def.returns.safeParse(result, params);
@@ -10176,9 +10176,9 @@ var ZodFunction = class _ZodFunction extends ZodType {
     const validatedFunc = this.parse(func);
     return validatedFunc;
   }
-  static create(args, returns, params) {
+  static create(args2, returns, params) {
     return new _ZodFunction({
-      args: args ? args : ZodTuple.create([]).rest(ZodUnknown.create()),
+      args: args2 ? args2 : ZodTuple.create([]).rest(ZodUnknown.create()),
       returns: returns || ZodUnknown.create(),
       typeName: ZodFirstPartyTypeKind.ZodFunction,
       ...processCreateParams(params)
@@ -11413,8 +11413,8 @@ function getLengthableOrigin(input) {
     return "string";
   return "unknown";
 }
-function issue(...args) {
-  const [iss, input, inst] = args;
+function issue(...args2) {
+  const [iss, input, inst] = args2;
   if (typeof iss === "string") {
     return {
       message: iss,
@@ -11589,20 +11589,20 @@ var hostname = /^([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+$/;
 var e164 = /^\+(?:[0-9]){6,14}[0-9]$/;
 var dateSource = `(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))`;
 var date = /* @__PURE__ */ new RegExp(`^${dateSource}$`);
-function timeSource(args) {
+function timeSource(args2) {
   const hhmm = `(?:[01]\\d|2[0-3]):[0-5]\\d`;
-  const regex = typeof args.precision === "number" ? args.precision === -1 ? `${hhmm}` : args.precision === 0 ? `${hhmm}:[0-5]\\d` : `${hhmm}:[0-5]\\d\\.\\d{${args.precision}}` : `${hhmm}(?::[0-5]\\d(?:\\.\\d+)?)?`;
+  const regex = typeof args2.precision === "number" ? args2.precision === -1 ? `${hhmm}` : args2.precision === 0 ? `${hhmm}:[0-5]\\d` : `${hhmm}:[0-5]\\d\\.\\d{${args2.precision}}` : `${hhmm}(?::[0-5]\\d(?:\\.\\d+)?)?`;
   return regex;
 }
-function time(args) {
-  return new RegExp(`^${timeSource(args)}$`);
+function time(args2) {
+  return new RegExp(`^${timeSource(args2)}$`);
 }
-function datetime(args) {
-  const time3 = timeSource({ precision: args.precision });
+function datetime(args2) {
+  const time3 = timeSource({ precision: args2.precision });
   const opts = ["Z"];
-  if (args.local)
+  if (args2.local)
     opts.push("");
-  if (args.offset)
+  if (args2.offset)
     opts.push(`([+-]\\d{2}:\\d{2})`);
   const timeRegex2 = `${time3}(?:${opts.join("|")})`;
   return new RegExp(`^${dateSource}T(?:${timeRegex2})$`);
@@ -12005,11 +12005,11 @@ var $ZodCheckOverwrite = /* @__PURE__ */ $constructor("$ZodCheckOverwrite", (ins
 
 // node_modules/zod/v4/core/doc.js
 var Doc = class {
-  constructor(args = []) {
+  constructor(args2 = []) {
     this.content = [];
     this.indent = 0;
     if (this)
-      this.args = args;
+      this.args = args2;
   }
   indented(fn) {
     this.indent += 1;
@@ -12032,10 +12032,10 @@ var Doc = class {
   }
   compile() {
     const F = Function;
-    const args = this?.args;
+    const args2 = this?.args;
     const content = this?.content ?? [``];
     const lines = [...content.map((x) => `  ${x}`)];
-    return new F(...args, lines.join("\n"));
+    return new F(...args2, lines.join("\n"));
   }
 };
 
@@ -14088,12 +14088,12 @@ var ZodType2 = /* @__PURE__ */ $constructor("ZodType", (inst, def) => {
     },
     configurable: true
   });
-  inst.meta = (...args) => {
-    if (args.length === 0) {
+  inst.meta = (...args2) => {
+    if (args2.length === 0) {
       return globalRegistry.get(inst);
     }
     const cl = inst.clone();
-    globalRegistry.add(cl, args[0]);
+    globalRegistry.add(cl, args2[0]);
     return cl;
   };
   inst.isOptional = () => inst.safeParse(void 0).success;
@@ -14107,18 +14107,18 @@ var _ZodString = /* @__PURE__ */ $constructor("_ZodString", (inst, def) => {
   inst.format = bag.format ?? null;
   inst.minLength = bag.minimum ?? null;
   inst.maxLength = bag.maximum ?? null;
-  inst.regex = (...args) => inst.check(_regex(...args));
-  inst.includes = (...args) => inst.check(_includes(...args));
-  inst.startsWith = (...args) => inst.check(_startsWith(...args));
-  inst.endsWith = (...args) => inst.check(_endsWith(...args));
-  inst.min = (...args) => inst.check(_minLength(...args));
-  inst.max = (...args) => inst.check(_maxLength(...args));
-  inst.length = (...args) => inst.check(_length(...args));
-  inst.nonempty = (...args) => inst.check(_minLength(1, ...args));
+  inst.regex = (...args2) => inst.check(_regex(...args2));
+  inst.includes = (...args2) => inst.check(_includes(...args2));
+  inst.startsWith = (...args2) => inst.check(_startsWith(...args2));
+  inst.endsWith = (...args2) => inst.check(_endsWith(...args2));
+  inst.min = (...args2) => inst.check(_minLength(...args2));
+  inst.max = (...args2) => inst.check(_maxLength(...args2));
+  inst.length = (...args2) => inst.check(_length(...args2));
+  inst.nonempty = (...args2) => inst.check(_minLength(1, ...args2));
   inst.lowercase = (params) => inst.check(_lowercase(params));
   inst.uppercase = (params) => inst.check(_uppercase(params));
   inst.trim = () => inst.check(_trim());
-  inst.normalize = (...args) => inst.check(_normalize(...args));
+  inst.normalize = (...args2) => inst.check(_normalize(...args2));
   inst.toLowerCase = () => inst.check(_toLowerCase());
   inst.toUpperCase = () => inst.check(_toUpperCase());
 });
@@ -14328,8 +14328,8 @@ var ZodObject2 = /* @__PURE__ */ $constructor("ZodObject", (inst, def) => {
   inst.merge = (other) => util_exports.merge(inst, other);
   inst.pick = (mask) => util_exports.pick(inst, mask);
   inst.omit = (mask) => util_exports.omit(inst, mask);
-  inst.partial = (...args) => util_exports.partial(ZodOptional2, inst, args[0]);
-  inst.required = (...args) => util_exports.required(ZodNonOptional, inst, args[0]);
+  inst.partial = (...args2) => util_exports.partial(ZodOptional2, inst, args2[0]);
+  inst.required = (...args2) => util_exports.required(ZodNonOptional, inst, args2[0]);
 });
 function object2(shape, params) {
   const def = {
@@ -17359,8 +17359,8 @@ var ExperimentalServerTasks = class {
    */
   elicitInputStream(params, options) {
     const clientCapabilities = this._server.getClientCapabilities();
-    const mode = params.mode ?? "form";
-    switch (mode) {
+    const mode2 = params.mode ?? "form";
+    switch (mode2) {
       case "url": {
         if (!clientCapabilities?.elicitation?.url) {
           throw new Error("Client does not support url elicitation.");
@@ -17374,7 +17374,7 @@ var ExperimentalServerTasks = class {
         break;
       }
     }
-    const normalizedParams = mode === "form" && params.mode === void 0 ? { ...params, mode: "form" } : params;
+    const normalizedParams = mode2 === "form" && params.mode === void 0 ? { ...params, mode: "form" } : params;
     return this.requestStream({
       method: "elicitation/create",
       params: normalizedParams
@@ -17757,8 +17757,8 @@ var Server = class extends Protocol {
    * @returns The result of the elicitation request.
    */
   async elicitInput(params, options) {
-    const mode = params.mode ?? "form";
-    switch (mode) {
+    const mode2 = params.mode ?? "form";
+    switch (mode2) {
       case "url": {
         if (!this._clientCapabilities?.elicitation?.url) {
           throw new Error("Client does not support url elicitation.");
@@ -19375,9 +19375,11 @@ ${traceback}
 }
 
 // server.ts
+var args = process.argv.slice(2);
+var mode = args.find((a) => a.startsWith("--mode="))?.split("=")[1];
 var server = new Server(
   {
-    name: "notebook",
+    name: mode === "visualization" ? "visualization" : "notebook",
     version: "0.1.0"
   },
   {
@@ -19563,25 +19565,29 @@ var toolOwnerMap = /* @__PURE__ */ new Map();
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   let aggregatedTools = [];
   toolOwnerMap.clear();
-  if (notebookClient) {
-    try {
-      const response = await notebookClient.listTools();
-      response.tools.forEach((t) => toolOwnerMap.set(t.name, "notebook"));
-      aggregatedTools.push(...response.tools);
-    } catch (e) {
-      console.error("Error listing tools from notebook client:", e);
+  if (!mode || mode === "notebook") {
+    if (notebookClient) {
+      try {
+        const response = await notebookClient.listTools();
+        response.tools.forEach((t) => toolOwnerMap.set(t.name, "notebook"));
+        aggregatedTools.push(...response.tools);
+      } catch (e) {
+        console.error("Error listing tools from notebook client:", e);
+      }
+    } else {
+      LOCAL_TOOLS.forEach((t) => toolOwnerMap.set(t.name, "notebook"));
+      aggregatedTools.push(...LOCAL_TOOLS);
     }
-  } else {
-    LOCAL_TOOLS.forEach((t) => toolOwnerMap.set(t.name, "notebook"));
-    aggregatedTools.push(...LOCAL_TOOLS);
   }
-  if (vizClient) {
-    try {
-      const response = await vizClient.listTools();
-      response.tools.forEach((t) => toolOwnerMap.set(t.name, "viz"));
-      aggregatedTools.push(...response.tools);
-    } catch (e) {
-      console.error("Error listing tools from viz client:", e);
+  if (!mode || mode === "visualization") {
+    if (vizClient) {
+      try {
+        const response = await vizClient.listTools();
+        response.tools.forEach((t) => toolOwnerMap.set(t.name, "viz"));
+        aggregatedTools.push(...response.tools);
+      } catch (e) {
+        console.error("Error listing tools from viz client:", e);
+      }
     }
   }
   return { tools: aggregatedTools };
@@ -19612,32 +19618,35 @@ var CreateNotebookSchema = external_exports.object({
   filename: external_exports.string()
 });
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const { name, arguments: args } = request.params;
+  const { name, arguments: args2 } = request.params;
   const owner = toolOwnerMap.get(name);
   if (owner === "notebook" && notebookClient) {
-    return await notebookClient.callTool({ name, arguments: args });
+    return await notebookClient.callTool({ name, arguments: args2 });
   }
   if (owner === "viz" && vizClient) {
-    return await vizClient.callTool({ name, arguments: args });
+    return await vizClient.callTool({ name, arguments: args2 });
+  }
+  if (mode === "visualization" && !owner) {
+    throw new Error(`Tool ${name} not available in visualization mode`);
   }
   try {
     switch (name) {
       case "list_cells": {
-        const parsed = ListCellsSchema.parse(args);
+        const parsed = ListCellsSchema.parse(args2);
         const result = await listCells(parsed.notebookPath, parsed.maxLength);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
         };
       }
       case "read_cell": {
-        const parsed = CellIndexSchema.parse(args);
+        const parsed = CellIndexSchema.parse(args2);
         const result = await readCell(parsed.notebookPath, parsed.cellIndex);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
         };
       }
       case "insert_cell": {
-        const parsed = InsertCellSchema.parse(args);
+        const parsed = InsertCellSchema.parse(args2);
         const result = await insertCell(
           parsed.notebookPath,
           parsed.cellType,
@@ -19649,7 +19658,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
       case "replace_cell": {
-        const parsed = ReplaceCellSchema.parse(args);
+        const parsed = ReplaceCellSchema.parse(args2);
         const result = await replaceCell(
           parsed.notebookPath,
           parsed.cellIndex,
@@ -19660,35 +19669,35 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
       case "delete_cell": {
-        const parsed = CellIndexSchema.parse(args);
+        const parsed = CellIndexSchema.parse(args2);
         const result = await deleteCell(parsed.notebookPath, parsed.cellIndex);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
         };
       }
       case "get_notebook_info": {
-        const parsed = NotebookPathSchema.parse(args);
+        const parsed = NotebookPathSchema.parse(args2);
         const result = await getNotebookInfo(parsed.notebookPath);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
         };
       }
       case "search_cells": {
-        const parsed = SearchCellsSchema.parse(args);
+        const parsed = SearchCellsSchema.parse(args2);
         const result = await searchCells(parsed.notebookPath, parsed.query, parsed.caseSensitive);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
         };
       }
       case "create_notebook": {
-        const parsed = CreateNotebookSchema.parse(args);
+        const parsed = CreateNotebookSchema.parse(args2);
         const result = await createNotebook(parsed.directory, parsed.filename);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
         };
       }
       case "get_cell_outputs": {
-        const parsed = CellIndexSchema.parse(args);
+        const parsed = CellIndexSchema.parse(args2);
         const result = await getCellOutputs(parsed.notebookPath, parsed.cellIndex);
         return {
           content: result
@@ -19748,27 +19757,31 @@ async function run() {
   }
   if (ideName) {
     const proxyCmd = path3.resolve(path3.dirname(fileURLToPath2(import.meta.url)), "../bin/mcp_proxy_bundle.cjs");
-    try {
-      const notebookTransport = new StdioClientTransport({
-        command: process.execPath,
-        args: [proxyCmd, `notebooks-${ideName.toLowerCase()}`],
-        env: process.env
-      });
-      notebookClient = new Client({ name: "notebook-client", version: "0.1.0" }, { capabilities: {} });
-      await notebookClient.connect(notebookTransport);
-    } catch (e) {
-      notebookClient = null;
+    if (!mode || mode === "notebook") {
+      try {
+        const notebookTransport = new StdioClientTransport({
+          command: process.execPath,
+          args: [proxyCmd, `notebooks-${ideName.toLowerCase()}`],
+          env: process.env
+        });
+        notebookClient = new Client({ name: "notebook-client", version: "0.1.0" }, { capabilities: {} });
+        await notebookClient.connect(notebookTransport);
+      } catch (e) {
+        notebookClient = null;
+      }
     }
-    try {
-      const vizTransport = new StdioClientTransport({
-        command: process.execPath,
-        args: [proxyCmd, `visualization-${ideName.toLowerCase()}`],
-        env: process.env
-      });
-      vizClient = new Client({ name: "viz-client", version: "0.1.0" }, { capabilities: {} });
-      await vizClient.connect(vizTransport);
-    } catch (e) {
-      vizClient = null;
+    if (!mode || mode === "visualization") {
+      try {
+        const vizTransport = new StdioClientTransport({
+          command: process.execPath,
+          args: [proxyCmd, `visualization-${ideName.toLowerCase()}`],
+          env: process.env
+        });
+        vizClient = new Client({ name: "viz-client", version: "0.1.0" }, { capabilities: {} });
+        await vizClient.connect(vizTransport);
+      } catch (e) {
+        vizClient = null;
+      }
     }
     if (!notebookClient && !vizClient) {
       await startStandaloneServer();
