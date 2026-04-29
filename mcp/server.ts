@@ -23,6 +23,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import psList from 'ps-list';
 
+
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -38,9 +39,14 @@ import {searchCells} from './tools/search_cells.js';
 import {createNotebook} from './tools/create_notebook.js';
 import {getCellOutputs} from './tools/get_cell_outputs.js';
 
+const args = process.argv;
+const mode = args.find(a => a.startsWith('--mode='))?.split('=')[1];
+
+
+
 const server = new Server(
   {
-    name: 'notebook',
+    name: mode === 'visualization' ? 'visualization' : 'notebook',
     version: '0.1.0',
   },
   {
@@ -232,26 +238,30 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   let aggregatedTools: any[] = [];
   toolOwnerMap.clear();
 
-  if (notebookClient) {
-    try {
-      const response = await notebookClient.listTools();
-      response.tools.forEach((t: any) => toolOwnerMap.set(t.name, 'notebook'));
-      aggregatedTools.push(...response.tools);
-    } catch (e) {
-      console.error('Error listing tools from notebook client:', e);
+  if (mode === 'notebook') {
+    if (notebookClient) {
+      try {
+        const response = await notebookClient.listTools();
+        response.tools.forEach((t: any) => toolOwnerMap.set(t.name, 'notebook'));
+        aggregatedTools.push(...response.tools);
+      } catch (e) {
+        console.error('Error listing tools from notebook client:', e);
+      }
+    } else {
+      LOCAL_TOOLS.forEach((t: any) => toolOwnerMap.set(t.name, 'notebook'));
+      aggregatedTools.push(...LOCAL_TOOLS);
     }
-  } else {
-    LOCAL_TOOLS.forEach((t: any) => toolOwnerMap.set(t.name, 'notebook'));
-    aggregatedTools.push(...LOCAL_TOOLS);
   }
 
-  if (vizClient) {
-    try {
-      const response = await vizClient.listTools();
-      response.tools.forEach((t: any) => toolOwnerMap.set(t.name, 'viz'));
-      aggregatedTools.push(...response.tools);
-    } catch (e) {
-      console.error('Error listing tools from viz client:', e);
+  if (mode === 'visualization') {
+    if (vizClient) {
+      try {
+        const response = await vizClient.listTools();
+        response.tools.forEach((t: any) => toolOwnerMap.set(t.name, 'viz'));
+        aggregatedTools.push(...response.tools);
+      } catch (e) {
+        console.error('Error listing tools from viz client:', e);
+      }
     }
   }
 
@@ -302,6 +312,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
   if (owner === 'viz' && vizClient) {
     return await vizClient.callTool({ name, arguments: args });
+  }
+
+  if (mode === 'visualization' && !owner) {
+     throw new Error(`Tool ${name} not available in visualization mode`);
   }
 
   try {
@@ -443,29 +457,33 @@ async function run() {
     const proxyCmd = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../bin/mcp_proxy_bundle.cjs');
     
     // Connect to Notebooks proxy
-    try {
-      const notebookTransport = new StdioClientTransport({
-        command: process.execPath,
-        args: [proxyCmd, `notebooks-${ideName.toLowerCase()}`],
-        env: process.env
-      });
-      notebookClient = new Client({ name: 'notebook-client', version: '0.1.0' }, { capabilities: {} });
-      await notebookClient.connect(notebookTransport);
-    } catch (e) {
-      notebookClient = null;
+    if (mode === 'notebook') {
+      try {
+        const notebookTransport = new StdioClientTransport({
+          command: process.execPath,
+          args: [proxyCmd, `notebooks-${ideName.toLowerCase()}`],
+          env: process.env
+        });
+        notebookClient = new Client({ name: 'notebook-client', version: '0.1.0' }, { capabilities: {} });
+        await notebookClient.connect(notebookTransport);
+      } catch (e) {
+        notebookClient = null;
+      }
     }
 
     // Connect to Visualization proxy
-    try {
-      const vizTransport = new StdioClientTransport({
-        command: process.execPath,
-        args: [proxyCmd, `visualization-${ideName.toLowerCase()}`],
-        env: process.env
-      });
-      vizClient = new Client({ name: 'viz-client', version: '0.1.0' }, { capabilities: {} });
-      await vizClient.connect(vizTransport);
-    } catch (e) {
-      vizClient = null;
+    if (mode === 'visualization') {
+      try {
+        const vizTransport = new StdioClientTransport({
+          command: process.execPath,
+          args: [proxyCmd, `visualization-${ideName.toLowerCase()}`],
+          env: process.env
+        });
+        vizClient = new Client({ name: 'viz-client', version: '0.1.0' }, { capabilities: {} });
+        await vizClient.connect(vizTransport);
+      } catch (e) {
+        vizClient = null;
+      }
     }
 
     // Fallback strategy Scenario 4: Both fail -> Standalone
