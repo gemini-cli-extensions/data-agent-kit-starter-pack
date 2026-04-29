@@ -19579,6 +19579,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     if (notebookClient) {
       try {
         const response = await notebookClient.listTools();
+        try {
+          fs11.appendFileSync(logPath, `[${(/* @__PURE__ */ new Date()).toISOString()}] [Notebook Mode] Socket returned tools: ${JSON.stringify(response.tools.map((t) => t.name))}
+`);
+        } catch (e) {
+          console.error("Failed to write to log file:", e);
+        }
         response.tools.forEach((t) => toolOwnerMap.set(t.name, "notebook"));
         aggregatedTools.push(...response.tools);
       } catch (e) {
@@ -19593,6 +19599,12 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     if (vizClient) {
       try {
         const response = await vizClient.listTools();
+        try {
+          fs11.appendFileSync(logPath, `[${(/* @__PURE__ */ new Date()).toISOString()}] [Viz Mode] Socket returned tools: ${JSON.stringify(response.tools.map((t) => t.name))}
+`);
+        } catch (e) {
+          console.error("Failed to write to log file:", e);
+        }
         response.tools.forEach((t) => toolOwnerMap.set(t.name, "viz"));
         aggregatedTools.push(...response.tools);
       } catch (e) {
