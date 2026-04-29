@@ -40,11 +40,13 @@ import {searchCells} from './tools/search_cells.js';
 import {createNotebook} from './tools/create_notebook.js';
 import {getCellOutputs} from './tools/get_cell_outputs.js';
 
-const mode = process.env.MCP_MODE;
+const args = process.argv;
+const mode = args.find(a => a.startsWith('--mode='))?.split('=')[1];
 
 const logPath = path.join(os.tmpdir(), 'mcp_debug.log');
 try {
-  fs.appendFileSync(logPath, `[${new Date().toISOString()}] process.env.MCP_MODE: ${mode}\n`);
+  fs.appendFileSync(logPath, `[${new Date().toISOString()}] process.argv: ${JSON.stringify(process.argv)}\n`);
+  fs.appendFileSync(logPath, `[${new Date().toISOString()}] parsed mode: ${mode}\n`);
 } catch (e) {
   console.error('Failed to write to log file:', e);
 }
