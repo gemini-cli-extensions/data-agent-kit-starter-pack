@@ -19377,6 +19377,8 @@ ${traceback}
 // server.ts
 var args = process.argv.slice(2);
 var mode = args.find((a) => a.startsWith("--mode="))?.split("=")[1];
+console.error(`[MCP Server] process.argv: ${JSON.stringify(process.argv)}`);
+console.error(`[MCP Server] parsed mode: ${mode}`);
 var server = new Server(
   {
     name: mode === "visualization" ? "visualization" : "notebook",

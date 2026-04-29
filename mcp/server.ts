@@ -41,6 +41,9 @@ import {getCellOutputs} from './tools/get_cell_outputs.js';
 const args = process.argv.slice(2);
 const mode = args.find(a => a.startsWith('--mode='))?.split('=')[1];
 
+console.error(`[MCP Server] process.argv: ${JSON.stringify(process.argv)}`);
+console.error(`[MCP Server] parsed mode: ${mode}`);
+
 const server = new Server(
   {
     name: mode === 'visualization' ? 'visualization' : 'notebook',
