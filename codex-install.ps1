@@ -93,7 +93,6 @@ Remove-Item -LiteralPath (Join-Path $installDir ".git") -Recurse -Force
 Write-Host "Copying configuration file..."
 $localMcp = Join-Path $PSScriptRoot ".mcp.json"
 $targetMcp = Join-Path $installDir ".mcp.json"
-Copy-Item -LiteralPath $localMcp -Destination $targetMcp -Force
 
 # Apply configuration
 Write-Host "Applying configuration..."
