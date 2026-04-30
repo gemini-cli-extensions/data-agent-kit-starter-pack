@@ -54,7 +54,6 @@ rm -rf "$INSTALL_DIR/.git"
 # Copy local .mcp.json to support local changes and testing
 echo "Copying configuration file..."
 cp "$(dirname "$0")/.mcp.json" "$INSTALL_DIR/.mcp.json"
-
 echo "Applying configuration..."
 node -e "
 const fs = require('fs');
