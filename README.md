@@ -78,13 +78,11 @@ Run the `claude` command to start the agent, then follow these steps:
 
 **macOS / Linux:**
 ```bash
-# Pass the version as a parameter if you want to pin to a specific release
 curl -sSL https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/0.1.1/codex-install.sh | bash -s -- 0.1.1
 ```
 
 **Windows:**
 ```powershell
-# Pass the version as a parameter if you want to pin to a specific release
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/0.1.1/codex-install.ps1))) -Tag 0.1.1
 ```
 
