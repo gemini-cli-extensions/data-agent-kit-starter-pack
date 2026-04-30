@@ -62,6 +62,10 @@ function Write-TextFileNoBom {
 
 Write-Host "--- $pluginName Installer for Codex ---"
 
+$projectId = Read-Host "Enter GCP Project ID"
+$gcpRegion = Read-Host "Enter GCP Region (e.g., us-central1)"
+$bigqueryLocation = Read-Host "Enter BigQuery Location (e.g., US)"
+
 New-Item -ItemType Directory -Force -Path $pluginsRoot | Out-Null
 
 if (Test-Path $installDir) {
@@ -84,6 +88,20 @@ if ($Tag) {
 
 Write-Host "Removing git metadata..."
 Remove-Item -LiteralPath (Join-Path $installDir ".git") -Recurse -Force
+
+# Copy local .mcp.json to support local changes and testing
+Write-Host "Copying configuration file..."
+$localMcp = Join-Path $PSScriptRoot ".mcp.json"
+$targetMcp = Join-Path $installDir ".mcp.json"
+Copy-Item -LiteralPath $localMcp -Destination $targetMcp -Force
+
+# Apply configuration
+Write-Host "Applying configuration..."
+$mcpContent = Get-Content -LiteralPath $targetMcp -Raw
+$mcpContent = $mcpContent.Replace('$PROJECT_ID', $projectId)
+$mcpContent = $mcpContent.Replace('$GCP_REGION', $gcpRegion)
+$mcpContent = $mcpContent.Replace('$BIGQUERY_LOCATION', $bigqueryLocation)
+Write-TextFileNoBom -Path $targetMcp -Content $mcpContent
 
 if (-not (Test-Path $marketplaceFile)) {
     Write-Host "Creating new personal marketplace..."
