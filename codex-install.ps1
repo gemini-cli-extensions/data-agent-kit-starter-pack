@@ -17,6 +17,10 @@ param(
     [string]$Tag
 )
 
+if (-not $Tag -and $env:CODEX_TAG) {
+    $Tag = $env:CODEX_TAG
+}
+
 $ErrorActionPreference = "Stop"
 
 $pluginName = "data-agent-kit-starter-pack"

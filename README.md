@@ -83,7 +83,7 @@ curl -sSL https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit
 
 **Windows:**
 ```powershell
-& ([scriptblock]::Create((irm https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/0.1.1/codex-install.ps1))) -Tag 0.1.1
+$env:CODEX_TAG="0.1.1"; irm https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/0.1.1/codex-install.ps1 | iex
 ```
 
 2. **Install the plugin in Codex:**
