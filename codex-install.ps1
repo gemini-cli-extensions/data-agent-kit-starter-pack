@@ -83,7 +83,6 @@ if ($Tag) {
 
 Write-Host "Removing git metadata..."
 Remove-Item -LiteralPath (Join-Path $installDir ".git") -Recurse -Force
-
 $targetMcp = Join-Path $installDir ".mcp.json"
 
 # Apply configuration
