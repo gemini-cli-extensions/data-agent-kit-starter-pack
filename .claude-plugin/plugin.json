@@ -2,5 +2,25 @@
   "name": "data-agent-kit-starter-pack",
   "version": "0.1.1",
   "description": "This plugin provides a specialized suite of skills for data engineers and database practitioners working on Google Cloud. It acts as an expert assistant, allowing you to use natural language prompts in your preferred coding agent to architect complex data pipelines, transform data with dbt, write Spark and BigQuery SQL notebooks, and orchestrate end-to-end workflows across GCP's data ecosystem.",
-  "mcpServers": "./.claude-mcp.json"
+  "mcpServers": "./.claude-mcp.json",
+  "userConfig": {
+    "PROJECT_ID": {
+      "type": "string",
+      "title": "GCP Project ID",
+      "description": "Project ID when using the MCP toolbox for databases",
+      "required": true
+    },
+    "GCP_REGION": {
+      "type": "string",
+      "title": "GCP Region",
+      "description": "Region for GCP services (e.g. us-central1)",
+      "required": true
+    },
+    "BIGQUERY_LOCATION": {
+      "type": "string",
+      "title": "BigQuery Location",
+      "description": "Location for BigQuery datasets (e.g. US)",
+      "required": true
+    }
+  }
 }

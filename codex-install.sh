@@ -22,6 +22,12 @@ MARKETPLACE_FILE="$HOME/.agents/plugins/marketplace.json"
 
 echo "--- $PLUGIN_NAME Installer for Codex ---"
 
+# Prompt for configuration variables
+echo "Please enter the following configuration variables:"
+read -p "GCP Project ID: " PROJECT_ID
+read -p "GCP Region (e.g., us-central1): " GCP_REGION
+read -p "BigQuery Location (e.g., US): " BIGQUERY_LOCATION
+
 # 1. Download/Update Plugin Content
 mkdir -p "$HOME/.agents/plugins"
 if [ -d "$INSTALL_DIR" ]; then
@@ -31,6 +37,22 @@ else
     echo "Cloning plugin to $INSTALL_DIR..."
     git clone "$REPO_URL" "$INSTALL_DIR"
 fi
+
+# Copy local .mcp.json to support local changes and testing
+echo "Copying configuration file..."
+cp "$(dirname "$0")/.mcp.json" "$INSTALL_DIR/.mcp.json"
+
+echo "Applying configuration..."
+node -e "
+const fs = require('fs');
+const path = require('path');
+const mcpFilePath = path.join(process.argv[1], '.mcp.json');
+let mcpContent = fs.readFileSync(mcpFilePath, 'utf8');
+mcpContent = mcpContent.replace(/\\\$PROJECT_ID/g, process.argv[2]);
+mcpContent = mcpContent.replace(/\\\$GCP_REGION/g, process.argv[3]);
+mcpContent = mcpContent.replace(/\\\$BIGQUERY_LOCATION/g, process.argv[4]);
+fs.writeFileSync(mcpFilePath, mcpContent);
+" "$INSTALL_DIR" "$PROJECT_ID" "$GCP_REGION" "$BIGQUERY_LOCATION"
 
 # 2. Register with Codex Marketplace
 if [ ! -f "$MARKETPLACE_FILE" ]; then

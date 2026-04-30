@@ -23,8 +23,8 @@
         "datacloud.gemini-cli"
       ],
       "env": {
-        "BIGQUERY_LOCATION": "",
-        "BIGQUERY_PROJECT": ""
+        "BIGQUERY_LOCATION": "$BIGQUERY_LOCATION",
+        "BIGQUERY_PROJECT": "$PROJECT_ID"
       }
     },
     "datacloud_spanner_toolbox": {
@@ -42,7 +42,7 @@
         "SPANNER_DATABASE": "",
         "SPANNER_DIALECT": "",
         "SPANNER_INSTANCE": "",
-        "SPANNER_PROJECT": ""
+        "SPANNER_PROJECT": "$PROJECT_ID"
       }
     },
     "datacloud_alloydb-postgres-admin_toolbox": {
@@ -75,8 +75,8 @@
         "ALLOYDB_POSTGRES_INSTANCE": "",
         "ALLOYDB_POSTGRES_IP_TYPE": "",
         "ALLOYDB_POSTGRES_PASSWORD": "",
-        "ALLOYDB_POSTGRES_PROJECT": "",
-        "ALLOYDB_POSTGRES_REGION": "",
+        "ALLOYDB_POSTGRES_PROJECT": "$PROJECT_ID",
+        "ALLOYDB_POSTGRES_REGION": "$GCP_REGION",
         "ALLOYDB_POSTGRES_USER": ""
       }
     },
@@ -109,8 +109,8 @@
         "CLOUD_SQL_POSTGRES_INSTANCE": "",
         "CLOUD_SQL_POSTGRES_IP_TYPE": "",
         "CLOUD_SQL_POSTGRES_PASSWORD": "",
-        "CLOUD_SQL_POSTGRES_PROJECT": "",
-        "CLOUD_SQL_POSTGRES_REGION": "",
+        "CLOUD_SQL_POSTGRES_PROJECT": "$PROJECT_ID",
+        "CLOUD_SQL_POSTGRES_REGION": "$GCP_REGION",
         "CLOUD_SQL_POSTGRES_USER": ""
       }
     },
@@ -126,7 +126,7 @@
         "datacloud.gemini-cli"
       ],
       "env": {
-        "DATAPLEX_PROJECT": ""
+        "DATAPLEX_PROJECT": "$PROJECT_ID"
       }
     },
     "datacloud_dataproc_toolbox": {
@@ -141,8 +141,8 @@
         "datacloud.gemini-cli"
       ],
       "env": {
-        "DATAPROC_PROJECT": "",
-        "DATAPROC_REGION": ""
+        "DATAPROC_PROJECT": "$PROJECT_ID",
+        "DATAPROC_REGION": "$GCP_REGION"
       }
     },
     "datacloud_serverless-spark_toolbox": {
@@ -157,9 +157,26 @@
         "datacloud.gemini-cli"
       ],
       "env": {
-        "SERVERLESS_SPARK_PROJECT": "",
-        "SERVERLESS_SPARK_LOCATION": ""
+        "SERVERLESS_SPARK_PROJECT": "$PROJECT_ID",
+        "SERVERLESS_SPARK_LOCATION": "$GCP_REGION"
       }
     }
-  }
+  },
+  "settings": [
+    {
+      "name": "GCP Project ID",
+      "description": "Project ID when using the MCP toolbox for databases",
+      "envVar": "PROJECT_ID"
+    },
+    {
+      "name": "GCP Region",
+      "description": "Region for GCP services (e.g. us-central1)",
+      "envVar": "GCP_REGION"
+    },
+    {
+      "name": "BigQuery Location",
+      "description": "Location for BigQuery datasets (e.g. US)",
+      "envVar": "BIGQUERY_LOCATION"
+    }
+  ]
 }
