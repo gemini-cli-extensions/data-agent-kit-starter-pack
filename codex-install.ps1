@@ -79,11 +79,7 @@ if (Test-Path $installDir) {
     Invoke-GitCommand -Arguments @("clone", $repoUrl, $installDir)
 }
 
-# Copy local .mcp.json to support local changes and testing
-Write-Host "Copying configuration file..."
-$localMcp = Join-Path $PSScriptRoot ".mcp.json"
 $targetMcp = Join-Path $installDir ".mcp.json"
-Copy-Item -LiteralPath $localMcp -Destination $targetMcp -Force
 
 # Apply configuration
 Write-Host "Applying configuration..."

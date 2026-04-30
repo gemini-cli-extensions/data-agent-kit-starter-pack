@@ -24,9 +24,9 @@ echo "--- $PLUGIN_NAME Installer for Codex ---"
 
 # Prompt for configuration variables
 echo "Please enter the following configuration variables:"
-read -p "GCP Project ID: " PROJECT_ID
-read -p "GCP Region (e.g., us-central1): " GCP_REGION
-read -p "BigQuery Location (e.g., US): " BIGQUERY_LOCATION
+read -p "GCP Project ID: " PROJECT_ID </dev/tty
+read -p "GCP Region (e.g., us-central1): " GCP_REGION </dev/tty
+read -p "BigQuery Location (e.g., US): " BIGQUERY_LOCATION </dev/tty
 
 # 1. Download/Update Plugin Content
 mkdir -p "$HOME/.agents/plugins"
@@ -38,9 +38,7 @@ else
     git clone "$REPO_URL" "$INSTALL_DIR"
 fi
 
-# Copy local .mcp.json to support local changes and testing
-echo "Copying configuration file..."
-cp "$(dirname "$0")/.mcp.json" "$INSTALL_DIR/.mcp.json"
+
 
 echo "Applying configuration..."
 node -e "
