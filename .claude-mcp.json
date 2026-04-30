@@ -23,8 +23,8 @@
         "datacloud.claude"
       ],
       "env": {
-        "BIGQUERY_LOCATION": "",
-        "BIGQUERY_PROJECT": ""
+        "BIGQUERY_LOCATION": "${user_config.BIGQUERY_LOCATION}",
+        "BIGQUERY_PROJECT": "${user_config.PROJECT_ID}"
       }
     },
     "datacloud_spanner_toolbox": {
@@ -42,7 +42,7 @@
         "SPANNER_DATABASE": "",
         "SPANNER_DIALECT": "",
         "SPANNER_INSTANCE": "",
-        "SPANNER_PROJECT": ""
+        "SPANNER_PROJECT": "${user_config.PROJECT_ID}"
       }
     },
     "datacloud_alloydb-postgres-admin_toolbox": {
@@ -75,8 +75,8 @@
         "ALLOYDB_POSTGRES_INSTANCE": "",
         "ALLOYDB_POSTGRES_IP_TYPE": "",
         "ALLOYDB_POSTGRES_PASSWORD": "",
-        "ALLOYDB_POSTGRES_PROJECT": "",
-        "ALLOYDB_POSTGRES_REGION": "",
+        "ALLOYDB_POSTGRES_PROJECT": "${user_config.PROJECT_ID}",
+        "ALLOYDB_POSTGRES_REGION": "${user_config.GCP_REGION}",
         "ALLOYDB_POSTGRES_USER": ""
       }
     },
@@ -109,8 +109,8 @@
         "CLOUD_SQL_POSTGRES_INSTANCE": "",
         "CLOUD_SQL_POSTGRES_IP_TYPE": "",
         "CLOUD_SQL_POSTGRES_PASSWORD": "",
-        "CLOUD_SQL_POSTGRES_PROJECT": "",
-        "CLOUD_SQL_POSTGRES_REGION": "",
+        "CLOUD_SQL_POSTGRES_PROJECT": "${user_config.PROJECT_ID}",
+        "CLOUD_SQL_POSTGRES_REGION": "${user_config.GCP_REGION}",
         "CLOUD_SQL_POSTGRES_USER": ""
       }
     },
@@ -126,7 +126,7 @@
         "datacloud.claude"
       ],
       "env": {
-        "DATAPLEX_PROJECT": ""
+        "DATAPLEX_PROJECT": "${user_config.PROJECT_ID}"
       }
     },
     "datacloud_dataproc_toolbox": {
@@ -141,8 +141,8 @@
         "datacloud.claude"
       ],
       "env": {
-        "DATAPROC_PROJECT": "",
-        "DATAPROC_REGION": ""
+        "DATAPROC_PROJECT": "${user_config.PROJECT_ID}",
+        "DATAPROC_REGION": "${user_config.GCP_REGION}"
       }
     },
     "datacloud_serverless-spark_toolbox": {
@@ -157,8 +157,8 @@
         "datacloud.claude"
       ],
       "env": {
-        "SERVERLESS_SPARK_PROJECT": "",
-        "SERVERLESS_SPARK_LOCATION": ""
+        "SERVERLESS_SPARK_PROJECT": "${user_config.PROJECT_ID}",
+        "SERVERLESS_SPARK_LOCATION": "${user_config.GCP_REGION}"
       }
     }
   }
