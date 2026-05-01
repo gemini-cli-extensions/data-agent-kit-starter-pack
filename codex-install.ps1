@@ -62,9 +62,17 @@ function Write-TextFileNoBom {
 
 Write-Host "--- $pluginName Installer for Codex ---"
 
-$projectId = Read-Host "Enter GCP Project ID"
-$gcpRegion = Read-Host "Enter GCP Region (e.g., us-central1)"
-$bigqueryLocation = Read-Host "Enter BigQuery Location (e.g., US)"
+Write-Host "GCP Project ID"
+Write-Host "Project ID when using the MCP toolbox for databases"
+$projectId = Read-Host "... "
+
+Write-Host "GCP Region"
+Write-Host "Region for GCP services (e.g. us-central1)"
+$gcpRegion = Read-Host "... "
+
+Write-Host "BigQuery Location"
+Write-Host "Location for BigQuery datasets (e.g. US)"
+$bigqueryLocation = Read-Host "... "
 
 New-Item -ItemType Directory -Force -Path $pluginsRoot | Out-Null
 
