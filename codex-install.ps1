@@ -12,6 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+param(
+    [Parameter(Mandatory = $false)]
+    [string]$Tag
+)
+
+if (-not $Tag -and $env:CODEX_TAG) {
+    $Tag = $env:CODEX_TAG
+}
+
 $ErrorActionPreference = "Stop"
 
 $pluginName = "data-agent-kit-starter-pack"
@@ -60,25 +69,20 @@ $bigqueryLocation = Read-Host "Enter BigQuery Location (e.g., US)"
 New-Item -ItemType Directory -Force -Path $pluginsRoot | Out-Null
 
 if (Test-Path $installDir) {
-    try {
-        & git -C $installDir rev-parse --is-inside-work-tree 2>$null | Out-Null
-    } catch {
-    }
-
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "Updating existing plugin at $installDir..."
-        Invoke-GitCommand -Arguments @("-C", $installDir, "pull")
-    } else {
-        Write-Host "Existing directory at $installDir is not a valid git checkout. Reinstalling..."
-        Remove-Item -LiteralPath $installDir -Recurse -Force
-        Write-Host "Cloning plugin to $installDir..."
-        Invoke-GitCommand -Arguments @("clone", $repoUrl, $installDir)
-    }
-} else {
-    Write-Host "Cloning plugin to $installDir..."
-    Invoke-GitCommand -Arguments @("clone", $repoUrl, $installDir)
+    Write-Host "Removing existing plugin at $installDir for clean install..."
+    Remove-Item -LiteralPath $installDir -Recurse -Force
 }
 
+if ($Tag) {
+    Write-Host "Cloning plugin version $Tag to $installDir..."
+    Invoke-GitCommand -Arguments @("clone", "--depth", "1", "--branch", $Tag, $repoUrl, $installDir)
+} else {
+    Write-Host "Cloning plugin default branch to $installDir..."
+    Invoke-GitCommand -Arguments @("clone", "--depth", "1", $repoUrl, $installDir)
+}
+
+Write-Host "Removing git metadata..."
+Remove-Item -LiteralPath (Join-Path $installDir ".git") -Recurse -Force
 $targetMcp = Join-Path $installDir ".mcp.json"
 
 # Apply configuration

@@ -15,6 +15,8 @@
 
 set -e
 
+TAG=$1
+
 PLUGIN_NAME="data-agent-kit-starter-pack"
 REPO_URL="https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack"
 INSTALL_DIR="$HOME/.agents/plugins/$PLUGIN_NAME"
@@ -31,14 +33,20 @@ read -p "BigQuery Location (e.g., US): " BIGQUERY_LOCATION </dev/tty
 # 1. Download/Update Plugin Content
 mkdir -p "$HOME/.agents/plugins"
 if [ -d "$INSTALL_DIR" ]; then
-    echo "Updating existing plugin at $INSTALL_DIR..."
-    cd "$INSTALL_DIR" && git pull
-else
-    echo "Cloning plugin to $INSTALL_DIR..."
-    git clone "$REPO_URL" "$INSTALL_DIR"
+    echo "Removing existing plugin at $INSTALL_DIR for clean install..."
+    rm -rf "$INSTALL_DIR"
 fi
 
+if [ -n "$TAG" ]; then
+    echo "Cloning plugin version $TAG to $INSTALL_DIR..."
+    git clone --depth 1 --branch "$TAG" "$REPO_URL" "$INSTALL_DIR"
+else
+    echo "Cloning plugin default branch to $INSTALL_DIR..."
+    git clone --depth 1 "$REPO_URL" "$INSTALL_DIR"
+fi
 
+echo "Removing git metadata..."
+rm -rf "$INSTALL_DIR/.git"
 
 echo "Applying configuration..."
 node -e "
