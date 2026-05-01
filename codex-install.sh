@@ -27,16 +27,13 @@ echo "--- $PLUGIN_NAME Installer for Codex ---"
 # Prompt for configuration variables
 echo "Please enter the following configuration variables:"
 echo "GCP Project ID"
-echo "Project ID when using the MCP toolbox for databases"
-read -p "... " PROJECT_ID </dev/tty
+read -p "Project ID when using the MCP toolbox for databases … " PROJECT_ID </dev/tty
 
 echo "GCP Region"
-echo "Region for GCP services (e.g. us-central1)"
-read -p "... " GCP_REGION </dev/tty
+read -p "Region for GCP services (e.g. us-central1) … " GCP_REGION </dev/tty
 
 echo "BigQuery Location"
-echo "Location for BigQuery datasets (e.g. US)"
-read -p "... " BIGQUERY_LOCATION </dev/tty
+read -p "Location for BigQuery datasets (e.g. US) … " BIGQUERY_LOCATION </dev/tty
 
 # 1. Download/Update Plugin Content
 mkdir -p "$HOME/.agents/plugins"
