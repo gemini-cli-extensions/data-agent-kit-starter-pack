@@ -170,7 +170,7 @@
     },
     {
       "name": "GCP Region",
-      "description": "Region for GCP services (e.g. us-central1)",
+      "description": "Region for GCP services (e.g. us-west1)",
       "envVar": "GCP_REGION"
     },
     {
