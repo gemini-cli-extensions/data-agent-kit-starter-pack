@@ -27,8 +27,11 @@ echo "--- $PLUGIN_NAME Installer for Codex ---"
 # 1. Download/Update Plugin Content
 mkdir -p "$HOME/.agents/plugins"
 if [ -d "$INSTALL_DIR" ]; then
-    echo "Removing existing plugin at $INSTALL_DIR for clean install..."
-    rm -rf "$INSTALL_DIR"
+    BACKUP_DIR="${INSTALL_DIR}_backup_$(date +%Y%m%d_%H%M%S)"
+    echo "Backing up existing plugin to $BACKUP_DIR..."
+    mv "$INSTALL_DIR" "$BACKUP_DIR"
+    echo "Notice: Your previous installation has been backed up to $BACKUP_DIR."
+    echo "You can delete it if you do not need it."
 fi
 
 if [ -n "$TAG" ]; then

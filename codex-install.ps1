@@ -65,8 +65,13 @@ Write-Host "--- $pluginName Installer for Codex ---"
 New-Item -ItemType Directory -Force -Path $pluginsRoot | Out-Null
 
 if (Test-Path $installDir) {
-    Write-Host "Removing existing plugin at $installDir for clean install..."
-    Remove-Item -LiteralPath $installDir -Recurse -Force
+    $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+    $backupName = "$pluginName" + "_backup_" + $timestamp
+    $backupPath = Join-Path (Split-Path $installDir) $backupName
+    Write-Host "Backing up existing plugin to $backupPath..."
+    Rename-Item -LiteralPath $installDir -NewName $backupName
+    Write-Host "Notice: Your previous installation has been backed up to $backupPath."
+    Write-Host "You can delete it if you do not need it."
 }
 
 if ($Tag) {
