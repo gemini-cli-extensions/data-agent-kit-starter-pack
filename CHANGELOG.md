@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.2](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.1.1...0.1.2) (2026-05-04)
+
+
+### Features
+
+* split notebook and visualization MCP servers ([#51](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/issues/51)) ([3e4c2d1](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/3e4c2d16f06c90c44b9c0df51ae8c91ef452d559))
+
+
+### Bug Fixes
+
+* use tags for codex installation scripts ([#52](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/issues/52)) ([6cd5114](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/6cd5114531dc807c9b8894b3511bb7b399afabad))
+
 ## [0.1.1](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.1.0...0.1.1) (2026-04-28)
 
 
