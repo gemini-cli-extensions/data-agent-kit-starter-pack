@@ -3,11 +3,21 @@
   "version": "0.1.1",
   "description": "This plugin provides a specialized suite of skills for data engineers and database practitioners working on Google Cloud. It acts as an expert assistant, allowing you to use natural language prompts in your preferred coding agent to architect complex data pipelines, transform data with dbt, write Spark and BigQuery SQL notebooks, and orchestrate end-to-end workflows across GCP's data ecosystem.",
   "mcpServers": {
-    "notebook_and_visualization": {
+    "notebook": {
       "command": "npx",
       "args": [
         "-y",
-        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git"
+        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
+        "--mode=notebook"
+      ],
+      "env": {}
+    },
+    "visualization": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
+        "--mode=visualization"
       ],
       "env": {}
     },

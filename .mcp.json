@@ -1,10 +1,23 @@
 {
   "mcpServers": {
-    "notebook_and_visualization": {
+    "notebook": {
       "command": "npx",
       "args": [
         "-y",
-        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git"
+        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
+        "--mode=notebook"
+      ],
+      "env": {},
+      "env_vars": [
+        "DATA_CLOUD_CURR_IDE_NAME"
+      ]
+    },
+    "visualization": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
+        "--mode=visualization"
       ],
       "env": {},
       "env_vars": [
