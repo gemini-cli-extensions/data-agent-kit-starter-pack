@@ -127,19 +127,16 @@ Edit the configuration file:
 <summary><b>Claude Code</b></summary>
 
 Edit the configuration file:
-`~/.claude/plugins/cache/data-agent-kit-starter-pack-marketplace/data-agent-kit-starter-pack/0.1.2/.mcp.json`
+`~/.claude/plugins/cache/data-agent-kit-starter-pack-marketplace/data-agent-kit-starter-pack/0.1.2/.claude-mcp.json`
 </details>
 
 <details>
 <summary><b>Codex</b></summary>
 
 1. Edit the configuration file:
-`~/.agents/plugins/data-agent-kit-starter-pack/.mcp.json`
+`~/.codex/plugins/cache/personal/data-agent-kit-starter-pack/0.1.2/.mcp.json`
 
-2. Use the interactive options to uninstall and install the plugin with the name `Data Agent Kit Starter Pack`:
-```bash
-/plugins
-```
+2. Restart Codex.
 </details>
 
 <!-- {x-release-please-end} -->
