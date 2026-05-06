@@ -94,9 +94,6 @@ if ($Tag) {
 Write-Host "Removing git metadata..."
 Remove-Item -LiteralPath (Join-Path $installDir ".git") -Recurse -Force
 
-# Copy local .mcp.json to support local changes and testing
-Write-Host "Copying configuration file..."
-$localMcp = Join-Path $PSScriptRoot ".mcp.json"
 $targetMcp = Join-Path $installDir ".mcp.json"
 
 # Apply configuration
