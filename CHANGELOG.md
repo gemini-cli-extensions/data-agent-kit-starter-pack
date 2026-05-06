@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.1.2...0.1.3) (2026-05-06)
+
+
+### Bug Fixes
+
+* Update codex commands version ([#56](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/issues/56)) ([f78aa61](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/f78aa61e586f01b45581149bd5b9a2c3f9de70fd))
+
 ## [0.1.2](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.1.1...0.1.2) (2026-05-04)
 
 
