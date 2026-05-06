@@ -78,12 +78,12 @@ Run the `claude` command to start the agent, then follow these steps:
 
 **macOS / Linux:**
 ```bash
-curl -sSL https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/0.1.2/codex-install.sh | bash -s -- 0.1.1
+CODEX_TAG="0.1.2"; curl -sSL https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/$CODEX_TAG/codex-install.sh | bash -s -- $CODEX_TAG
 ```
 
 **Windows:**
 ```powershell
-$env:CODEX_TAG="0.1.2"; irm https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/0.1.1/codex-install.ps1 | iex
+$env:CODEX_TAG="0.1.2"; irm "https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/$env:CODEX_TAG/codex-install.ps1" | iex
 ```
 
 2. **Install the plugin in Codex:**
