@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.1.3...0.1.4) (2026-05-07)
+
+
+### Features
+
+* prompt and configure GCP and BigQuery variables during installation ([#54](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/issues/54)) ([e12d327](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/e12d3279b5bd97e88522427510d18dd7a43c1626))
+
 ## [0.1.3](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.1.2...0.1.3) (2026-05-06)
 
 
