@@ -60,14 +60,9 @@ gemini extensions install https://github.com/gemini-cli-extensions/data-agent-ki
 
 Run the `claude` command to start the agent, then follow these steps:
 
-1. **Add the marketplace:**
+1. **Install the plugin:**
 ```bash
-/plugin marketplace add https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack#0.1.4 
-```
-
-2. **Install the plugin:**
-```bash
-/plugin install data-agent-kit-starter-pack@data-agent-kit-starter-pack-marketplace
+/plugin install data-agent-kit-starter-pack@claude-plugins-official
 ```
 </details>
 
