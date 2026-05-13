@@ -7,7 +7,7 @@ description: 'Provides guidance for writing, packaging and executing Apache Beam
   '
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 
@@ -97,3 +97,67 @@ Follow the Flex Templates section below.
     unknown, proactively run commands like `gcloud config get-value project` to
     find active resources to pre-fill scripts for the user. Confirm the values
     with the user before proceeding.
+
+## Diagnostics & Troubleshooting
+
+YOU MUST use this section when the user asks about performance of their dataflow
+pipelines. This can be used to debug issues like pipeline slowness, pipeline
+failures, etc.
+
+### Task Execution Workflow
+
+1.  **Understand User Request**: Extract Job ID, Project ID, Transform Name
+    (optional), and Time Window.
+2.  **Transform Name Mapping**: If the user requires transform-based debugging,
+    map user-provided Transform Names to actual Dataflow `stage` or `ptransform`
+    and apply to filters while querying:
+
+    This mapping can be extracted from `gcloud dataflow jobs describe JOB_ID
+    --full --format="json(pipelineDescription.executionPipelineStage)"`.
+
+    1.  **Extract the targets**:
+        *   Get stage_id: **`name`** property at the parent stage level. This
+            matches `"F[digit]"` (e.g. `"F6"`).
+        *   Get ptransform: inside the `componentTransform` array, read
+            precisely from **`userName`** or **`originalTransform`** (e.g.
+            `"RateLimitAndLog/ParMultiDo(RateLimitAndLog)"`). and use it as
+            **`ptransform`**.
+    2.  **Apply the filters strictly following mapping mechanics**:
+        *   **For Cloud Logging queries**: Apply extracted ptransform name to
+            filter `resource.labels.step_id="[Extracted ptransform name]"`.
+        *   **For Monitoring queries**: Use the stage_id/ptransform filters
+            based on filters supported by metric:
+            `metric.labels.ptransform="[Extracted ptransform name]"` or
+            `metric.labels.stage="[Extracted stage_id]"`.
+
+3.  **Query Telemetry**:
+
+    *   Use Dataflow REST API to get High level Job Messages/Events that
+        happened in the job.
+    *   Refer to
+        [dataflow_diagnostics_reference.md](resources/dataflow_diagnostics_reference.md)
+        for key metrics and logging query patterns based on Job Type.
+    *   Use Monitoring REST API to fetch metrics.
+    *   Use GCloud Logging command to fetch logs.
+    *   Use Dataflow REST API to fetch current snapshot metrics when historical
+        time-series are not needed.
+
+4.  **Analysis**:
+
+    *   Correlate metrics spikes/drops with log errors.
+    *   Identify Issues.
+
+5.  **Output**: Provide a synthesized summary with symptoms, potential root
+    cause, and links to relevant code transforms (using `file:///...` format).
+    Follow this template to structure your response:
+
+    1.  High level Job Events: Infer from job messages.
+    2.  Data Freshness: Infer from watermark_age/system_lag metrics.
+    3.  Throughput: Infer from
+        elements_produced_count/estimated_bytes_produced_count metrics.
+    4.  Backlog: Infer from estimated_backlog_processing_time/backlog_bytes
+        metrics.
+    5.  Bottlenecks: Infer from is_bottleneck/backlogged_keys metrics.
+    6.  Autoscaling: Infer from horizontal_worker_scaling metric.
+    7.  Recommendations: Provide recommendations based on the analysis of both
+        metrics and logs.

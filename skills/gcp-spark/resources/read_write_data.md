@@ -153,10 +153,6 @@ spark = SparkSession.builder \
         "spark.sql.catalog.<GCS_CATALOG_NAME>.io-impl",
         "org.apache.iceberg.gcp.gcs.GCSFileIO",
     ) \
-    .config(
-        "spark.sql.catalog.<GCS_CATALOG_NAME>.rest-metrics-reporting-enabled",
-        "false",
-    ) \
     .getOrCreate()
 ```
 
@@ -192,10 +188,6 @@ spark = SparkSession.builder \
     .config(
         "spark.sql.catalog.<CATALOG_NAME>.io-impl",
         "org.apache.iceberg.aws.s3.S3FileIO",
-    ) \
-    .config(
-        "spark.sql.catalog.<CATALOG_NAME>.rest-metrics-reporting-enabled",
-        "false",
     ) \
     .config(
         "spark.sql.catalog.<CATALOG_NAME>.header.X-Iceberg-Access-Delegation",

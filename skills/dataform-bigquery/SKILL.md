@@ -7,7 +7,7 @@ description: Expertise in generating clean, correct, and efficient Dataform pipe
   up a new Dataform project or configuring workflow_settings.yaml.
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 
@@ -270,10 +270,8 @@ Usage in models:
 SELECT * FROM ${ref("my_iceberg_table")}
 ```
 
-> [!WARNING]
->
-> You cannot create a BigQuery view directly from a source BigLake table (using
-> 4-part naming). It needs to be a native BigQuery table.
+You cannot create a BigQuery view directly from a source BigLake table (using
+4-part naming). This feature is only for native BigQuery tables.
 
 ## Unit Testing
 

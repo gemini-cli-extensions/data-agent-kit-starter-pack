@@ -46,9 +46,13 @@ comparison is involved, favor a notebook and a visualization. A notebook is the
 ## Notebook Best Practices
 
 > [!IMPORTANT]
-> **Agent execution rules**: Your behavior MUST depend on whether the `notebook_execute_cell` tool is available in your current context:
-> *   **If notebook `execute_cell` tool is available**: You MUST follow the incremental GENERATE CELL -> EXECUTE CELL -> VALIDATE flow.
-> *   **If notebook `execute_cell` tool is NOT available**: You MUST generate the complete notebook and request user execution.
+>
+> **Agent execution rules**: Your behavior MUST depend on whether the
+> `notebook_execute_cell` tool is available in your current context: * **If
+> notebook `execute_cell` tool is available**: You MUST follow the incremental
+> GENERATE CELL -> EXECUTE CELL -> VALIDATE flow. * **If notebook `execute_cell`
+> tool is NOT available**: You MUST generate the complete notebook and request
+> user execution.
 
 1.  **CONDITIONAL EXECUTION FLOW**:
     *   **If notebook `execute_cell` tool is available**: Follow the **STEP BY
@@ -157,7 +161,8 @@ other), aim for this general flow:
     *   What is this notebook for? (e.g., `# Retention Analysis`)
 2.  **Section Header** (Markdown Cell)
     *   What are we looking at now? (e.g., `## Exploring User Retention`)
-3.  **Data Acquisition/Transformation** (Python cell, may contain `%%bqsql` magics)
+3.  **Data Acquisition/Transformation** (Python cell, may contain `%%bqsql`
+    magics)
     *   Query BigQuery or transform data.
 4.  **Verification (Optional but Recommended)** (Python Cell)
     *   `df.head()` or assert sanity checks.
@@ -228,10 +233,10 @@ native BigQuery SQL execution and data export to BigFrames dataframes.
 > *   DO NOT use the standard BigQuery Python client library
 >     (`google.cloud.bigquery`) or `pandas.read_gbq`.
 > *   **Mandatory dataframe export**: Always provide a dataframe name e.g.
->     `%%bqsql <df_name>`. This makes it easy to use results in follow up
->     Python cells.
+>     `%%bqsql <df_name>`. This makes it easy to use results in follow up Python
+>     cells.
 > *   Verify that `bigframes` version number `2.38.0` and above is installed in
->     the notebook runtime environment. If it is missing,  ask the user if they
+>     the notebook runtime environment. If it is missing, ask the user if they
 >     would like you to upgrade for them.
 
 **Example %%bqsql magic usage:**
@@ -243,12 +248,16 @@ import bigframes.pandas as bpd
 %load_ext bigframes
 ```
 
-> [!CAUTION] Always use `%load_ext bigframes` exactly as shown. Do not load
-> submodules — for example, `%load_ext bigframes.magics` or `%load_ext
-> bigframes.bigquery` are not valid and must not be used.
+> [!CAUTION]
+>
+> Always use `%load_ext bigframes` exactly as shown. Do not load submodules —
+> for example, `%load_ext bigframes.magics` or `%load_ext bigframes.bigquery`
+> are not valid and must not be used.
 
-> [!IMPORTANT] The `bigframes` library must be installed. Determine if bigframes
-> needs to be installed by following @skill:managing-python-dependencies.
+> [!IMPORTANT]
+>
+> The `bigframes` library must be installed. Determine if bigframes needs to be
+> installed by following @skill:managing-python-dependencies.
 
 ```python
 %%bqsql df_sample
@@ -257,19 +266,24 @@ SELECT * FROM `project.dataset.table` LIMIT 10
 
 #### Anti-patterns (NEVER DO THESE)
 
-> [!CAUTION] 1. **NO Python SDK for Queries**: Do not switch to
-> `client.query(sql).to_dataframe()` if SQL fails. Fix the SQL syntax instead.
-> 2. **NO Mixing Logic**: Do not put Python code in the same cell as `%%bqsql`
-> magics.
+> [!CAUTION]
+>
+> 1.  **NO Python SDK for Queries**: Do not switch to
+>     `client.query(sql).to_dataframe()` if SQL fails. Fix the SQL syntax
+>     instead.
+> 2.  **NO Mixing Logic**: Do not put Python code in the same cell as `%%bqsql`
+>     magics.
 
 #### Working with SQL Results in Python
 
 Magic cells with `%%bqsql <df_name>` produce a **BigQuery DataFrame**. In
 subsequent cells, you can use `<df_name>` directly.
 
-> [!IMPORTANT] You MUST use BigFrames for data exploration, manipulation,
-> splitting etc. You MUST use BQML SQL or bigframes.ml for machine learning
-> tasks. You MUST NOT use pandas or Scikit-learn.
+> [!IMPORTANT]
+>
+> You MUST use BigFrames for data exploration, manipulation, splitting etc. You
+> MUST use BQML SQL or bigframes.ml for machine learning tasks. You MUST NOT use
+> pandas or Scikit-learn.
 
 ##### BigQuery DataFrame Tips
 

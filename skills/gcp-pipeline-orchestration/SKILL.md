@@ -27,18 +27,16 @@ Function/Use Case                  | Required Reference File                    
 Orchestration pipelines require creating two files to ensure a complete and
 deployable pipeline:
 
-```
 1.  `Orchestration File` (e.g., `orchestration-pipeline.yaml`,
-    `test-pipeline.yaml`): Defines the pipeline's logic, tasks, and
-    schedule. **IMPORTANT:** Check if a `deployment.yaml` file exists and
-    references an existing orchestration file. If it does, you **must update
-    the existing orchestration file** (e.g.,`test_pipeline.yaml`) instead of
-    creating a new one. The filename can be customized but must be
-    referenced in the `deployment.yaml` file.
-2.  `deployment.yaml`: Defines the environment-specific
-    configurations.(e.g., `dev`, `prod`). `deployment.yaml`should only
-    exists in the repository root and must be named `deployment.yaml`
-```
+    `test-pipeline.yaml`): Defines the pipeline's logic, tasks, and schedule.
+    **IMPORTANT:** Check if a `deployment.yaml` file exists and references an
+    existing orchestration file. If it does, you **must update the existing
+    orchestration file** (e.g.,`test_pipeline.yaml`) instead of creating a new
+    one. The filename can be customized but must be referenced in the
+    `deployment.yaml` file.
+2.  `deployment.yaml`: Defines the environment-specific configurations.(e.g.,
+    `dev`, `prod`). `deployment.yaml`should only exists in the repository root
+    and must be named `deployment.yaml`
 
 -   All files should always be maintained together. And all files should be
     placed on the root of the workspace folder.
@@ -56,8 +54,8 @@ Examine the repository's root directory for a `deployment.yaml` file.
     that orchestration has not been set up.
 2.  **Determine if initialization is required**: Initialization is required if
     `deployment.yaml` is missing. you **MUST** run the `init` command in Step 3
-    to scaffold the project if `deployment.yaml` is missing. Do NOT
-    create the files manually.
+    to scaffold the project if `deployment.yaml` is missing. Do NOT create the
+    files manually.
 3.  **Pipeline Name**: If initialization is needed, ask the user for the
     pipeline name. If user hasn't provided the orchestration pipeline name, name
     should be "orchestration_pipeline"
@@ -78,9 +76,11 @@ gcloud beta orchestration-pipelines init <ORCHESTRATION_PIPELINE_NAME> --environ
 
 *** Pipeline Models (mapping to YAML)
 
-> [!IMPORTANT] While the internal pipeline models are defined using protobuf
-> (which typically uses `snake_case`), the **YAML configuration expects
-> `camelCase`** for almost all field names.
+> [!IMPORTANT]
+>
+> While the internal pipeline models are defined using protobuf (which typically
+> uses `snake_case`), the **YAML configuration expects `camelCase`** for almost
+> all field names.
 >
 > **Mapping Rule:** Always convert `snake_case` proto fields (e.g.,
 > `pipeline_id`) to `camelCase` in YAML (e.g., `pipelineId`).
@@ -119,9 +119,11 @@ following fields:
 -   `variables` (dictionary, optional): Key-value pairs representing environment
     variables. Values can be strings, numbers, or booleans.
 
-> [!TIP] If the user doesn't provide specific paths for scripts, dbt projects,
-> or GCP details (Project ID, Region), use tools like `find_by_name` to search
-> the repository and `gcloud` commands (e.g., `gcloud config get-value project`) to
+> [!TIP]
+>
+> If the user doesn't provide specific paths for scripts, dbt projects, or GCP
+> details (Project ID, Region), use tools like `find_by_name` to search the
+> repository and `gcloud` commands (e.g., `gcloud config get-value project`) to
 > retrieve the necessary information.
 
 ### Step 3: Generate the pipeline files
@@ -144,8 +146,10 @@ following fields:
     --region <REGION> \
     ```
 
-    > [!TIP] Running the command without `--format=yaml` provides a clear,
-    > tabular output that is easier to read.
+    > [!TIP]
+    >
+    > Running the command without `--format=yaml` provides a clear, tabular
+    > output that is easier to read.
 
 -   Then use the returned dataproc list with details to create the orchestration
     pipeline definition file based on the user's requirements for the pipeline's
@@ -153,14 +157,16 @@ following fields:
     `endTime`. Every schedule **must** use the current date as `startTime` if
     the user hasn't specified.
 
-    > [!IMPORTANT] A Composer environment is not a Dataproc cluster. If no
-    > Dataproc clusters are available, do not use a Composer environment for the
+    > [!IMPORTANT]
+    >
+    > A Composer environment is not a Dataproc cluster. If no Dataproc clusters
+    > are available, do not use a Composer environment for the
     > `sparkHistoryServerConfig`. It is better to omit this configuration if a
     > dedicated Spark History Server is not available.
 
--   If you want to schedule the python job, check the content of Python
-    content to determine if it's a spark job. If it is, use `pyspark` as type
-    instead of script as type.
+-   If you want to schedule the python job, check the content of Python content
+    to determine if it's a spark job. If it is, use `pyspark` as type instead of
+    script as type.
 
 -   Before creating or updating the `deployment.yaml` file, you **must** first
     run the following command to get the list of available Composer environments
@@ -176,7 +182,8 @@ following fields:
 
     After listing available Composer environments, you **must** check each
     environment to ensure the composer is using the right image version or has
-    installed right PyPI packages. Run the following command for each environment:
+    installed right PyPI packages. Run the following command for each
+    environment:
 
     ```
     # Replace <ENVIRONMENT_NAME> with the Composer environment name
@@ -186,8 +193,14 @@ following fields:
     --format="json(config.softwareConfig.imageVersion, config.softwareConfig.pypiPackages)"
     ```
 
-    From the output, select an environment where the imageVersion value is one of is "composer-3-airflow-3.1.7-build.x, composer-3-airflow-2.11.1-build.x, composer-3-airflow-2.10.5-build.x, composer-3-airflow-2.9.3-build.x, composer-2.16.11-airflow-2.11.1, composer-2.16.11-airflow-2.10.5, composer-2.16.11-airflow-2.9.3" or select an environment where`orchestration-pipelines` field is presented listed in the PyPI packages.
-    This ensures the selected environment is compatible with orchestration pipelines.
+    From the output, select an environment where the imageVersion value is one
+    of is "composer-3-airflow-3.1.7-build.x, composer-3-airflow-2.11.1-build.x,
+    composer-3-airflow-2.10.5-build.x, composer-3-airflow-2.9.3-build.x,
+    composer-2.16.11-airflow-2.11.1, composer-2.16.11-airflow-2.10.5,
+    composer-2.16.11-airflow-2.9.3" or select an environment
+    where`orchestration-pipelines` field is presented listed in the PyPI
+    packages. This ensures the selected environment is compatible with
+    orchestration pipelines.
 
 -   Third, before generating the `deployment.yaml` file, you **must ask the
     user** to provide the `artifact_storage` bucket name. Note that the
@@ -264,6 +277,7 @@ environments:
     pipelines:
       - source: '<orchestration-pipeline.yaml>' # e.g., list of pipeline yaml names
 ```
+
 ### Step 6: Deploy the Orchestration Pipeline (Optional)
 
 If requested to **deploy** the orchestration pipeline:
@@ -288,9 +302,11 @@ If requested to **deploy** the orchestration pipeline:
     local-b32d15e307b5` The version string (e.g., `local-b32d15e307b5`) is the
     bundle ID.
 
-> [!IMPORTANT] `--local` deployments now default to `--paused=true`. The
-> deployed DAG will be visible in Airflow as a paused DAG without a schedule. It
-> will **not** auto-run. Use Step 7 to trigger it.
+> [!IMPORTANT]
+>
+> `--local` deployments now default to `--paused=true`. The deployed DAG will be
+> visible in Airflow as a paused DAG without a schedule. It will **not**
+> auto-run. Use Step 7 to trigger it.
 
 ### Step 7: Trigger the Orchestration Pipeline Run (Optional)
 
@@ -305,61 +321,68 @@ Deploy → Poll → Trigger flow.
     `pipelineId` from the orchestration YAML.
 
 3.  **Poll for DAG readiness**: Wait for the DAG to be registered in Composer.
-    ```
 
+    ```bash
     # Initial delay: wait 30 seconds after deploy
-
     sleep 30
 
     # Poll every 15 seconds, up to 2 minutes total
-
     # Replace <ENV_NAME>, <BUNDLE_ID> with actual values
 
     gcloud beta orchestration-pipelines list \
     --environment=<ENV_NAME> \
-    --bundle=<BUNDLE_ID> 
-    ``` 
-    The pipeline is ready when it appears in the list
-    output. If it does not appear after 2 minutes, report failure and advise the
-    user to check YAML validity.
+    --bundle=<BUNDLE_ID>
+    ```
 
-4.  **Trigger the pipeline**: 
-```
+    The pipeline is ready when it appears in the list output. If it does not
+    appear after 2 minutes, report failure and advise the user to check YAML
+    validity.
+
+4.  **Trigger the pipeline**:
+
+    ```
     # Replace <ENV_NAME>, <BUNDLE_ID>, <PIPELINE_ID> with actual values
-
     gcloud beta orchestration-pipelines trigger \
     --environment=<ENV_NAME> \
     --bundle=<BUNDLE_ID> \
-    --pipeline=<PIPELINE_ID> 
-```
+    --pipeline=<PIPELINE_ID>
+    ```
 
-5.  **Verify the run started**: 
-```
-gcloud beta orchestration-pipelines runs
-    list \ --environment=<ENV_NAME> \ --bundle=<BUNDLE_ID> \
-    --pipeline=<PIPELINE_ID>`
-```
+5.  **Verify the run started**:
 
-> [!TIP] **Trigger-only (no deploy):** If the user wants to trigger an
-> already-deployed pipeline, skip Step 6. Use `gcloud beta
-> orchestration-pipelines list --environment=<ENV_NAME>` to find the bundle ID,
-> then trigger directly with Step 7.4.
+    ```
+    gcloud beta orchestration-pipelines runs list \
+    --environment=<ENV_NAME> \
+    --bundle=<BUNDLE_ID> \
+    --pipeline=<PIPELINE_ID>
+    ```
 
-> [!IMPORTANT] **Fallback:** If `gcloud trigger` fails, use the bundled script:
-> Run script with -- help to discover and learn the interface.
-```
-python scripts/trigger/airflow_trigger.py \ --project <PROJECT_ID>
---location <REGION> \ --environment <COMPOSER_ENV> --dag_id <PIPELINE_ID>
-```
+> [!TIP]
+>
+> **Trigger-only (no deploy):** If the user wants to trigger an already-deployed
+> pipeline, skip Step 6. Use `gcloud beta orchestration-pipelines list
+> --environment=<ENV_NAME>` to find the bundle ID, then trigger directly with
+> Step 7.4.
+
+> [!IMPORTANT]
+>
+> **Fallback:** If `gcloud trigger` fails, use the bundled script: Run script
+> with -- help to discover and learn the interface.
+>
+> ```
+> python scripts/trigger/airflow_trigger.py \ --project <PROJECT_ID>
+> --location <REGION> \ --environment <COMPOSER_ENV> --dag_id <PIPELINE_ID>
+> ```
+>
 > Get `project`, `region`, and `composer_environment` from `deployment.yaml`.
 
 ## Definition of done
 
 -   `deployment.yaml` file is created successfully.
--   The orchestration pipeline file (e.g., `orchestration_pipeline.yaml`)
-    is created successfully, includes a mandatory `endTime` for every schedule,
-    and passes the validation command: `gcloud beta orchestration-pipelines
-    validate --environment=<ENV_NAME>`
+-   The orchestration pipeline file (e.g., `orchestration_pipeline.yaml`) is
+    created successfully, includes a mandatory `endTime` for every schedule, and
+    passes the validation command: `gcloud beta orchestration-pipelines validate
+    --environment=<ENV_NAME>`
 -   If user requested to **deploy** the orchestration pipeline, the `gcloud beta
     orchestration-pipelines deploy --environment=<ENV_NAME> --local` command
     should return a success message with a version/bundle ID.
@@ -370,21 +393,23 @@ python scripts/trigger/airflow_trigger.py \ --project <PROJECT_ID>
     4.  Run is visible in `gcloud beta orchestration-pipelines runs list`
 
 ## Other actions
+
 If requested to pause/stop the orchestration pipeline, use
- ```bash
+
+```bash
     # Replace <ENV_NAME>, <BUNDLE_ID>, <PIPELINE_ID> with actual values
     gcloud beta orchestration-pipelines pause \
     --environment=<ENV_NAME> \
     --bundle=<BUNDLE_ID> \
-    --pipeline=<PIPELINE_ID> 
+    --pipeline=<PIPELINE_ID>
 ```
 
 If requested to unpause/resume the orchestration pipeline, use
- ```bash
+
+```bash
     # Replace <ENV_NAME>, <BUNDLE_ID>, <PIPELINE_ID> with actual values
     gcloud beta orchestration-pipelines unpause \
     --environment=<ENV_NAME> \
     --bundle=<BUNDLE_ID> \
-    --pipeline=<PIPELINE_ID> 
+    --pipeline=<PIPELINE_ID>
 ```
-
