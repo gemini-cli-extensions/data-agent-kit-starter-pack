@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.1.4...0.2.0) (2026-05-15)
+
+
+### Features
+
+* update skills from cloudtop ([#70](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/issues/70)) ([f094668](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/f0946689ea9b5bd1f1a56225b24d5f5f4da95f87))
+
+
+### Miscellaneous Chores
+
+* force release 0.2.0 ([#72](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/issues/72)) ([90311ce](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/90311cea40d6ebac8189fcced17e5b98d384e681))
+
 ## [0.1.4](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.1.3...0.1.4) (2026-05-07)
 
 
