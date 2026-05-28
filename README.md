@@ -122,6 +122,13 @@ To verify your configuration:
 * Ask your agent "What skills are available?" to view the list of active skills.
 
 <details>
+<summary><b>Antigravity CLI</b></summary>
+
+Edit the configuration file:
+`~/.gemini/antigravity-cli/plugins/data-agent-kit-starter-pack/mcp_config.json`
+</details>
+
+<details>
 <summary><b>Gemini CLI and Gemini Code Assist</b></summary>
 
 Edit the configuration file:
