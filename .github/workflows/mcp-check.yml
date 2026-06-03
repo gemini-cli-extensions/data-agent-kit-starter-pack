@@ -16,8 +16,6 @@ name: Notebook MCP Bundle Check
 
 on:
   pull_request:
-    paths:
-      - 'mcp/**'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
