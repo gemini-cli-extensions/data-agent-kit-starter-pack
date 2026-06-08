@@ -19,32 +19,37 @@ description: |
     - Assets are outside Google Cloud
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v4
   publisher: google
 ---
 
 # Instructions
 
-## Step 1: Handle Public Datasets or Proceed to Search
+## Step 1: Prioritize Assets from the Conversation
 
-Dataplex Entries Lookup provides the richest metadata for data assets. You MUST
+If the asset was created or mentioned earlier in the same conversation, then
+proceed with that asset instead of searching. Skip steps 2, 3, and 4.
+
+## Step 2: Handle Public Datasets or Proceed to Search
+
+Dataplex Lookup Context provides the richest metadata for data assets. You MUST
 prioritize using it for all Google Cloud assets, even if you already know their
 IDs.
 
 -   **Public Datasets (Direct Inspection)**: If the requested asset belongs to
-    the `bigquery-public-data` project, Dataplex Entries Lookup will fail. You
-    MUST skip Steps 2 and 3 and inspect the table directly using the `bq` CLI or
+    the `bigquery-public-data` project, Dataplex Lookup Context will fail. You
+    MUST skip Steps 3 and 4 and inspect the table directly using the `bq` CLI or
     BigQuery MCP tools instead.
--   **All Other Assets (Proceed to Step 2)**: For all other BigQuery, Cloud
+-   **All Other Assets (Proceed to Step 3)**: For all other BigQuery, Cloud
     Storage, Spanner, BigLake Iceberg or general GCP data assets (whether their
-    IDs are known or missing), you MUST proceed to **Step 2** to search the
+    IDs are known or missing), you MUST proceed to **Step 3** to search the
     Dataplex catalog and obtain their full Entry Name.
 
-## Step 2: Execute Discovery Search
+## Step 3: Execute Discovery Search
 
 You MUST use the Dataplex search command to discover assets and retrieve their
 full `projects/...` entry names. This step is required even if you already know
-the asset's short ID (e.g., `my_dataset.my_table`), because Step 3 strictly
+the asset's short ID (e.g., `my_dataset.my_table`), because Step 4 strictly
 requires the full entry name.
 
 > [!IMPORTANT] The `--project` parameter MUST ALWAYS be provided. This
@@ -86,8 +91,9 @@ Use this for exact keyword matches or technical strings (e.g., `name:order_v2`).
     -   Use `:` for token/substring matches (e.g., `name:sales`).
     -   Use `=` for exact matches. REQUIRED for `system`, `type`, and
         `location`.
--   **Singular Keywords**: ALWAYS convert plurals to singular (e.g., "product"
-    NOT "products").
+-   **Singular Keywords**: When performing keyword search, ALWAYS convert
+    plurals to singular (e.g., "product" NOT "products"). Semantic search
+    handles singular/plural variations and synonyms automatically.
 -   **Scope Restriction**: You SHOULD restrict the search scope using a `parent`
     filter if the project or dataset is known (e.g.,
     `parent:projects/<PROJECT_ID>`).
@@ -126,26 +132,50 @@ gcloud dataplex entries search "<KEYWORD_SEARCH_QUERY>" \
   --limit=50
 ```
 
-*Criteria*: Once candidate assets are returned, proceed to Step 3 using the
+> [!IMPORTANT] Handling Search Results and Avoiding Loops:
+>
+> 1.  **No Results:** If the search returns no entries:
+>     *   **Variation Rule:** You may try AT MOST 3 variations of the search
+>         query (e.g., switching AND/OR clauses, adding/removing `parent:`,
+>         removing `projectid:` or `location:`, trying `fully_qualified_name=`).
+>     *   **Stop Rule:** If after 3 attempts no results are found, STOP and
+>         inform the user. Ask for clarification, specifically the Dataplex
+>         **full entry name** if known, or identifiers such as **project ID**,
+>         **dataset ID**, or **instance ID** to help narrow the search. Example:
+>         "I couldn't find any tables matching that description after several
+>         attempts. If you know the Dataplex full entry name (`projects/...`),
+>         please provide it. Otherwise, please provide any identifiers you know,
+>         such as project, dataset, or instance name, to help locate the asset."
+> 2.  **Multiple Results:**
+>     *   If more than 10 results are returned, state that many matches were
+>         found. Show the names of the first 5 entries and ask for
+>         clarification.
+>     *   If 2-10 results are returned and you cannot definitively choose, list
+>         them and ask the user.
+> 3.  **Single Result:** Proceed to Step 3 with the full entry name.
+> 4.  **Avoid Infinite Loops:** MUST NOT re-run identical or near-identical
+>     queries. If Dataplex fails to return the expected asset, prioritize asking
+>     the user for the exact resource ID or using Fallback 2 (Native Tools).
+
+*Criteria*: Once candidate assets are returned, proceed to Step 4 using the
 **full entry names** from the search results.
+## Step 4: Lookup Context
 
-## Step 3: Lookup Entry
+You MUST use the **Lookup Context** command to fetch schema and deep metadata
+for the relevant results obtained from Step 3.
 
-You MUST use the **Entries Lookup** command to fetch schema and deep metadata
-for the relevant results obtained from Step 2.
-
-> [!IMPORTANT] The argument MUST be the **name** (starting with `projects/`)
-> returned by the search result. Passing short table IDs, GCS URIs, or fully
-> qualified `bigquery:` prefixes is PROHIBITED and will fail.
+> [!IMPORTANT] The `--resources` parameter MUST be the **full name** (starting
+> with `projects/`) returned by the search result. Passing short table IDs, GCS
+> URIs, or fully qualified `bigquery:` prefixes is PROHIBITED and will fail.
 
 ### Command Execution
 
-Use the `lookup_entry` MCP tool
+Use the `lookup_context` MCP tool
 
 OR
 
 ```bash
-gcloud dataplex entries lookup "<FULL_ENTRY_NAME>"
+gcloud dataplex context lookup --resources="<FULL_ENTRY_NAME>"
 ```
 
 *Completion Criteria*: The command returns the detailed schema and business
@@ -155,7 +185,7 @@ context.
 
 ## Troubleshooting
 
-### Lookup Fails or "Resource not found"
+### Context Lookup Fails or "Resource not found"
 
 -   **Cause**: Short table names were used improperly.
 -   **Fix**: Ensure you use the correct entry name format from the search
@@ -167,12 +197,24 @@ context.
 -   **Fix**: Switch to singular keywords. For semantic search, try more
     descriptive natural language.
 
-### Lookup Fails with "NOT_FOUND" (despite correct format)
+### Context Lookup Fails with "NOT_FOUND" (despite correct format)
 
 -   **Cause**: The table belongs to a project (e.g., `bigquery-public-data`)
     that has not fully synchronized its metadata with the Dataplex Universal
-    Catalog. While the entry appears in search, `entries lookup` is unavailable.
+    Catalog. While the entry appears in search, `context lookup` is unavailable.
 -   **Fix**: Fall back to direct inspection using native tools (e.g., `bq` CLI).
+-   **Stop Rule:** If the native tool (e.g., `bq show`) also returns "Not
+    Found", STOP. Do not restart the Dataplex discovery loop. Specifically ask
+    the user to verify the **project ID** and **table ID**.
+
+### Breaking the Research Loop
+
+If you find yourself repeatedly searching for the same asset:
+
+1.  **STOP.**
+2.  State what you have tried (e.g., "I tried searching Dataplex with X and Y,
+    and checked `bq show`").
+3.  Ask the user for the exact project, dataset, and table ID.
 
 ### Search Fails with "--project: Must be specified."
 

@@ -33,6 +33,7 @@ Ensure you have the following installed:
 * **Node.js and npm** (Latest version recommended)
 * **Google Cloud SDK (gcloud CLI):** [Install and initialize](https://cloud.google.com/sdk/docs/install) the gcloud CLI and ensure [Application Default Credentials (ADC)](https://cloud.google.com/docs/authentication/provide-credentials-adc) are configured.
 * One of the following coding agents:
+    * Antigravity CLI
     * [Gemini CLI](https://github.com/google-gemini/gemini-cli) (v0.6.0+)
     * [Claude Code](https://code.claude.com/docs)
     * Codex CLI
@@ -47,11 +48,20 @@ Ensure you have the following installed:
 Choose the installation method for your preferred coding agent. Run the commands in terminal
 
 <details>
+<summary><b>Antigravity CLI</b></summary>
+
+Install the plugin directly from GitHub:
+```bash
+agy plugin install https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack
+```
+</details>
+
+<details>
 <summary><b>Gemini CLI and Gemini Code Assist</b></summary>
 
 Install the extension directly from GitHub:
 ```bash
-gemini extensions install https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack --ref 0.1.4
+gemini extensions install https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack --ref 0.2.0
 ```
 </details>
 
@@ -60,14 +70,9 @@ gemini extensions install https://github.com/gemini-cli-extensions/data-agent-ki
 
 Run the `claude` command to start the agent, then follow these steps:
 
-1. **Add the marketplace:**
+1. **Install the plugin:**
 ```bash
-/plugin marketplace add https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack#0.1.4 
-```
-
-2. **Install the plugin:**
-```bash
-/plugin install data-agent-kit-starter-pack@data-agent-kit-starter-pack-marketplace
+/plugin install data-agent-kit-starter-pack@claude-plugins-official
 ```
 </details>
 
@@ -78,12 +83,12 @@ Run the `claude` command to start the agent, then follow these steps:
 
 **macOS / Linux:**
 ```bash
-CODEX_TAG="0.1.4"; curl -sSL https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/$CODEX_TAG/codex-install.sh | bash -s -- $CODEX_TAG
+CODEX_TAG="0.2.0"; curl -sSL https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/$CODEX_TAG/codex-install.sh | bash -s -- $CODEX_TAG
 ```
 
 **Windows:**
 ```powershell
-$env:CODEX_TAG="0.1.4"; irm "https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/$env:CODEX_TAG/codex-install.ps1" | iex
+$env:CODEX_TAG="0.2.0"; irm "https://raw.githubusercontent.com/gemini-cli-extensions/data-agent-kit-starter-pack/$env:CODEX_TAG/codex-install.ps1" | iex
 ```
 
 2. **Install the plugin in Codex:**
@@ -117,6 +122,13 @@ To verify your configuration:
 * Ask your agent "What skills are available?" to view the list of active skills.
 
 <details>
+<summary><b>Antigravity CLI</b></summary>
+
+Edit the configuration file:
+`~/.gemini/antigravity-cli/plugins/data-agent-kit-starter-pack/mcp_config.json`
+</details>
+
+<details>
 <summary><b>Gemini CLI and Gemini Code Assist</b></summary>
 
 Edit the configuration file:
@@ -127,14 +139,14 @@ Edit the configuration file:
 <summary><b>Claude Code</b></summary>
 
 Edit the configuration file:
-`~/.claude/plugins/cache/data-agent-kit-starter-pack-marketplace/data-agent-kit-starter-pack/0.1.4/.claude-mcp.json`
+`~/.claude/plugins/cache/data-agent-kit-starter-pack-marketplace/data-agent-kit-starter-pack/0.2.0/.claude-mcp.json`
 </details>
 
 <details>
 <summary><b>Codex</b></summary>
 
 1. Edit the configuration file:
-`~/.codex/plugins/cache/personal/data-agent-kit-starter-pack/0.1.4/.mcp.json`
+`~/.codex/plugins/cache/personal/data-agent-kit-starter-pack/0.2.0/.mcp.json`
 
 2. Restart Codex.
 </details>
