@@ -20,7 +20,7 @@ metadata:
 Before choosing to use a notebook, evaluate the task complexity using these
 heuristics.
 
-Use a notebook if you meet at least one of these 3 criteria:
+Use a notebook if you meet at least one of these 3 criterias:
 
 *   📈 **Data Insights & Storytelling**: Use a notebook for any request to "give
     insights", "find trends", "explore data", or "analyze data". These tasks
