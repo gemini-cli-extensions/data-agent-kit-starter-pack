@@ -25,28 +25,28 @@ metadata:
 ## Task Execution Workflow
 
 1.  **Understand schemas**: **ALWAYS** use `@skill:discovering-gcp-data-assets`
-    skill or `resources/schema_direct_inspection.md` to understand input and
+    skill or `references/schema_direct_inspection.md` to understand input and
     output schemas. Include the schema in your thought process BEFORE generating
     any code. Do NOT guess column names.
 2.  **Generate spark code**:
     *   **Output Format**: **ALWAYS** generate code in **Python Notebooks
         (.ipynb)** format. Generate scripts (.py) only if explicitly requested.
     *   **Read and Write data**: **ALWAYS** Refer to
-        `resources/read_write_data.md` when reading or writing data.
+        `references/read_write_data.md` when reading or writing data.
     *   **ML Tasks**: Refer to `@skill:ml-best-practices` skill and
-        `resources/ml_tasks.md` when generating ML code.
+        `references/ml_tasks.md` when generating ML code.
     *   **Spark Optimizations**: **ALWAYS** refer to
-        `resources/spark_optimizations.md` when generating spark code and apply
+        `references/spark_optimizations.md` when generating spark code and apply
         optimization whenever applicable.
 3.  **Verify schema before write**: **ALWAYS** verify that the dataframe and
     destination schema match, use `df.printSchema()` for dataframe schema and
     refer to `@skill:discovering-gcp-data-assets` skill or
-    `resources/schema_direct_inspection.md` to verify destination schema.
+    `references/schema_direct_inspection.md` to verify destination schema.
 4.  **Compile code before executing**: For notebooks convert them to python
     script using `jupyter nbconvert --to script your-notebook.ipynb` first, then
     compile code using `python3 -m py_compile your-notebook.py`.
 5.  **Execute script**: ONLY when generating a `.py` script refer to
-    `resources/gcloud_dataproc.md` on writing command to execute generated code
+    `references/gcloud_dataproc.md` on writing command to execute generated code
     on Dataproc. This DOES NOT apply when generating notebooks.
 
 --------------------------------------------------------------------------------
@@ -85,5 +85,5 @@ The Dataproc service account needs:
 
 ## Spark resource management
 
-Refer to `resources/gcloud_dataproc.md` for detailed guidelines on managing
+Refer to `references/gcloud_dataproc.md` for detailed guidelines on managing
 Spark clusters, jobs, batches, and interactive sessions.
