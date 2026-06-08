@@ -14,7 +14,7 @@
     "@modelcontextprotocol/sdk": "^1.29.0",
     "ps-list": "^9.0.0",
     "tsx": "^4.7.0",
-    "zod": "^3.22.0"
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

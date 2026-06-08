@@ -26,7 +26,7 @@ jobs:
       pull-requests: write
     steps:
       - name: "Auto-assign PR"
-        uses: pozil/auto-assign-issue@v2
+        uses: pozil/auto-assign-issue@07fe6dc0e9771842b428f5739098d6140734e226 # v4.0.0
         with:
           assignees: chriskinzel
           numOfAssignee: 1
