@@ -27,6 +27,6 @@ jobs:
       - name: "Auto-assign issue"
         uses: pozil/auto-assign-issue@v2
         with:
-          assignees: chriskinzel
+          assignees: belluru,snehshah22
           numOfAssignee: 1
           abortIfPreviousAssignees: true

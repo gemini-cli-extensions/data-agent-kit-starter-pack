@@ -64,7 +64,7 @@ Follow the Flex Templates section below.
     that requires extra dependencies (e.g., using `--requirements_file`,
     `--setup_file`, or `--extra_package`), **YOU MUST recommend the Single
     Docker Image Configuration** as detailed in
-    [python_flex_template_reference.md](resources/python_flex_template_reference.md).
+    [python_flex_template_reference.md](references/python_flex_template_reference.md).
 -   **Prefer Cloud Build over Local Docker**:
     -   Do NOT assume local Docker availability on the workspace machine.
     -   **Action**: Suggest and provide `cloudbuild.yaml` out-of-the-box for
@@ -135,7 +135,7 @@ failures, etc.
     *   Use Dataflow REST API to get High level Job Messages/Events that
         happened in the job.
     *   Refer to
-        [dataflow_diagnostics_reference.md](resources/dataflow_diagnostics_reference.md)
+        [dataflow_diagnostics_reference.md](references/dataflow_diagnostics_reference.md)
         for key metrics and logging query patterns based on Job Type.
     *   Use Monitoring REST API to fetch metrics.
     *   Use GCloud Logging command to fetch logs.

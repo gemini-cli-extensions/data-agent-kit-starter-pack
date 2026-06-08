@@ -69,7 +69,7 @@ justifies the choice based on the criteria above.
 ## Shared Design Standards
 
 Regardless of framework, you MUST follow the principles in
-`resources/shared_design_system.md`.
+`references/shared_design_system.md`.
 
 -   **Visual Style**: Minimal chrome, zinc color palette, and card-based
     layouts.
@@ -81,13 +81,13 @@ Regardless of framework, you MUST follow the principles in
 
 ### If using Streamlit:
 
-1.  Read `resources/streamlit_framework.md` for detailed CSS and component
+1.  Read `references/streamlit_framework.md` for detailed CSS and component
     patterns.
 2.  Follow the "Checklist for New Dashboards" in that file.
 
 ### If using React + Vite:
 
-1.  Read `resources/react_framework.md` for Tailwind and ECharts setup.
+1.  Read `references/react_framework.md` for Tailwind and ECharts setup.
 2.  Follow the detailed component guidelines for KPI cards, Tables, and Panels.
 
 --------------------------------------------------------------------------------
@@ -115,7 +115,7 @@ If the user requests or agrees to the chat interface:
 > assumed.
 ```
 
-1.  **Gather Technical Details**: You MUST read `resources/chat_integration.md`
+1.  **Gather Technical Details**: You MUST read `references/chat_integration.md`
     for the technical requirements.
 2.  **Update the implementation plan**: If and only if there is an
     implementation plan, you MUST update the implementation plan. This is a

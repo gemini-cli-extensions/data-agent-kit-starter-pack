@@ -33,6 +33,7 @@ Ensure you have the following installed:
 * **Node.js and npm** (Latest version recommended)
 * **Google Cloud SDK (gcloud CLI):** [Install and initialize](https://cloud.google.com/sdk/docs/install) the gcloud CLI and ensure [Application Default Credentials (ADC)](https://cloud.google.com/docs/authentication/provide-credentials-adc) are configured.
 * One of the following coding agents:
+    * Antigravity CLI
     * [Gemini CLI](https://github.com/google-gemini/gemini-cli) (v0.6.0+)
     * [Claude Code](https://code.claude.com/docs)
     * Codex CLI
@@ -45,6 +46,15 @@ Ensure you have the following installed:
 ### Installation
 
 Choose the installation method for your preferred coding agent. Run the commands in terminal
+
+<details>
+<summary><b>Antigravity CLI</b></summary>
+
+Install the plugin directly from GitHub:
+```bash
+agy plugin install https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack
+```
+</details>
 
 <details>
 <summary><b>Gemini CLI and Gemini Code Assist</b></summary>
@@ -110,6 +120,13 @@ You must configure the MCP toolboxes in your agent's configuration files for the
 To verify your configuration:
 * Run the `/mcp` command to check the status of available MCP servers.
 * Ask your agent "What skills are available?" to view the list of active skills.
+
+<details>
+<summary><b>Antigravity CLI</b></summary>
+
+Edit the configuration file:
+`~/.gemini/antigravity-cli/plugins/data-agent-kit-starter-pack/mcp_config.json`
+</details>
 
 <details>
 <summary><b>Gemini CLI and Gemini Code Assist</b></summary>
