@@ -100,7 +100,7 @@ Follow the Flex Templates section below.
 
 ## Diagnostics & Troubleshooting
 
-YOU MUST use this section when the user asks about performance of their dataflow
+You MUST use this section when the user asks about performance of their dataflow
 pipelines. This can be used to debug issues like pipeline slowness, pipeline
 failures, etc.
 

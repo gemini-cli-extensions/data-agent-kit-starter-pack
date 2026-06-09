@@ -36,7 +36,7 @@ Guidelines for generating valid BigFrames code for data manipulation, model
 development, and visualization. - **Guide**:
 [BIGFRAMES.md](references/BIGFRAMES.md)
 
-Bigframes should be the default library/tool as it is more efficient than using
+BigFrames should be the default library/tool as it is more efficient than using
 the BigQuery Python client library.
 
 ### 3. BigQuery ML & AI Functions (BQML SQL)
