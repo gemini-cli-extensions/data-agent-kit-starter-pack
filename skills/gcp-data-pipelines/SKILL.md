@@ -121,19 +121,25 @@ multiple pipelines already in the repo:
 :                  : (Datasets, DTS,    :                                      :
 :                  : Dataproc)          :                                      :
 
-> [!TIP] If the user mentions **scheduling**, **automating**, **cron**, or
+> [!TIP]
+>
+> If the user mentions **scheduling**, **automating**, **cron**, or
 > **coordinating** existing scripts, queries, or notebooks — highlight **Cloud
 > Composer / Orchestration** as the most likely fit.
 
-> [!NOTE] Based on any hints in the user's request (data size, language
-> preference, source/destination, complexity), you SHOULD **briefly highlight
-> the most likely fit** before asking them to confirm.
+> [!NOTE]
+>
+> Based on any hints in the user's request (data size, language preference,
+> source/destination, complexity), you SHOULD **briefly highlight the most
+> likely fit** before asking them to confirm.
 
 ### Step 3: Confirm Selection
 
-> [!IMPORTANT] You MUST **stop and wait for the user to select one of the
-> options above.** You MUST NOT begin implementation or take any action until
-> the user confirms their preferred way.
+> [!IMPORTANT]
+>
+> You MUST **stop and wait for the user to select one of the options above.**
+> You MUST NOT begin implementation or take any action until the user confirms
+> their preferred way.
 
 ### Clarifying "Run" Requests
 

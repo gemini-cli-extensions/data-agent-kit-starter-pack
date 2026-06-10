@@ -19,8 +19,9 @@ metadata:
 
 # Spark on Dataproc
 
-> [!IMPORTANT] You MUST ALWAYS follow the Task Execution Workflow when writing
-> spark code.
+> [!IMPORTANT]
+>
+> You MUST ALWAYS follow the Task Execution Workflow when writing spark code.
 
 ## Task Execution Workflow
 
@@ -53,7 +54,9 @@ metadata:
 
 ## Common Mistakes Checklist
 
-> [!CAUTION] Ensure you verify this checklist to avoid mistakes
+> [!CAUTION]
+>
+> Ensure you verify this checklist to avoid mistakes
 
 Before submitting a job, verify:
 

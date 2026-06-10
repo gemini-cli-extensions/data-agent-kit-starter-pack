@@ -15,11 +15,15 @@ metadata:
 This skill provides comprehensive guidance for BigQuery services, optimizations,
 and data handling. It acts as a routing table for specialized BigQuery topics.
 
-> [!IMPORTANT] For general standards on running BigQuery in notebooks (SQL
-> cells, `export` keyword), see `@skill:notebook-guidance`.
+> [!IMPORTANT]
+>
+> For general standards on running BigQuery in notebooks (SQL cells, `export`
+> keyword), see `@skill:notebook-guidance`.
 
-> [!IMPORTANT] You MUST check the data size before deciding on which libraries
-> to use. Use the data size to justify your decision.
+> [!IMPORTANT]
+>
+> You MUST check the data size before deciding on which libraries to use. Use
+> the data size to justify your decision.
 
 Refer to the following resources for expert guidance on specific BigQuery
 features:
@@ -36,7 +40,7 @@ Guidelines for generating valid BigFrames code for data manipulation, model
 development, and visualization. - **Guide**:
 [BIGFRAMES.md](references/BIGFRAMES.md)
 
-BigFrames should be the default library/tool as it is more efficient than using
+Bigframes should be the default library/tool as it is more efficient than using
 the BigQuery Python client library.
 
 ### 3. BigQuery ML & AI Functions (BQML SQL)

@@ -1,13 +1,15 @@
 ---
 name: gcp-dataflow
-description: 'Provides guidance for writing, packaging and executing Apache Beam pipelines
-  on GCP using Cloud Dataflow. Use when: - Creating an Apache Beam Dataflow pipeline.
-  - Creating a Google Flex Template.
-
-  '
+description: |
+  Guides writing, packaging, executing, and troubleshooting Apache Beam pipelines on Dataflow. Use when creating new pipelines, configuring Flex Templates, or analyzing performance of Dataflow jobs. Capabilities include Java/Python/Go setup, Cloud Build integration, and deep diagnostic analysis of job health and autoscaling.
+  Use when: - Creating an Apache Beam Dataflow pipeline. - Creating a Google Flex Template. - Debugging Dataflow pipeline - Troubleshooting Dataflow pipeline - Analyzing Performance of Dataflow pipeline.
+  Key capabilities include: Project setup for Java/Python/Go, Flex Template configuration (with Cloud Build support), and in-depth diagnostics for streaming job health, bottlenecks, and autoscaling.
+  Do NOT use for: - General GCP resource management unrelated to Dataflow. - Issues with other GCP services (e.g., GCE, GCS, BigQuery) unless directly
+    impacting Dataflow pipeline execution.
+  - Pipeline technologies other than Apache Beam on Dataflow.
 license: Apache-2.0
 metadata:
-  version: v2
+  version: v3
   publisher: google
 ---
 
@@ -100,9 +102,9 @@ Follow the Flex Templates section below.
 
 ## Diagnostics & Troubleshooting
 
-You MUST use this section when the user asks about performance of their dataflow
-pipelines. This can be used to debug issues like pipeline slowness, pipeline
-failures, etc.
+> [!IMPORTANT] YOU MUST use this section when the user asks about performance of
+> their Dataflow pipelines. This can be used to debug issues like pipeline
+> slowness, pipeline failures, etc.
 
 ### Task Execution Workflow
 
@@ -135,8 +137,8 @@ failures, etc.
     *   Use Dataflow REST API to get High level Job Messages/Events that
         happened in the job.
     *   Refer to
-        [dataflow_diagnostics_reference.md](references/dataflow_diagnostics_reference.md)
-        for key metrics and logging query patterns based on Job Type.
+        [dataflow_diagnostics_reference.md](references/dataflow_diagnostics_reference.md) for
+        key metrics and logging query patterns based on Job Type.
     *   Use Monitoring REST API to fetch metrics.
     *   Use GCloud Logging command to fetch logs.
     *   Use Dataflow REST API to fetch current snapshot metrics when historical
@@ -144,20 +146,58 @@ failures, etc.
 
 4.  **Analysis**:
 
-    *   Correlate metrics spikes/drops with log errors.
-    *   Identify Issues.
+    *   For Streaming Jobs
+        *   Overall Job Health: YOU MUST refer to
+            [streaming_job_health](references/streaming_job_health.md) to analyze
+            overall streaming job health.
+        *   Analyze Bottlenecks and Parallelism. YOU MUST refer to
+            [bottlenecks_and_parallelism_context](references/bottlenecks_and_parallelism_context.md)
+            and interpret the bottlenecks and parallelism metrics in that
+            context.
+        *   Analyze Autoscaling Behavior. YOU MUST refer to
+            [streaming_horizontal_autoscaling_analysis.md](references/streaming_horizontal_autoscaling_analysis.md)
+    *   For Batch Jobs
+        *   Correlate metrics spikes/drops with log errors.
+        *   Identify Issues.
 
-5.  **Output**: Provide a synthesized summary with symptoms, potential root
-    cause, and links to relevant code transforms (using `file:///...` format).
-    Follow this template to structure your response:
+5.  **Output**: Provide a synthesized diagnosis containing symptoms, root
+    causes, and target code links (using `file:///...` format). Strictly follow
+    the response structure appropriate for the job type:
 
-    1.  High level Job Events: Infer from job messages.
-    2.  Data Freshness: Infer from watermark_age/system_lag metrics.
-    3.  Throughput: Infer from
-        elements_produced_count/estimated_bytes_produced_count metrics.
-    4.  Backlog: Infer from estimated_backlog_processing_time/backlog_bytes
-        metrics.
-    5.  Bottlenecks: Infer from is_bottleneck/backlogged_keys metrics.
-    6.  Autoscaling: Infer from horizontal_worker_scaling metric.
-    7.  Recommendations: Provide recommendations based on the analysis of both
-        metrics and logs.
+    **For Streaming Jobs:**
+
+    1.  **Overall Job State**: State categorization (Healthy, Mostly Healthy,
+        Not Healthy) per
+        [streaming_job_health](references/streaming_job_health.md).
+    2.  **High-level Job Events**: Notable control plane events, errors, or
+        stage failures parsed from job messages.
+    3.  **Data Freshness**: Current data delay utilizing
+        `job/data_watermark_age` / `job/per_stage_data_watermark_age` and system
+        lag.
+    4.  **Throughput**: Processing rate trends utilizing
+        `job/elements_produced_count` / `job/estimated_bytes_produced_count`.
+    5.  **Backlog**: Input backlog (if source stage) or inter-stage backlog
+        using `job/estimated_backlog_processing_time` / `job/backlog_bytes`.
+    6.  **Bottlenecks & Parallelism**: Queue delay diagnostics using
+        `job/is_bottleneck` (interpreting `likely_cause` / `bottleneck_kind`)
+        and key metrics `job/backlogged_keys` /
+        `job/processing_parallelism_keys` interpreted in the context of
+        [bottlenecks_and_parallelism_context](references/bottlenecks_and_parallelism_context.md).
+    7.  **Autoscaling Analysis**: Scaling trends using
+        `job/horizontal_worker_scaling` (and label `rationale`), clamp limits
+        (`job/max_worker_instances_limit` / `job/min_worker_instances_limit`),
+        and utilization hints in the context of
+        [streaming_horizontal_autoscaling_analysis](references/streaming_horizontal_autoscaling_analysis.md).
+    8.  **Recommendations**: Direct remediation plans (in-flight updates,
+        client-side configurations, or code corrections linked via absolute
+        `file:///` URIs).
+
+    **For Batch Jobs:**
+
+    1.  **High-level Job Events**: Notable control plane events, errors, or
+        stage failures parsed from job messages.
+    2.  **Throughput**: Processing rate trends utilizing
+        `job/elements_produced_count` (primary performance indicator).
+    3.  **Recommendations**: Direct remediation plans to future runs
+        (client-side configurations, or code corrections linked via absolute
+        `file:///` URIs).

@@ -97,10 +97,10 @@ and validate them with the user.
 > If `<DATA_SOURCE_ID>` is unknown, run the discovery script without
 > `<DATA_SOURCE_ID>` argument to list available source IDs (e.g.,
 > `google_cloud_storage`). It uses the derived project and location from Step 0.
->
-> ```bash
-> python3 scripts/bigquery_dts.py --project_id=<PROJECT_ID>
-> ```
+
+```bash
+python3 scripts/bigquery_dts.py --project_id=<PROJECT_ID>
+```
 
 1.  **Run Discovery Script**: Use the `bigquery_dts.py` script to inspect Data
     Source parameters via the REST API.

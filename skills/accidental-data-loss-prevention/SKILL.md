@@ -29,4 +29,3 @@ metadata:
     -   A request for their **explicit approval** to proceed.
 3.  **Wait**: Only proceed if the user provides clear, affirmative consent in
     the conversation.
-

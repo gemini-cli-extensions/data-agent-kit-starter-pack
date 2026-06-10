@@ -98,35 +98,44 @@ Composer environment before analyzing.
 
 #### Scenario: Remote DAG differs from Local
 
-If the remote DAG is different: 1. **Sync Option**: Ask the user: *"Should I
-sync your local DAG to the remote environment and retry the run?"* 2. **Download
-Option**: If the user wants to debug the *current* remote failure without
-syncing: * Ask the user to provide or confirm a **temporary folder** (e.g.,
-`tmp_debug/`) to download the remote DAGs. * Download the remote DAGs there to
-perform the RCA on the actual running code.
+If the remote DAG is different:
+
+1.  **Sync Option**: Ask the user: *"Should I sync your local DAG to the remote
+    environment and retry the run?"*
+2.  **Download Option**: If the user wants to debug the *current* remote failure
+    without syncing:
+    *   Ask the user to provide or confirm a **temporary folder** (e.g.,
+        `tmp_debug/`) to download the remote DAGs.
+    *   Download the remote DAGs there to perform the RCA on the actual running
+        code.
 
 #### Scenario: Applying Fixes
 
-When the RCA is complete and a fix is ready: 1. **Repository Check**: If the
-current workspace does not seem to be the source of truth for the Composer
-environment: * Ask the user to **open the correct git repository**. * OR ask if
-they want to **download the remote DAG** to the current workspace to apply the
-fix (warning them about potential overwrites).
+When the RCA is complete and a fix is ready:
+
+1.  **Repository Check**: If the current workspace does not seem to be the
+    source of truth for the Composer environment:
+    *   Ask the user to **open the correct git repository**.
+    *   OR ask if they want to **download the remote DAG** to the current
+        workspace to apply the fix (warning them about potential overwrites).
 
 ## Example Workflow
 
 **User**: "My DAG `daily_sales_agg` failed yesterday around 2pm."
 
-**Agent**: 1. Calls `gcloud` to get environment details, download dags and code,
-and see runs etc. Calls gcloud logging to get the failed task logs. 2. Analyzes
-logs: Finds critical errors and stack traces. 3. Analyzes code: Sees
-`record['region']` access without a check. 4. **RCA**: " The DAG failed because
-the `process_sales` task encountered a `KeyError: 'region'`. The code at line 45
-assumes 'region' always exists, but yesterday's data likely had missing values."
-5. **Fix**: "I recommend adding a default value: `record.get('region',
-'unknown')`." Providing the existing code how to fix it and error messages. 6.
-**RCA Report**: Generate a Root Cause Analysis (RCA) report and save it to a
-file.
+**Agent**:
+
+1.  Calls `gcloud` to get environment details, download dags and code, and see
+    runs etc. Calls gcloud logging to get the failed task logs.
+2.  Analyzes logs: Finds critical errors and stack traces.
+3.  Analyzes code: Sees `record['region']` access without a check.
+4.  **RCA**: "The DAG failed because the `process_sales` task encountered a
+    `KeyError: 'region'`. The code at line 45 assumes 'region' always exists,
+    but yesterday's data likely had missing values."
+5.  **Fix**: "I recommend adding a default value: `record.get('region',
+    'unknown')`." Providing the existing code how to fix it and error messages.
+6.  **RCA Report**: Generate a Root Cause Analysis (RCA) report and save it to a
+    file.
 
 ## Example Gcloud commands
 

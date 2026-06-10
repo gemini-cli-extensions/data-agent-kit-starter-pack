@@ -19,9 +19,11 @@ metadata:
 
 # Python Dependency Management Rule
 
-> [!CAUTION] **BEFORE any `pip install`**: You MUST first detect the project's
-> existing dependency manager and use it correctly. Do NOT override the
-> project's established tooling.
+> [!CAUTION]
+>
+> **BEFORE any `pip install`**: You MUST first detect the project's existing
+> dependency manager and use it correctly. Do NOT override the project's
+> established tooling.
 
 ## Dependency Manager Detection
 

@@ -52,10 +52,12 @@ full `projects/...` entry names. This step is required even if you already know
 the asset's short ID (e.g., `my_dataset.my_table`), because Step 4 strictly
 requires the full entry name.
 
-> [!IMPORTANT] The `--project` parameter MUST ALWAYS be provided. This
-> project_id is used to attribute the search only and does NOT restrict the
-> search scope. The project must have the dataplex API enabled and user must
-> have the `dataplex.entries.get` permissions.
+> [!IMPORTANT]
+>
+> The `--project` parameter MUST ALWAYS be provided. This project_id is used to
+> attribute the search only and does NOT restrict the search scope. The project
+> must have the dataplex API enabled and user must have the
+> `dataplex.entries.get` permissions.
 
 ### A. Semantic Search (Natural Language Intent)
 
@@ -119,9 +121,11 @@ Use this for exact keyword matches or technical strings (e.g., `name:order_v2`).
 -   **`fully_qualified_name=x`**: Exact match on the FQN (e.g.,
     `bigquery:project.dataset.table`).
 
-> [!TIP] Dataplex search results rely on metadata being ingested into the
-> Universal Catalog (often via **Discovery Scans**). If an asset is missing from
-> search, it may not be indexed. - **Fallback 1**: Try searching by the
+> [!TIP]
+>
+> Dataplex search results rely on metadata being ingested into the Universal
+> Catalog (often via **Discovery Scans**). If an asset is missing from search,
+> it may not be indexed. - **Fallback 1**: Try searching by the
 > `fully_qualified_name` qualifier. - **Fallback 2**: Use native tools (e.g.,
 > `bq show`, `gcloud storage`) or specific skills for that asset type if you
 > already know the ID.
@@ -132,7 +136,9 @@ gcloud dataplex entries search "<KEYWORD_SEARCH_QUERY>" \
   --limit=50
 ```
 
-> [!IMPORTANT] Handling Search Results and Avoiding Loops:
+> [!IMPORTANT]
+>
+> Handling Search Results and Avoiding Loops:
 >
 > 1.  **No Results:** If the search returns no entries:
 >     *   **Variation Rule:** You may try AT MOST 3 variations of the search
@@ -159,14 +165,17 @@ gcloud dataplex entries search "<KEYWORD_SEARCH_QUERY>" \
 
 *Criteria*: Once candidate assets are returned, proceed to Step 4 using the
 **full entry names** from the search results.
+
 ## Step 4: Lookup Context
 
 You MUST use the **Lookup Context** command to fetch schema and deep metadata
 for the relevant results obtained from Step 3.
 
-> [!IMPORTANT] The `--resources` parameter MUST be the **full name** (starting
-> with `projects/`) returned by the search result. Passing short table IDs, GCS
-> URIs, or fully qualified `bigquery:` prefixes is PROHIBITED and will fail.
+> [!IMPORTANT]
+>
+> The `--resources` parameter MUST be the **full name** (starting with
+> `projects/`) returned by the search result. Passing short table IDs, GCS URIs,
+> or fully qualified `bigquery:` prefixes is PROHIBITED and will fail.
 
 ### Command Execution
 
