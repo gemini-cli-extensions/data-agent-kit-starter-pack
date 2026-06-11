@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.2.0...0.4.0) (2026-06-11)
+
+
+### Miscellaneous Chores
+
+* force release 0.4.0 ([#93](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/issues/93)) ([23aab90](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/23aab90cf7a198e8481dce1475020e14014a7ebe))
+
 ## [0.2.0](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.1.4...0.2.0) (2026-05-15)
 
 
