@@ -5,7 +5,7 @@
   },
   "plugins": [
     {
-      "name": "data-agent-kit-starter-pack",
+      "name": "dak",
       "source": {
         "source": "local",
         "path": "./"

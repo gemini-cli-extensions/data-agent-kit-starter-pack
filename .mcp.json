@@ -24,7 +24,7 @@
         "DATA_CLOUD_CURR_IDE_NAME"
       ]
     },
-    "datacloud_bigquery_toolbox": {
+    "bigquery": {
       "command": "npx",
       "args": [
         "-y",
@@ -40,7 +40,7 @@
         "BIGQUERY_PROJECT": "$PROJECT_ID"
       }
     },
-    "datacloud_spanner_toolbox": {
+    "spanner": {
       "command": "npx",
       "args": [
         "-y",
@@ -58,7 +58,7 @@
         "SPANNER_PROJECT": "$PROJECT_ID"
       }
     },
-    "datacloud_alloydb-postgres-admin_toolbox": {
+    "alloydb-postgres-admin": {
       "command": "npx",
       "args": [
         "-y",
@@ -71,7 +71,7 @@
       ],
       "env": {}
     },
-    "datacloud_alloydb-postgres_toolbox": {
+    "alloydb-postgres": {
       "command": "npx",
       "args": [
         "-y",
@@ -93,7 +93,7 @@
         "ALLOYDB_POSTGRES_USER": ""
       }
     },
-    "datacloud_cloud-sql-postgresql-admin_toolbox": {
+    "cloud-sql-postgresql-admin": {
       "command": "npx",
       "args": [
         "-y",
@@ -106,7 +106,7 @@
       ],
       "env": {}
     },
-    "datacloud_cloud-sql-postgresql_toolbox": {
+    "cloud-sql-postgresql": {
       "command": "npx",
       "args": [
         "-y",
@@ -127,7 +127,7 @@
         "CLOUD_SQL_POSTGRES_USER": ""
       }
     },
-    "datacloud_knowledge_catalog_toolbox": {
+    "knowledge_catalog": {
       "command": "npx",
       "args": [
         "-y",
@@ -142,7 +142,7 @@
         "DATAPLEX_PROJECT": "$PROJECT_ID"
       }
     },
-    "datacloud_dataproc_toolbox": {
+    "dataproc": {
       "command": "npx",
       "args": [
         "-y",
@@ -158,7 +158,7 @@
         "DATAPROC_REGION": "$GCP_REGION"
       }
     },
-    "datacloud_serverless-spark_toolbox": {
+    "serverless-spark": {
       "command": "npx",
       "args": [
         "-y",
