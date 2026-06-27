@@ -1,0 +1,20 @@
+{
+  "name": "data-agent-kit-starter-pack-marketplace",
+  "interface": {
+    "displayName": "Data Agent Kit Starter Pack Marketplace"
+  },
+  "plugins": [
+    {
+      "name": "dak",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
