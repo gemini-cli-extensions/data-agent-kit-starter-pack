@@ -94,11 +94,15 @@ The primary maintainers for this repository are defined in the
 
 ### Releasing
 
-The release process is automated using `release-please`.
+The repository follows a weekly release cycle. Because the automatic postsubmit sync from google3 is disabled, maintainers must manually trigger the sync to GitHub before performing a release.
 
-1.  **Release PR:** When commits with conventional commit headers (e.g., `feat:`,
-    `fix:`) are merged into the `main` branch, `release-please` will
-    automatically create or update a "Release PR" containing the updated changelog.
-2.  **Merge Release PR:** A maintainer approves and merges the Release PR. This
-    action triggers `release-please` to create a new GitHub tag and a
-    corresponding GitHub Release.
+1.  **Sync google3 to GitHub**: Manually trigger the Copybara sync to push the latest submitted google3 commits to the public GitHub main branch:
+    ```bash
+    copybara service trigger \
+      piper://depot/google3/third_party/data_agent_kit/data_agent_common/copy.bara.sky \
+      data_agent_common_skills_postsubmit_piper_to_github \
+      --worker-flags \
+      --squash
+    ```
+2.  **Release PR**: Once the changes are pushed to GitHub, `release-please` will automatically create or update a "Release PR" containing the updated changelog.
+3.  **Merge Release PR**: A maintainer approves and merges the Release PR. This action triggers `release-please` to create a new GitHub tag and a corresponding GitHub Release.
