@@ -1,0 +1,346 @@
+"""Shared Copybara helpers for Data Agent Kit (DAK) partner teams."""
+
+BUILD_LICENSE_HEADER = """Copyright 2026 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License."""
+
+DEFAULT_REVIEWERS = ["ellurubharath", "danielheyman"]
+
+SUPPORTED_FILES = [
+    "**/*.py",
+    "**/*.md",
+    "**/*.js",
+]
+
+DAK_SKILLS_PREFIX = "google3/third_party/data_agent_kit/data_agent_common/skills/"
+
+STATIC_CHECKS = [
+    core.verify_match(
+        regex = r"(?s).*",
+        verify_no_match = True,
+        paths = glob(
+            include = ["**"],
+            exclude = SUPPORTED_FILES,
+        ),
+        failure_message = (
+            "Only Python (.py) and Markdown (.md) files are allowed in DAK skills. " +
+            "This restriction ensures that metadata validation, license header injection, " +
+            "and other shared local helpers support the file types correctly. " +
+            "If you need to add new file types, feel free to send a CL to DAK's " +
+            "copybara_helpers.bara.sky to update this allowlist, or reach out to " +
+            "the DAK team for help."
+        ),
+    ),
+    core.verify_match(
+        regex = r"\bgoogle3\b",
+        verify_no_match = True,
+        paths = glob(["**/*.py"]),
+        failure_message = (
+            "References to 'google3' are not allowed in DAK skill Python files. " +
+            "This ensures that your skill is portable and self-contained (working across " +
+            "local developer, IDE, and GitHub/OSS environments) and does not leak internal references. " +
+            "Please use standard Python relative imports (e.g., 'from . import helper') and " +
+            "remove any internal absolute paths/concepts."
+        ),
+    ),
+]
+
+def _generate_license(comment_style):
+    result = []
+    for line in BUILD_LICENSE_HEADER.split("\n"):
+        if line == "":
+            result.append(comment_style)
+        else:
+            result.append(comment_style + " " + line)
+    return "\n".join(result) + "\n\n"
+
+
+def _add_license_headers(skill_path):
+    """Returns a dynamic transform to prepend Apache 2.0 license headers to Python/JS files in a skill folder."""
+
+    def impl(ctx):
+        configs = [
+            {"glob": skill_path + "/**/*.py", "comment": "#"},
+            {"glob": skill_path + "/**/*.js", "comment": "//"},
+        ]
+        for cfg in configs:
+            files = ctx.run(glob([cfg["glob"]]))
+            license_text = _generate_license(cfg["comment"])
+            for f in files:
+                content = ctx.read_path(f)
+                if "Copyright" in content or "Licensed under" in content:
+                    continue
+
+                if content.startswith("#!"):
+                    parts = content.split("\n", 1)
+                    shebang = parts[0] + "\n"
+                    rest = parts[1] if len(parts) > 1 else ""
+                    new_content = shebang + license_text + rest
+                else:
+                    new_content = license_text + content
+
+                ctx.write_path(f, new_content)
+
+    return core.dynamic_transform(impl = impl)
+
+# Helper implementation that standardizes SKILL.md frontmatter metadata (license, version, publisher).
+def _clean_metadata_block(lines):
+    """Upserts the metadata block (creating it if missing) and standardizes version/publisher.
+
+    This helper automatically scans for base indentation, locates or creates
+    the 'metadata:' key line, and dynamically formats nested fields to match
+    the existing key block indentation.
+
+    Args:
+        lines: List of frontmatter lines.
+
+    Returns:
+        The updated lines list.
+    """
+
+    # 1. Find metadata block index
+    metadata_index = -1
+    for idx in range(len(lines)):
+        if lines[idx].strip() == "metadata:":
+            metadata_index = idx
+            break
+
+    # Helper function to detect fallback base indentation
+    def get_base_indent():
+        for line in lines:
+            if line.startswith(" ") or line.startswith("\t"):
+                lead_ws = ""
+                for i in range(len(line)):
+                    char = line[i]
+                    if char == " " or char == "\t":
+                        lead_ws += char
+                    else:
+                        break
+                return lead_ws
+        return "  "
+
+    # 3. If metadata block is missing, append it at the end
+    if metadata_index == -1:
+        base_indent = get_base_indent()
+        lines.append("metadata:")
+        lines.append(base_indent + "version: v1")
+        lines.append(base_indent + "publisher: google")
+        return lines
+
+    # 4. If metadata block exists, detect its child indentation
+    metadata_indent = ""
+    for idx in range(metadata_index + 1, len(lines)):
+        line = lines[idx]
+        if not (line.startswith(" ") or line.startswith("\t")):
+            break
+        if line.strip() != "":
+            lead_ws = ""
+            for j in range(len(line)):
+                char = line[j]
+                if char == " " or char == "\t":
+                    lead_ws += char
+                else:
+                    break
+            metadata_indent = lead_ws
+            break
+
+    if metadata_indent == "":
+        metadata_indent = get_base_indent()
+
+    # 5. Upsert version and publisher under metadata block
+    has_version = False
+    has_publisher = False
+    insert_index = metadata_index + 1
+
+    for i in range(metadata_index + 1, len(lines)):
+        line = lines[i]
+        s_line = line.strip()
+        if s_line == "":
+            insert_index = i
+            continue
+        if not (line.startswith(" ") or line.startswith("\t")):
+            insert_index = i
+            break
+
+        if s_line.startswith("version:"):
+            lines[i] = metadata_indent + "version: v1"
+            has_version = True
+        elif s_line.startswith("publisher:"):
+            lines[i] = metadata_indent + "publisher: google"
+            has_publisher = True
+
+        insert_index = i + 1
+
+    if not has_publisher:
+        lines = lines[:insert_index] + [metadata_indent + "publisher: google"] + lines[insert_index:]
+    if not has_version:
+        lines = lines[:insert_index] + [metadata_indent + "version: v1"] + lines[insert_index:]
+
+    return lines
+
+def _clean_frontmatter_transform(skill_path):
+    """Returns a dynamic transform to clean the frontmatter of a specific skill's SKILL.md file."""
+
+    def impl(ctx):
+        file_path = skill_path + "/SKILL.md"
+        if not ctx.run(glob([file_path])):
+            return
+        content = ctx.read_path(ctx.new_path(file_path))
+        if "---" not in content:
+            return
+
+        parts = content.split("---", 2)
+        if len(parts) < 3:
+            return
+
+        frontmatter = parts[1]
+        body = parts[2]
+
+        original_lines = frontmatter.split("\n")
+        lines = []
+        for line in original_lines:
+            lines.append(line)
+
+        # Clean leading/trailing empty lines
+        for _ in range(len(lines)):
+            if len(lines) > 0 and lines[0].strip() == "":
+                lines.pop(0)
+            else:
+                break
+        for _ in range(len(lines)):
+            if len(lines) > 0 and lines[-1].strip() == "":
+                lines.pop()
+            else:
+                break
+
+        # Clean misplaced top-level publisher and version keys:
+        cleaned_lines = []
+        for line in lines:
+            s_line = line.strip()
+            if not (line.startswith(" ") or line.startswith("\t")) and s_line.startswith(("publisher:", "version:")):
+                continue
+            cleaned_lines.append(line)
+        lines = cleaned_lines
+
+        # Clean existing license lines (wherever they are) to move it to the end:
+        cleaned_lines = []
+        for line in lines:
+            if line.strip().startswith("license:"):
+                continue
+            cleaned_lines.append(line)
+        lines = cleaned_lines
+
+        # Standardize metadata (creates metadata block if missing, upserts version/publisher)
+        lines = _clean_metadata_block(lines)
+        lines.append("license: Apache-2.0")
+
+        new_frontmatter = "\n" + "\n".join(lines) + "\n"
+        new_content = "---" + new_frontmatter + "---" + body
+        ctx.write_path(ctx.new_path(file_path), new_content)
+
+    return core.dynamic_transform(impl = impl)
+
+# Validation checks and helpers for skills syncing.
+
+def dak_skills_sync_workflow(
+        origin_files,
+        workflow_name,
+        author,
+        owner_mdb,
+        contact_email,
+        destination_skills_globs,
+        reviewers = DEFAULT_REVIEWERS,
+        transformations = []):
+    """Defines a standard partner sync workflow for multiple skills from google3 to DAK.
+
+    Args:
+        origin_files: Copybara glob() object specifying files to copy from the origin.
+        workflow_name: The globally unique name of the Copybara workflow/migration.
+        author: The authoring string to use for migrated CLs (e.g. 'GCS Team <no-reply@google.com>').
+        owner_mdb: The MDB group owner of the migration.
+        contact_email: The contact email address for the migration.
+        destination_skills_globs: List of string globs relative to DAK's skills directory that this workflow is allowed to write to (e.g., ['gcs_*/**']).
+        reviewers: The default LDAPs to assign as CL reviewers.
+        transformations: Optional list of custom Copybara transformations.
+    """
+    dest_include = [
+        "google3/third_party/data_agent_kit/data_agent_common/skills/" + pattern
+        for pattern in destination_skills_globs
+    ] + ["google3/third_party/data_agent_kit/data_agent_common/skills/BUILD"]
+    destination_files = glob(include = dest_include)
+
+    def impl(ctx):
+        # 0. Fetch the destination BUILD file so we can modify it
+        build_file_path = "google3/third_party/data_agent_kit/data_agent_common/skills/BUILD"
+        if ctx.destination_reader().file_exists(build_file_path):
+            ctx.destination_reader().copy_destination_files(glob(include = [build_file_path]))
+
+        # 1. Discover all skills in the workspace (we find all SKILL.md files)
+        skill_files = ctx.run(glob(["**/SKILL.md"]))
+        skills_to_register = []
+
+        for f in skill_files:
+            parts = f.path.split("/")
+            if len(parts) < 2:
+                continue
+
+            folder_name = parts[-2]
+            normalized_name = folder_name.lower().replace("-", "_")
+            skills_to_register.append(normalized_name)
+
+            # Source directory of this skill
+            src_dir = "/".join(parts[:-1])
+            # Destination path in DAK
+            dest_dir = "google3/third_party/data_agent_kit/data_agent_common/skills/" + normalized_name
+
+            # Move the skill files to DAK destination
+            ctx.run(core.move(src_dir, dest_dir))
+
+            # Run frontmatter cleaning and license header prepending
+            ctx.run(_clean_frontmatter_transform(dest_dir))
+            ctx.run(_add_license_headers(dest_dir))
+
+        # 2. Register the discovered skills in the BUILD file
+        for skill in skills_to_register:
+            ctx.run(buildozer.modify(
+                target = "google3/third_party/data_agent_kit/data_agent_common/skills:%define_partner_skills",
+                commands = ["add skills " + skill],
+            ))
+
+        return ctx.success()
+
+    core.workflow(
+        name = workflow_name,
+        origin = piper.origin(),
+        destination = piper.destination(
+            mode = "AUTO_SUBMIT",
+            reviewers = reviewers,
+        ),
+        origin_files = origin_files,
+        destination_files = destination_files,
+        authoring = authoring.overwrite(author),
+        transformations = [
+                              leakr.disable_check("Purely internal Piper-to-Piper sync within google3"),
+                          ] + transformations +
+                          STATIC_CHECKS + [
+                              core.dynamic_transform(impl = impl)
+                          ],
+    )
+
+    service.migration(
+        migration_name = workflow_name,
+        owner_mdb = owner_mdb,
+        contact_email = contact_email,
+        state = "ACTIVE",
+    )
+
