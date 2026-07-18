@@ -62,7 +62,14 @@ agy plugin install https://github.com/gemini-cli-extensions/data-agent-kit-start
 Install the extension directly from GitHub:
 ```bash
 gemini extensions install https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack --ref 0.6.1
-```
+
+  
+  
+  
+  
+  
+  
+  ```
 </details>
 
 <details>
@@ -89,6 +96,11 @@ codex plugin marketplace add https://github.com/gemini-cli-extensions/data-agent
 
 # Step 2. Add the plugin
 codex plugin add dak@data-agent-kit-starter-pack-marketplace
+# Step 2. Install the plugin
+codex plugin install dak@data-agent-kit-starter-pack
+
+# Optional. Update the marketplace
+codex plugin marketplace upgrade data-agent-kit-starter-pack
 ```
 
 #### Option 2: Script Installation (Alternative)
