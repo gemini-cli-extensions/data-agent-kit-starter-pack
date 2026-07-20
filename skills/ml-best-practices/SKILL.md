@@ -13,7 +13,7 @@ description: |
     * Data analysis
 
   SQL/BigQuery ML HANDOFF: If the user requires a SQL solution, use this skill to dictate the ANALYSIS STEPS (e.g., markdown analysis cells, visualization logic), but defer to `bigquery` for all SQL syntax.
-license: TBD
+license: Apache-2.0
 metadata:
   version: v1
   publisher: google
@@ -198,6 +198,7 @@ production based on predictive power, robustness, and viability.
 -   Conclusion: comprehensively answer the prompt in a final markdown cell.
 
 ## Essential ML Practices
+
 [!IMPORTANT] ALWAYS follow these ML practices
 
 -   **Strict Featurization Ordering**: For supervised learning **ALWAYS** split

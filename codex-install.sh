@@ -15,22 +15,58 @@
 
 set -e
 
-PLUGIN_NAME="data-cloud-ai-dev-kit"
-REPO_URL="https://github.com/gemini-cli-extensions/data-cloud-ai-dev-kit"
+TAG=$1
+
+PLUGIN_NAME="data-agent-kit-starter-pack"
+REPO_URL="https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack"
 INSTALL_DIR="$HOME/.agents/plugins/$PLUGIN_NAME"
 MARKETPLACE_FILE="$HOME/.agents/plugins/marketplace.json"
 
 echo "--- $PLUGIN_NAME Installer for Codex ---"
 
+# Prompt for configuration variables
+echo "Please enter the following configuration variables:"
+echo "GCP Project ID"
+read -p "Project ID when using the MCP toolbox for databases: " PROJECT_ID </dev/tty
+
+echo "GCP Region"
+read -p "Region for GCP services (e.g. us-west1): " GCP_REGION </dev/tty
+
+echo "BigQuery Location"
+read -p "Location for BigQuery datasets (e.g. US): " BIGQUERY_LOCATION </dev/tty
+
 # 1. Download/Update Plugin Content
 mkdir -p "$HOME/.agents/plugins"
 if [ -d "$INSTALL_DIR" ]; then
-    echo "Updating existing plugin at $INSTALL_DIR..."
-    cd "$INSTALL_DIR" && git pull
-else
-    echo "Cloning plugin to $INSTALL_DIR..."
-    git clone "$REPO_URL" "$INSTALL_DIR"
+    BACKUP_DIR="${INSTALL_DIR}_backup_$(date +%Y%m%d_%H%M%S)"
+    echo "Backing up existing plugin to $BACKUP_DIR..."
+    mv "$INSTALL_DIR" "$BACKUP_DIR"
+    echo "Notice: Your previous installation has been backed up to $BACKUP_DIR."
+    echo "You can delete it if you do not need it."
 fi
+
+if [ -n "$TAG" ]; then
+    echo "Cloning plugin version $TAG to $INSTALL_DIR..."
+    git clone --depth 1 --branch "$TAG" "$REPO_URL" "$INSTALL_DIR"
+else
+    echo "Cloning plugin default branch to $INSTALL_DIR..."
+    git clone --depth 1 "$REPO_URL" "$INSTALL_DIR"
+fi
+
+echo "Removing git metadata..."
+rm -rf "$INSTALL_DIR/.git"
+
+echo "Applying configuration..."
+node -e "
+const fs = require('fs');
+const path = require('path');
+const mcpFilePath = path.join(process.argv[1], '.mcp.json');
+let mcpContent = fs.readFileSync(mcpFilePath, 'utf8');
+mcpContent = mcpContent.replace(/\\\$PROJECT_ID/g, process.argv[2]);
+mcpContent = mcpContent.replace(/\\\$GCP_REGION/g, process.argv[3]);
+mcpContent = mcpContent.replace(/\\\$BIGQUERY_LOCATION/g, process.argv[4]);
+fs.writeFileSync(mcpFilePath, mcpContent);
+" "$INSTALL_DIR" "$PROJECT_ID" "$GCP_REGION" "$BIGQUERY_LOCATION"
 
 # 2. Register with Codex Marketplace
 if [ ! -f "$MARKETPLACE_FILE" ]; then
@@ -53,7 +89,7 @@ data.plugins = data.plugins || [];
 data.plugins = data.plugins.filter(p => p.name !== '${PLUGIN_NAME}');
 data.plugins.push({
     name: '${PLUGIN_NAME}',
-    interface: { displayName: 'Google Data Cloud AI Dev Kit' },
+    interface: { displayName: 'Data Agent Kit Starter Pack' },
     source: { source: 'local', path: './.agents/plugins/${PLUGIN_NAME}' },
     policy: { installation: 'AVAILABLE', authentication: 'ON_INSTALL' },
     category: 'Productivity'

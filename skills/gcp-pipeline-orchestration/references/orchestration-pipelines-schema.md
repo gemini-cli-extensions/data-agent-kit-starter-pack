@@ -131,6 +131,7 @@ message DataprocClusterResourceProfile {
 
         // A Dataproc cluster config.
         // See: https://docs.cloud.google.com/dataproc/docs/reference/rest/v1/ClusterConfig
+        // For instance group config (e.g. machineTypeUri), see: https://docs.cloud.google.com/dataproc/docs/reference/rest/v1/InstanceGroupConfig
         google.protobuf.Struct config = 2;
       }
   }
@@ -141,6 +142,7 @@ message DataprocClusterResourceProfile {
   }
   // Overrides are applied with deep merge onto the inline or external config. The format of Dataproc cluster config is required.
   // See: https://docs.cloud.google.com/dataproc/docs/reference/rest/v1/ClusterConfig
+  // For instance group config (e.g. machineTypeUri), see: https://docs.cloud.google.com/dataproc/docs/reference/rest/v1/InstanceGroupConfig
   google.protobuf.Struct overrides = 4;
 }
 
@@ -394,7 +396,7 @@ message DataformAirflowExecution {
 
 ## Ochestration Pipeline YAML File example
 ```yaml
-modelVersion: v2
+modelVersion: 1.0
 pipelineId: sample_orchestration
 description: Orchestrate dbt after pyspark
 runner: airflow

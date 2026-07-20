@@ -1,0 +1,24 @@
+{
+  "name": "@google/standalone-notebook-mcp",
+  "version": "0.6.1",
+  "type": "module",
+  "description": "Standalone MCP server for notebook manipulation",
+  "main": "server.ts",
+  "scripts": {
+    "build": "npm run bundle",
+    "bundle": "node build.js",
+    "prepublishOnly": "npm run build",
+    "start": "tsx server.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "ps-list": "^9.0.0",
+    "tsx": "^4.7.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "esbuild": "^0.28.0",
+    "typescript": "^6.0.0"
+  }
+}

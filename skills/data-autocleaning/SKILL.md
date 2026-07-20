@@ -4,7 +4,7 @@ description: Automated data quality and transformation capabilities for Dataform
   pipelines. Processes data sourced from BigQuery or Cloud Storage (GCS), applying
   best practices for data ingestion, movement, schema mapping, and comprehensive data
   cleaning.
-license: TBD
+license: Apache-2.0
 metadata:
   version: v1
   publisher: google
@@ -17,13 +17,16 @@ sourced from **BigQuery** or **Google Cloud Storage (GCS)**.
 
 ## When to Use
 
-> [!IMPORTANT] You **MUST** use this skill for **ANY** task where the source is
-> BigQuery or GCS — including seemingly simple operations like "move data" or
-> "copy table".
+> [!IMPORTANT]
+>
+> You **MUST** use this skill for **ANY** task where the source is BigQuery or
+> GCS — including seemingly simple operations like "move data" or "copy table".
 
-- Apply to **all operations** on new and existing sources: copying, moving, appending, ingesting, or extracting data.
-- Apply to the **source node** specifically, not to subsequent pipeline steps.
-- **Never skip** Dataplex profiling (Steps 1 and 3). Always use Dataplex — **not** ad-hoc BigQuery profiling.
+-   Apply to **all operations** on new and existing sources: copying, moving,
+    appending, ingesting, or extracting data.
+-   Apply to the **source node** specifically, not to subsequent pipeline steps.
+-   **Never skip** Dataplex profiling (Steps 1 and 3). Always use Dataplex —
+    **not** ad-hoc BigQuery profiling.
 
 ## Task Execution Workflow
 
@@ -108,22 +111,30 @@ Perform these checks **before** generating the `implementation_plan.md`.
 2.  Your `implementation_plan.md` **MUST** also reference Step 3 (Quality
     Review) under its **Verification Plan** section.
 
-> [!CAUTION] **Do not proceed to implementation** until both sections are
-> completed. You MUST ensure that the verification phase only validates that
-> your transformations successfully addressed the anomalies found in Step 1.
+> [!CAUTION]
+>
+> **Do not proceed to implementation** until both sections are completed. You
+> MUST ensure that the verification phase only validates that your
+> transformations successfully addressed the anomalies found in Step 1.
 
 ### Step 2: Generate Transformations
 
 #### Schema Alignment
 
-- Match the destination table schema (types and names) if provided.
-- **Do not** perform column splits, merges, or other schema operations when no destination table is specified.
+-   Match the destination table schema (types and names) if provided.
+-   **Do not** perform column splits, merges, or other schema operations when no
+    destination table is specified.
 
 #### Data Cleaning Rules
 
-- **Garbage Values**: Drop or convert to `NULL` only for malformed data (e.g., unparseable dates, zero-length strings for non-nullable integers).
-- **Unit Normalization**: Standardize measurable units (e.g., `'C'` → `'F'`) to the most common unit. If units are too varied (e.g., `mg`, `liter`), leave as-is.
-- **Type Conversion**: Use `COALESCE` with `SAFE.PARSE_*` functions for multiple date/time/datetime/timestamp formats. Fetch diverse samples when source data shows high variance.
+-   **Garbage Values**: Drop or convert to `NULL` only for malformed data (e.g.,
+    unparseable dates, zero-length strings for non-nullable integers).
+-   **Unit Normalization**: Standardize measurable units (e.g., `'C'` → `'F'`)
+    to the most common unit. If units are too varied (e.g., `mg`, `liter`),
+    leave as-is.
+-   **Type Conversion**: Use `COALESCE` with `SAFE.PARSE_*` functions for
+    multiple date/time/datetime/timestamp formats. Fetch diverse samples when
+    source data shows high variance.
 
 #### JSON Data Handling
 
@@ -140,30 +151,45 @@ Perform these checks **before** generating the `implementation_plan.md`.
 
 #### Array Data Handling
 
--   **Unnesting**: Unnest array fields **only** if a destination schema explicitly requires it.
--   **Type Casting**: Attempt to cast elements to the most appropriate common type.
--   **CRITICAL**: Filter out `NULL` elements after `SAFE_CAST` (e.g., using `ARRAY`) as BigQuery arrays cannot contain `NULL`s.
--   **Normalization**: Only trim whitespace on string fields. Make sure to **PRESERVE CASE**. **DO NOT** perform case conversions (e.g., `LOWER()`, `UPPER()`) unless explicitly required.
--   **Filtering**: Filter out `NULL` values using `ARRAY_FILTER(array_column, e -> e IS NOT NULL)`.
--   **Deduplication**: Use `ARRAY(SELECT DISTINCT x FROM UNNEST(array_column))` for case-sensitive deduplication.
--   **Transformations**: Use `ARRAY_TRANSFORM` or `UNNEST`/`ARRAY_AGG` for element-wise changes (e.g., date parsing).
--   **Restructuring**: Use `UNNEST` to expand to rows, or `ARRAY_AGG` to group rows into an array, as required by the destination schema.
+-   **Unnesting**: Unnest array fields **only** if a destination schema
+    explicitly requires it.
+-   **Type Casting**: Attempt to cast elements to the most appropriate common
+    type.
+-   **CRITICAL**: Filter out `NULL` elements after `SAFE_CAST` (e.g., using
+    `ARRAY`) as BigQuery arrays cannot contain `NULL`s.
+-   **Normalization**: Only trim whitespace on string fields. Make sure to
+    **PRESERVE CASE**. **DO NOT** perform case conversions (e.g., `LOWER()`,
+    `UPPER()`) unless explicitly required.
+-   **Filtering**: Filter out `NULL` values using `ARRAY_FILTER(array_column, e
+    -> e IS NOT NULL)`.
+-   **Deduplication**: Use `ARRAY(SELECT DISTINCT x FROM UNNEST(array_column))`
+    for case-sensitive deduplication.
+-   **Transformations**: Use `ARRAY_TRANSFORM` or `UNNEST`/`ARRAY_AGG` for
+    element-wise changes (e.g., date parsing).
+-   **Restructuring**: Use `UNNEST` to expand to rows, or `ARRAY_AGG` to group
+    rows into an array, as required by the destination schema.
 
 #### STRUCT/Record Data Handling
 
--  **Extraction**: Extract fields to top-level columns **only** if the destination schema requires it.
--  **Type Casting**: Cast each field using `SAFE_CAST` based on the destination schema or inferred profile.
--  **Normalization**: Only trim whitespace on string fields. Make sure to **PRESERVE CASE**. **DO NOT** perform case conversions (e.g., `LOWER()`, `UPPER()`) unless explicitly required.
--  **Field Mapping**: Map directly if structures align; use dot notation (e.g., `struct.field`) to extract; or use `STRUCT()` constructor to group columns.
--  **Schema Alignment**: Populate missing fields with `NULL` and drop fields not present in the destination schema.
+-   **Extraction**: Extract fields to top-level columns **only** if the
+    destination schema requires it.
+-   **Type Casting**: Cast each field using `SAFE_CAST` based on the destination
+    schema or inferred profile.
+-   **Normalization**: Only trim whitespace on string fields. Make sure to
+    **PRESERVE CASE**. **DO NOT** perform case conversions (e.g., `LOWER()`,
+    `UPPER()`) unless explicitly required.
+-   **Field Mapping**: Map directly if structures align; use dot notation (e.g.,
+    `struct.field`) to extract; or use `STRUCT()` constructor to group columns.
+-   **Schema Alignment**: Populate missing fields with `NULL` and drop fields
+    not present in the destination schema.
 
 ### Step 3: Quality Review & Profiling
 
 > [!IMPORTANT]
+>
 > You **MUST** verify transformations strictly using the protocol below before
-> completing the task. **Never** skip this step.
-> Use **Dataplex profiling only** (unless scan was denied by the user) —
-> not ad-hoc SQL queries.
+> completing the task. **Never** skip this step. Use **Dataplex profiling only**
+> (unless scan was denied by the user) — not ad-hoc SQL queries.
 
 **Quality review protocol:**
 
@@ -200,9 +226,8 @@ Perform these checks **before** generating the `implementation_plan.md`.
 ### Step 3.5: Quality Review Evidence Requirements
 
 Your `walkthrough.md` **MUST** include a **Quality Review Profiling Evidence**
-section.
-**Note**: If scan execution was denied by the user, document the denial reason
-here instead of Job IDs.
+section. **Note**: If scan execution was denied by the user, document the denial
+reason here instead of Job IDs.
 
 ```markdown
 ## Quality Review Profiling Evidence
@@ -210,12 +235,15 @@ here instead of Job IDs.
 - [ ] Profile Comparison Summary: <Detailed comparison between initial and final profiles per column>
 ```
 
-> [!CAUTION] **Do not** conclude the task or ask for user review until this
-> section is filled and the profile comparison is documented.
+> [!CAUTION]
+>
+> **Do not** conclude the task or ask for user review until this section is
+> filled and the profile comparison is documented.
 
 ### Step 4: Documentation
 
-Your `walkthrough.md` must contain a table for each transformation in the following format:
+Your `walkthrough.md` must contain a table for each transformation in the
+following format:
 
 ```markdown
 | Field | Description |
@@ -230,9 +258,13 @@ Include a summary of all quality review steps and profiling evidence.
 
 ## Definition of Done
 
-- All source data quality issues are identified and addressed via SQL transformations.
-- Verification MUST be completed using the **Quality review protocol** and documented with evidence.
-- The verification step **MUST only** test the changes and should succeed when the sql is executed.
-- Transformations align with the target schema if provided.
-- Cleaning summary is provided with clear justification for each transformation.
-- If skipped, the reason is clearly stated (e.g., ineligible source).
+-   All source data quality issues are identified and addressed via SQL
+    transformations.
+-   Verification MUST be completed using the **Quality review protocol** and
+    documented with evidence.
+-   The verification step **MUST only** test the changes and should succeed when
+    the sql is executed.
+-   Transformations align with the target schema if provided.
+-   Cleaning summary is provided with clear justification for each
+    transformation.
+-   If skipped, the reason is clearly stated (e.g., ineligible source).

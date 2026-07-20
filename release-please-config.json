@@ -26,8 +26,9 @@
   "packages": {
     ".": {
       "release-type": "simple",
-      "package-name": "data-cloud-ai-dev-kit",
+      "package-name": "data-agent-kit-starter-pack",
       "extra-files": [
+        "README.md",
         {
           "type": "json",
           "path": "gemini-extension.json",
@@ -45,7 +46,7 @@
         },
         {
           "type": "json",
-          "path": "notebook_mcp/package.json",
+          "path": "mcp/package.json",
           "jsonpath": "$.version"
         },
         {
