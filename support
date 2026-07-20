@@ -11,14 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-name: Presubmit Tests
+name: support
 
 on:
   pull_request:
     branches: [ main ]
 
 jobs:
-  run-presubmit-tests:
+  run: setup
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
