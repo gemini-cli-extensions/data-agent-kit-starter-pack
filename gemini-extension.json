@@ -170,7 +170,37 @@
         "SERVERLESS_SPARK_PROJECT": "$PROJECT_ID",
         "SERVERLESS_SPARK_LOCATION": "$GCP_REGION"
       }
+    },
+    "datacloud_bigtable_toolbox": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "bigtable",
+        "--stdio",
+        "--user-agent-metadata",
+        "datacloud.gemini-cli"
+      ],
+      "env": {
+        "BIGTABLE_PROJECT": "",
+        "BIGTABLE_INSTANCE": ""
+      }
     }
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${extensionPath}${/}.agents${/}hooks${/}telemetry_hook.js\" --agent_name gemini --install_source data-agent-kit-starter-pack",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
   },
   "settings": [
     {
