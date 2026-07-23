@@ -7,6 +7,7 @@
     "email": "data-cloud-ai-integrations@google.com"
   },
   "mcpServers": "./.claude-mcp.json",
+  "hooks": "./.claude-plugin/hooks.json",
   "userConfig": {
     "PROJECT_ID": {
       "type": "string",

@@ -7,7 +7,7 @@ description: Expert guidance for creating, modifying, and optimizing dbt pipelin
   **setting up a new dbt project** or configuring existing one
 license: Apache-2.0
 metadata:
-  version: v3
+  version: v5
   publisher: google
 ---
 
@@ -82,8 +82,7 @@ Follow these steps when fulfilling dbt-related requests:
     -   If cleaning is not applied, provide **strong evidence** in the response.
     -   Include an **"Automatic Cleaning Summary"** section in every response.
 -   **SQL Optimizations:**
-    -   Follow the optimization protocol in **@skill:bigquery**
-        strictly.
+    -   Follow the optimization protocol in **@skill:bigquery-sql** strictly.
     -   Include an **"Optimization Summary"** section when applied.
 
 ### 4. Implement Changes
