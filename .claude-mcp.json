@@ -174,7 +174,7 @@
         "SERVERLESS_SPARK_LOCATION": "${user_config.GCP_REGION}"
       }
     },
-    "datacloud_bigtable_toolbox": {
+    "bigtable": {
       "command": "npx",
       "args": [
         "-y",
@@ -186,7 +186,7 @@
         "datacloud.claude"
       ],
       "env": {
-        "BIGTABLE_PROJECT": "",
+        "BIGTABLE_PROJECT": "${user_config.PROJECT_ID}",
         "BIGTABLE_INSTANCE": ""
       }
     }

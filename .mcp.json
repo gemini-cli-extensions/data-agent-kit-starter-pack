@@ -174,7 +174,7 @@
         "SERVERLESS_SPARK_LOCATION": "$GCP_REGION"
       }
     },
-    "datacloud_bigtable_toolbox": {
+    "bigtable": {
       "command": "npx",
       "args": [
         "-y",
@@ -186,7 +186,7 @@
         "datacloud.codex"
       ],
       "env": {
-        "BIGTABLE_PROJECT": "",
+        "BIGTABLE_PROJECT": "$PROJECT_ID",
         "BIGTABLE_INSTANCE": ""
       }
     }
