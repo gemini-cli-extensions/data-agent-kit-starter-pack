@@ -5,7 +5,7 @@ description: |
   Use this skill whenever you are running `bq` or `gcloud` commands via `run_command`.
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 
@@ -41,7 +41,10 @@ you **MUST** append the attribution label.
 -   **Flag Form**: `--label key=value`
 -   **Mandatory Label**: `datacloud=<ide>`
 -   **Deduction Rule**: Substitute `<ide>` with your actual environment/client
-    (e.g., `vscode`, `jetski`, `antigravity`, `codex`, `gemini-cli`, `claude`).
+    (e.g., `vscode`, `jetski`, `antigravity`, `codex`, `cursor`, `cloud-shell`,
+    `workstation`, `gemini-cli`, `claude`).
+    *   Use `cloud-shell` for GCP Cloud Shell.
+    *   Use `workstation` for GCP Cloud Workstations.
     If you cannot determine your environment, use `ai-agent`. Note that
     BigQuery labels **cannot** contain dots or spaces.
 
@@ -79,7 +82,10 @@ variable to ensure proper resource attribution.
 
 -   **Environment Variable**: `CLOUDSDK_METRICS_ENVIRONMENT=datacloud.<ide>`
 -   **Deduction Rule**: Substitute `<ide>` with your actual environment/client
-    (e.g., `vscode`, `jetski`, `antigravity`, `codex`, `gemini-cli`, `claude`).
+    (e.g., `vscode`, `jetski`, `antigravity`, `codex`, `cursor`, `cloud-shell`,
+    `workstation`, `gemini-cli`, `claude`).
+    *   Use `cloud-shell` for GCP Cloud Shell.
+    *   Use `workstation` for GCP Cloud Workstations.
     If you cannot determine your environment, use `ai-agent`. Note that
     values must use dots (e.g., `datacloud.vscode`), not colons.
 
@@ -99,3 +105,4 @@ CLOUDSDK_METRICS_ENVIRONMENT=datacloud.vscode gcloud compute disks create my-dis
 >
 > This applies to **ALL** `gcloud` commands, whether they are read-only
 > (`gcloud ... list`) or mutations (`gcloud ... create`).
+
