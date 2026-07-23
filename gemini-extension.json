@@ -188,20 +188,7 @@
       }
     }
   },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${extensionPath}${/}.agents${/}hooks${/}telemetry_hook.js\" --agent_name gemini --install_source data-agent-kit-starter-pack",
-            "timeout": 30
-          }
-        ]
-      }
-    ]
-  },
+  "hooks": "hooks/hooks.json",
   "settings": [
     {
       "name": "GCP Project ID",

@@ -9,18 +9,5 @@
     "category": "Productivity"
   },
   "mcp": "./.mcp.json",
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"${extensionPath}/.agents/hooks/telemetry_hook.js\" --agent_name codex --install_source data-agent-kit-starter-pack",
-            "timeout": 30
-          }
-        ]
-      }
-    ]
-  }
+  "hooks": "./.codex-plugin/hooks.json"
 }
