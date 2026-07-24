@@ -207,19 +207,46 @@ Cloud resources by enforcing **The Principle of Least Privilege** across all
 CLIs, MCP servers and other resources available to your agents.
 
 *   **Service Accounts:** Use
-    [service accounts](https://docs.cloud.google.com/docs/authentication/use-service-account-impersonation)
+    [service accounts](https://cloud.google.com/docs/authentication/use-service-account-impersonation)
     instead of end user credentials to access Google Cloud resources.
 *   **Limited Permissions:** Assign roles with
-    [limited permissions](https://docs.cloud.google.com/iam/docs/roles-overview)
+    [limited permissions](https://cloud.google.com/iam/docs/roles-overview)
     to the service account that you're using for authentication.
 *   **Principal Access Boundaries:** Prevent unwanted cross-org agent access by
     using
-    [Principal Access Boundary policies](https://docs.cloud.google.com/iam/docs/principal-access-boundary-policies#use-case-one-project)
+    [Principal Access Boundary policies](https://cloud.google.com/iam/docs/principal-access-boundary-policies#use-case-one-project)
     to scope your agent to projects you intend it to access.
-*   [Include a condition in the policy binding](https://docs.cloud.google.com/iam/docs/principal-access-boundary-policies#use-case-one-project)
+*   [Include a condition in the policy binding](https://cloud.google.com/iam/docs/principal-access-boundary-policies#use-case-one-project)
     to ensure that the policy only applies to the service accounts that you
     intend to restrict.
 
 You can read more
 [here](https://docs.cloud.google.com/data-cloud-extension/vs-code/prompt-injection-risk)
 on how to mitigate prompt injection attacks with Google Cloud MCP.
+
+## Usage Statistics
+
+The Data Agent Kit collects usage statistics (such as when the skills and
+MCP tools included in this kit are used) to improve the reliability and
+performance of the tool. No user code, file contents, or application data
+values are collected.
+
+### Opting Out
+
+You can opt out of usage statistics collection at any time using one of the
+following methods:
+
+#### 1. Environment Variable
+Set the `DO_NOT_TRACK` environment variable to `1` in your environment:
+```bash
+export DO_NOT_TRACK=1
+```
+
+#### 2. Configuration File
+Create or update your configuration file at `~/.data_agent_kit/config.json` to
+disable collection:
+```json
+{
+  "enableTelemetry": false
+}
+```
