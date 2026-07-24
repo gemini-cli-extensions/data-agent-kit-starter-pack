@@ -166,7 +166,7 @@ Edit the configuration file:
 </details>
 
 <!-- {x-release-please-end} -->
-<!-- release-version-force-update: 0.6.1 -->
+<!-- github-release-force: 0.7.0 -->
 
 ## Usage Examples
 
