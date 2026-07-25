@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.7.0](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.6.1...0.7.0) (2026-07-24)
+
+
+### Features
+
+* Add AI.AGG function to Data Agent Kit ([9431ff2](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/9431ff2d66468dcbe578499367699eba6cf03af3))
+* Bigtable MCP support ([26f175e](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/26f175e8e3f29a5e4103a05a102a522a5dcd7861)), refs [#146](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/issues/146)
+* Bigtable MCP support ([c58f5e9](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/c58f5e9d98d9cf94052d049712af8d27e03be5c8)), refs [#146](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/issues/146)
+* Modularize BigQuery skills in data_agent_common ([b29c63a](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/b29c63acb4e3d7f44b51bc8cb68785bb4d2a170f))
+* Remove DB skills, which are just wrappers on MCP toolbox from data agent common. Will add helpful skills once we come up with them. ([a9beba2](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/a9beba24337cd4d9994ece7faab4adadd7e19bdb))
+* **skills:** Add more IDE/environment values for resource attribution environment labels. ([3941694](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/3941694cf37f326e81a74eeee514c2163d67c7f6))
+* Update BQ ai_function_best_practices and constraints. ([f4394e1](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/f4394e1e9de1d877af3238e9d332f0f259aa7bb9))
+
+
+### Bug Fixes
+
+* Fix telemetry hook configurations for Codex, Claude Code, and Gemini CLI. ([b93ca2e](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/b93ca2ea387872d2b7378b0e56671cedf3d32517))
+* Update skill references and bump version in dataform and dbt. ([879f134](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/879f13499d5566ce2146050c2a8bce44abd69526))
+
+
+### Miscellaneous Chores
+
+* force release 0.7.0 ([3e89ba0](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/3e89ba0527440893bcd085aa69fd1943c9e2c576))
+
 ## [0.6.1](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.4.0...0.6.1) (2026-07-10)
 
 
