@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.7.0...0.7.1) (2026-07-27)
+
+
+### Bug Fixes
+
+* remove default hooks ([1171475](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/1171475ffa60507cf06eaa5d9a1b459db467b670))
+
 ## [0.7.0](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.6.1...0.7.0) (2026-07-24)
 
 
