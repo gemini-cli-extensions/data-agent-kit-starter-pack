@@ -188,7 +188,6 @@
       }
     }
   },
-  "hooks": "hooks/hooks.json",
   "settings": [
     {
       "name": "GCP Project ID",
