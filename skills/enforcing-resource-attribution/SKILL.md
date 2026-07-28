@@ -5,7 +5,7 @@ description: |
   Use this skill whenever you are running `bq` or `gcloud` commands via `run_command`.
 license: Apache-2.0
 metadata:
-  version: v2
+  version: v3
   publisher: google
 ---
 
@@ -38,8 +38,8 @@ Whenever you execute a `bq` command that accepts the `--label` flag (including
 but not limited to `bq query`, `bq load`, `bq extract`, `bq mk`, and `bq cp`),
 you **MUST** append the attribution label.
 
--   **Flag Form**: `--label key=value`
--   **Mandatory Label**: `datacloud=<ide>`
+-   **Flag Form**: `--label key:value`
+-   **Mandatory Label**: `datacloud:<ide>`
 -   **Deduction Rule**: Substitute `<ide>` with your actual environment/client
     (e.g., `vscode`, `jetski`, `antigravity`, `codex`, `cursor`, `cloud-shell`,
     `workstation`, `gemini-cli`, `claude`).
@@ -58,7 +58,7 @@ bq query --use_legacy_sql=false "SELECT 1"
 
 **Correct** (assuming you are running in VS Code):
 ```bash
-bq query --use_legacy_sql=false --label datacloud=vscode "SELECT 1"
+bq query --use_legacy_sql=false --label datacloud:vscode "SELECT 1"
 ```
 
 #### Copy Example
@@ -69,7 +69,7 @@ bq cp dataset1.table1 dataset2.table1_copy
 
 **Correct** (assuming you are running in Jetski):
 ```bash
-bq cp --label datacloud=jetski dataset1.table1 dataset2.table1_copy
+bq cp --label datacloud:jetski dataset1.table1 dataset2.table1_copy
 ```
 
 ---
