@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.2](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.7.1...0.7.2) (2026-07-28)
+
+
+### Features
+
+* **skills:** Clarify BQ label enforcement rules for resource attribution. ([c16b546](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/c16b5465d6dba54f089e8ed8ac83d38ed5cc4aae))
+* **skills:** Update bq label flag syntax in resource attribution skills. ([1ff44be](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/1ff44bec65a1a7913e772892c9a2542006c584b2))
+
+
+### Miscellaneous Chores
+
+* force release 0.7.2 ([62d2f9c](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/62d2f9c5504297893251a32ca92ec34c5ae2eb67))
+
 ## [0.7.1](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.7.0...0.7.1) (2026-07-27)
 
 
