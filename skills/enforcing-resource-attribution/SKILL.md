@@ -1,11 +1,10 @@
 ---
 name: enforcing-resource-attribution
 description: |
-  Enforces resource attribution for CLI commands.
-  Use this skill whenever you are running `bq` or `gcloud` commands via `run_command`.
+  Enforces resource attribution for CLI commands. Use this skill whenever you are running `bq` or `gcloud` commands via `run_command`. It ensures mandatory labeling for supported `bq` operations while avoiding invalid flags on read-only commands.
 license: Apache-2.0
 metadata:
-  version: v3
+  version: v4
   publisher: google
 ---
 
@@ -32,11 +31,17 @@ commands or working on infrastructure completely unrelated to Data Cloud /
 Analytics (e.g., managing Compute Engines for web apps, setting up standard
 IAM policies, etc.).
 
+Do **NOT** apply `--label` flags to commands that do not accept labels, as the `--label` flag is unsupported by these specific `bq` subcommands. These include:
+- `bq show`
+- `bq ls`
+- `bq version`
+- `bq rm`
+- `bq cancel`
+- `bq head`
+
 ## BigQuery CLI (`bq`)
 
-Whenever you execute a `bq` command that accepts the `--label` flag (including
-but not limited to `bq query`, `bq load`, `bq extract`, `bq mk`, and `bq cp`),
-you **MUST** append the attribution label.
+You **MUST** apply `--label key:value` **ONLY** to subcommands that accept job or resource labels (`bq query`, `bq load`, `bq extract`, `bq mk`, `bq update`, and `bq cp`).
 
 -   **Flag Form**: `--label key:value`
 -   **Mandatory Label**: `datacloud:<ide>`
