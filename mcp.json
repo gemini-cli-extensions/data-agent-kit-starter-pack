@@ -1,0 +1,153 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "notebook": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
+        "--mode=notebook"
+      ]
+    },
+    "visualization": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
+        "--mode=visualization"
+      ]
+    },
+    "bigquery": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "bigquery",
+        "--stdio",
+        "--user-agent-metadata",
+        "datacloud.other"
+      ]
+    },
+    "spanner": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "spanner",
+        "--stdio",
+        "--user-agent-metadata",
+        "datacloud.other"
+      ]
+    },
+    "alloydb-postgres-admin": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "alloydb-postgres-admin",
+        "--stdio",
+        "--user-agent-metadata",
+        "datacloud.other"
+      ]
+    },
+    "alloydb-postgres": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "alloydb-postgres",
+        "--stdio",
+        "--user-agent-metadata",
+        "datacloud.other"
+      ]
+    },
+    "cloud-sql-postgresql-admin": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "cloud-sql-postgres-admin",
+        "--stdio",
+        "--user-agent-metadata",
+        "datacloud.other"
+      ]
+    },
+    "cloud-sql-postgresql": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "cloud-sql-postgres",
+        "--stdio",
+        "--user-agent-metadata",
+        "datacloud.other"
+      ]
+    },
+    "knowledge_catalog": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "dataplex",
+        "--stdio",
+        "--user-agent-metadata",
+        "datacloud.other"
+      ]
+    },
+    "dataproc": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "dataproc",
+        "--stdio",
+        "--user-agent-metadata",
+        "datacloud.other"
+      ]
+    },
+    "serverless-spark": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "serverless-spark",
+        "--stdio",
+        "--user-agent-metadata",
+        "datacloud.other"
+      ]
+    },
+    "bigtable": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "bigtable",
+        "--stdio",
+        "--user-agent-metadata",
+        "datacloud.other"
+      ]
+    }
+  }
+}
