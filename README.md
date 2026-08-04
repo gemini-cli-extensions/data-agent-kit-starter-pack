@@ -114,6 +114,16 @@ Start the Codex agent (`codex`), then run:
 Use the interactive options to install the plugin with the name `Data Agent Kit Starter Pack`.
 </details>
 
+<details>
+<summary><b>Any Agent Plugins–compatible client</b></summary>
+
+This repository is a valid [Agent Plugins](https://github.com/agentplugins/agent-plugins-spec) (v1) plugin. Any [compatible client](https://agent-plugins.org/compatible-clients) (VS Code, Cursor, GitHub Copilot, Codex, Kiro, …) can install it directly using its own built-in plugin command — skills and MCP servers included — by pointing at this repository:
+```
+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack
+```
+See your agent's documentation for its exact install command.
+</details>
+
 ### Configuration
 
 This extension brings a suite of specialized **Skills** and **MCP toolboxes**. While skills are ready to use upon installation, you **must** configure the MCP toolboxes and authenticate with Google Cloud for them to start successfully.
