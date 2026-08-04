@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v2
+  version: v6
   publisher: google
 ---
 
@@ -29,7 +29,17 @@ metadata:
     skill or `references/schema_direct_inspection.md` to understand input and
     output schemas. Include the schema in your thought process BEFORE generating
     any code. Do NOT guess column names.
-2.  **Generate spark code**:
+2.  **Clarify ambiguous requests**: **ALWAYS** check if the user request lacks
+    explicit column names, metrics, or analytical objectives (e.g., general
+    "analyze dataset" or "analyze all transactions" prompts). When a request is
+    under-specified or ambiguous, you **MUST** ask a clarifying question to the
+    user BEFORE generating code, creating a notebook, or running analysis.
+    *   **Standard Clarification Templates**:
+        *   "What specific columns, metrics, or analytical objectives should I
+            focus on for this dataset?"
+        *   "Could you please specify what exact analysis or metrics you would
+            like to run on `<table_or_dataset>`?"
+3.  **Generate spark code**:
     *   **Output Format**: **ALWAYS** generate code in **Python Notebooks
         (.ipynb)** format. Generate scripts (.py) only if explicitly requested.
     *   **Read and Write data**: **ALWAYS** Refer to
@@ -39,14 +49,14 @@ metadata:
     *   **Spark Optimizations**: **ALWAYS** refer to
         `references/spark_optimizations.md` when generating spark code and apply
         optimization whenever applicable.
-3.  **Verify schema before write**: **ALWAYS** verify that the dataframe and
+4.  **Verify schema before write**: **ALWAYS** verify that the dataframe and
     destination schema match, use `df.printSchema()` for dataframe schema and
     refer to `@skill:discovering-gcp-data-assets` skill or
     `references/schema_direct_inspection.md` to verify destination schema.
-4.  **Compile code before executing**: For notebooks convert them to python
+5.  **Compile code before executing**: For notebooks convert them to python
     script using `jupyter nbconvert --to script your-notebook.ipynb` first, then
     compile code using `python3 -m py_compile your-notebook.py`.
-5.  **Execute script**: ONLY when generating a `.py` script refer to
+6.  **Execute script**: ONLY when generating a `.py` script refer to
     `references/gcloud_dataproc.md` on writing command to execute generated code
     on Dataproc. This DOES NOT apply when generating notebooks.
 
@@ -71,6 +81,9 @@ Before submitting a job, verify:
 -   [ ] **Avoid toPandas()** Converting a pyspark dataframe to pandas by calling
     toPandas() can lead to out of memory errors. Only acceptable for building
     visualizations in Spark 3.5
+-   [ ] **Clarify under-specified requests** ask for explicit column names,
+    metrics, or analytical goals if the user prompt is ambiguous before creating
+    a notebook or executing analysis
 
 --------------------------------------------------------------------------------
 
