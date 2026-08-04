@@ -156,15 +156,17 @@ executing the command for Job Submission
 Prefer MCP if available. If using gcloud, use this command template:
 
 Augment the basic command with iceberg, spanner or xgboost related arguments as
-needed by the script to be executed.
+needed by the script to be executed. Quote variable expansions (`"${VAR}"`) to
+ensure proper bash syntax.
 
-```
-gcloud dataproc batches submit pyspark <SCRIPT_PATH.py> \
-    --project=<PROJECT_ID> \
-    --region=<GCP_REGION> \
+```bash
+gcloud dataproc batches submit pyspark "${SCRIPT_PATH}" \
+    --project="${PROJECT_ID}" \
+    --region="${GCP_REGION}" \
     --version=2.3 \
-    --deps-bucket=<GCS_PATH>
+    --deps-bucket="${DEPS_BUCKET}"
 ```
+
 You MUST set the `--deps-bucket` to a GCS path to upload workload dependencies.
 
 > [!IMPORTANT] Dataproc Serverless batches can be expected to take a very long
@@ -201,6 +203,7 @@ Include the spark spanner connect jar using argument
 #### XGBoost
 XGBoost requires spark dynamic allocation to be disabled. Set additional
  properties:
+
 ```
 --properties="spark.dynamicAllocation.enabled=false"
 ```

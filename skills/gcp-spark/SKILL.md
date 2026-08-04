@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v2
+  version: v6
   publisher: google
 ---
 
@@ -48,7 +48,9 @@ metadata:
     compile code using `python3 -m py_compile your-notebook.py`.
 5.  **Execute script**: ONLY when generating a `.py` script refer to
     `references/gcloud_dataproc.md` on writing command to execute generated code
-    on Dataproc. This DOES NOT apply when generating notebooks.
+    on Dataproc. When generating bash submission scripts, quote variable
+    expansions (e.g. `"${PROJECT_ID}"`, `"${REGION}"`). This DOES NOT apply when
+    generating notebooks.
 
 --------------------------------------------------------------------------------
 
