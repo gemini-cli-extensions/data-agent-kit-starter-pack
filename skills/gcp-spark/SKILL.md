@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v2
+  version: v6
   publisher: google
 ---
 
@@ -34,6 +34,20 @@ metadata:
         (.ipynb)** format. Generate scripts (.py) only if explicitly requested.
     *   **Read and Write data**: **ALWAYS** Refer to
         `references/read_write_data.md` when reading or writing data.
+    *   **Table Read Failures & Typo Recovery**: **ALWAYS** use a
+        "catalog-first" recovery heuristic when a table read fails (e.g., table
+        not found, 403 Forbidden, or execution error). When a table read fails
+        with any error (including 403 Forbidden or Table Not Found), **DO NOT**
+        assume there is an IAM or permission blocker, and **DO NOT** switch to a
+        different project or dataset. You MUST immediately inspect the **SAME
+        project and dataset** specified in the request by querying BigQuery
+        `INFORMATION_SCHEMA.TABLES` (e.g., ``SELECT table_name FROM
+        \`PROJECT_ID.DATASET_NAME.INFORMATION_SCHEMA.TABLES\` ``), running `bq
+        ls PROJECT_ID:DATASET_NAME`, or using
+        `spark.catalog.listTables("PROJECT_ID.DATASET_NAME")`. Check for
+        fuzzy-matched table name typos (`loan` vs `loans`) within that exact
+        dataset. Autonomously update the notebook with the corrected table name
+        without asking the user for confirmation.
     *   **ML Tasks**: Refer to `@skill:ml-best-practices` skill and
         `references/ml_tasks.md` when generating ML code.
     *   **Spark Optimizations**: **ALWAYS** refer to
@@ -71,6 +85,12 @@ Before submitting a job, verify:
 -   [ ] **Avoid toPandas()** Converting a pyspark dataframe to pandas by calling
     toPandas() can lead to out of memory errors. Only acceptable for building
     visualizations in Spark 3.5
+-   [ ] **Catalog-first recovery for table read errors**: When a table read
+    fails, inspect the original project and dataset using `INFORMATION_SCHEMA`
+    queries or `spark.catalog.listTables()`. Check for fuzzy-matched table name
+    typos (`loan` vs `loans`) within that exact dataset. Do NOT switch projects
+    or datasets, and do NOT ask for user confirmation; fix the typo
+    autonomously.
 
 --------------------------------------------------------------------------------
 
