@@ -131,6 +131,7 @@ Prefer MCP if available. If using gcloud, use this command template:
 
 ```
 gcloud dataproc batches list \
+    --region=<GCP_REGION> \
     --format="json(batchType, createTime, creator, name, state, stateTime)" \
     --sort-by="~stateTime" \
     --limit=100
@@ -140,8 +141,17 @@ Tips:
 
 -   **Important:** Always include a limit; the default is no limit, which may
     produce too much output to process.
+-   Add `--region` (or `--location`) to scope query to a specific GCP region
+    (e.g. `--region=us-central1`).
 -   Add a `--filter` to limit results, e.g. `(state = RUNNING and create_time <
     "2023-01-01T00:00:00Z") or labels.environment=production`
+
+### Describing and monitoring batches
+
+```
+gcloud dataproc batches describe <BATCH_ID> --region=<GCP_REGION>
+gcloud dataproc batches wait <BATCH_ID> --region=<GCP_REGION>
+```
 
 ### Launching batches
 
@@ -201,6 +211,7 @@ Include the spark spanner connect jar using argument
 #### XGBoost
 XGBoost requires spark dynamic allocation to be disabled. Set additional
  properties:
+
 ```
 --properties="spark.dynamicAllocation.enabled=false"
 ```
@@ -231,5 +242,5 @@ Tips:
 
 -   **Important:** Always include a limit; the default is no limit, which may
     produce too much output to process.
--   Add a `--filter` to limit results, e.g. `state = ACTIVE AND
-    labels.env = staging AND create_time >= "2023-01-01T00:00:00Z"`
+-   Add a `--filter` to limit results, e.g. `state = ACTIVE AND labels.env =
+    staging AND create_time >= "2023-01-01T00:00:00Z"`
