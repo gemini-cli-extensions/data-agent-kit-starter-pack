@@ -7,7 +7,7 @@
     "name": "Google LLC",
     "email": "data-cloud-ai-integrations@google.com"
   },
-  "homepage": "https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack",
+  "homepage": "https://docs.cloud.google.com/data-cloud-extension",
   "repository": "https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack",
   "license": "Apache-2.0"
 }
