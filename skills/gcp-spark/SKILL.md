@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v2
+  version: v6
   publisher: google
 ---
 
@@ -28,7 +28,10 @@ metadata:
 1.  **Understand schemas**: **ALWAYS** use `@skill:discovering-gcp-data-assets`
     skill or `references/schema_direct_inspection.md` to understand input and
     output schemas. Include the schema in your thought process BEFORE generating
-    any code. Do NOT guess column names.
+    any code. Do NOT guess column names. When an explicitly named table is
+    missing and candidate replacements are found, **ALWAYS** report the missing
+    table, suggest available alternatives, and prompt the user for confirmation
+    before executing queries on an alternative table.
 2.  **Generate spark code**:
     *   **Output Format**: **ALWAYS** generate code in **Python Notebooks
         (.ipynb)** format. Generate scripts (.py) only if explicitly requested.
@@ -71,6 +74,10 @@ Before submitting a job, verify:
 -   [ ] **Avoid toPandas()** Converting a pyspark dataframe to pandas by calling
     toPandas() can lead to out of memory errors. Only acceptable for building
     visualizations in Spark 3.5
+-   [ ] **Prompt user before using alternative tables** when an explicitly named
+    table is missing and a candidate replacement is found, report the missing
+    table, suggest available alternatives, and prompt the user for confirmation
+    before executing queries on an alternative table
 
 --------------------------------------------------------------------------------
 
