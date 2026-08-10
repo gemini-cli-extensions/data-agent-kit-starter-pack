@@ -1,6 +1,7 @@
 # ML on Dataproc
 
 **Verified patterns** for ML training:
+
 - **XGBoost**: Use `SparkXGBClassifier`
 - **Native Spark ML**: `GBTClassifier`, `RandomForestClassifier`,
   `LogisticRegression`
@@ -12,6 +13,7 @@
 > LightGBM wrapper conflicts with Dataproc's internal libraries.
 
 **Alternatives:**
+
 1. **Use XGBoost** — Similar performance, native Spark support.
 2. **Use Native Spark ML** — `GBTClassifier` provides similar gradient boosting
 3. **Use Vertex AI** — Train LightGBM on Vertex, export model, load in Spark
@@ -19,6 +21,7 @@
 4. **Use Dataproc Cluster** (not Serverless) — More control over dependencies
 
 **If you must use LightGBM**, consider:
+
 - Training on a dedicated Dataproc cluster created with LightGBM spark packages
   set in the cluster properties:
   `spark:spark.jars.packages=com.microsoft.azure:synapseml_2.12:1.1.3`
@@ -39,12 +42,14 @@
 > **`SparkXGBClassifier`** requires `dynamicAllocation=false`
 
 **Prohibited** (causes `ValueError`):
+
 ```python
 # ❌ DO NOT do this
 xgb = SparkXGBClassifier(objective="binary:logistic", ...)
 ```
 
 **Correct**:
+
 ```python
 # ✅ Do this - objective is automatically set
 xgb = SparkXGBClassifier(
@@ -58,3 +63,12 @@ xgb = SparkXGBClassifier(
 See [XGBoost PySpark documentation]
 (https://xgboost.readthedocs.io/en/stable/python/python_api.html#module-xgboost.spark)
 for allowed parameters.
+
+--------------------------------------------------------------------------------
+
+## Clustering & Visualizations
+
+-   When creating clustering visualizations (e.g., PCA scatter plots), sample or
+    aggregate centroids before converting to Pandas (`.toPandas()`) to prevent
+    driver OOM.
+-   Include clear cluster profile descriptions in summary markdown cells.
