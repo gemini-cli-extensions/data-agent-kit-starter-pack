@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v2
+  version: v6
   publisher: google
 ---
 
@@ -68,9 +68,11 @@ Before submitting a job, verify:
     `df.printSchema()` before writing
 -   [ ] **CSV files read with `header` and `inferSchema`** without these, the
     header row becomes data and all columns are strings
--   [ ] **Avoid toPandas()** Converting a pyspark dataframe to pandas by calling
-    toPandas() can lead to out of memory errors. Only acceptable for building
-    visualizations in Spark 3.5
+-   [ ] **Avoid un-aggregated toPandas() / collect()** perform server-side
+    aggregation, sampling, or limit before converting to Pandas to avoid driver
+    OOM.
+-   [ ] **Unpersist cached DataFrames** call `df.unpersist()` after completing
+    cached operations.
 
 --------------------------------------------------------------------------------
 
