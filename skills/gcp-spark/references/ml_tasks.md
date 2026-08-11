@@ -5,6 +5,22 @@
 - **Native Spark ML**: `GBTClassifier`, `RandomForestClassifier`,
   `LogisticRegression`
 
+## Regression Modeling
+
+> [!IMPORTANT]
+> **Strict Guidelines for Regression Tasks in PySpark.** When working on regression tasks (e.g. predicting duration, prices), you MUST adhere to the following steps to avoid overfitting, data leakage, and improper evaluations:
+
+1.  **Target Analysis**: Perform target analysis to understand the distribution of the target variable. Check if any transformation (e.g., log transformation) is needed.
+2.  **Data Splitting**: Use an appropriate ratio, like 80/20 train/test split. Use `randomSplit([0.8, 0.2], seed=42)` for reproducibility.
+3.  **Prevent Data Leakage (Avoid Premature Featurization)**: **NEVER** apply feature transformations (e.g. `StringIndexer`, `OneHotEncoder`, `StandardScaler`, `VectorAssembler`) to the entire dataset before splitting. You MUST assemble all feature transformations in a Spark ML `Pipeline` and fit the pipeline **ONLY** on the training set, then transform both train and test. This prevents information leaking from the test set into the training phase.
+4.  **Train Multiple Models**: Train and compare multiple models (e.g., `LinearRegression`, `RandomForestRegressor`, `GBTRegressor`). 
+5.  **Baseline Comparison**: Always establish a simple baseline for comparison before tuning complex models (e.g., a simple Mean Predictor, or `LinearRegression` without regularization).
+6.  **Evaluate and Identify Overfitting**: Evaluate all models on **BOTH** the training set and the test set. Compare metrics (RMSE, R2, MAE) using `RegressionEvaluator` to identify if a model is overfitting (i.e. significantly better performance on train than test). 
+7.  **Address Overfitting**: If a model overfits, address it by applying regularization (`regParam`, `elasticNetParam` in `LinearRegression`), reducing tree depth (`maxDepth` in trees), or increasing instances per node (`minInstancesPerNode`). 
+8.  **Visualize Actual vs Predicted**: Provide a visualization of Actual vs. Predicted values, or a residual plot. Since data can be large, use `.sample(fraction, seed)` to downsample or extract it with `.toPandas()` *after* selecting predictions, ensuring you don't OOM the driver.
+
+---
+
 ## LightGBM on Dataproc
 
 > [!WARNING]
