@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v2
+  version: v5
   publisher: google
 ---
 
@@ -28,27 +28,42 @@ metadata:
 1.  **Understand schemas**: **ALWAYS** use `@skill:discovering-gcp-data-assets`
     skill or `references/schema_direct_inspection.md` to understand input and
     output schemas. Include the schema in your thought process BEFORE generating
-    any code. Do NOT guess column names.
-2.  **Generate spark code**:
+    any code. Do NOT guess column names. Unless explicitly specified, assume
+    that the assets are located in the same project. Avoid scanning for assets
+    across other projects as it can take a long time.
+2.  **Verify source accessibility**: verify access/existence using `gcloud
+    storage ls gs://<path-to-dataset>`. If accessing or reading a GCS path fails
+    with a storage error e.g., permission errors like `403
+    Forbidden`/`Forbidden`/`PermissionDenied`, or location errors like `404 Not
+    Found`/`NotFound`/`FileNotFoundException` you should report the error
+    immediately. Either (1) ask the user what to do next, or (2) if asked to
+    execute a notebook, save the notebook with the error output and recommend
+    next steps to resolve the issue. Do NOT scan all buckets for alternative
+    fallback datasets when encountering GCS errors.
+3.  **Generate spark code**:
     *   **Output Format**: **ALWAYS** generate code in **Python Notebooks
         (.ipynb)** format. Generate scripts (.py) only if explicitly requested.
     *   **Read and Write data**: **ALWAYS** Refer to
         `references/read_write_data.md` when reading or writing data.
+    *   **Feature Engineering**: **ALWAYS** refer to
+        `references/feature_engineering.md` when performing feature engineering
+        tasks like one-hot encoding or train/test splits.
     *   **ML Tasks**: Refer to `@skill:ml-best-practices` skill and
         `references/ml_tasks.md` when generating ML code.
     *   **Spark Optimizations**: **ALWAYS** refer to
         `references/spark_optimizations.md` when generating spark code and apply
         optimization whenever applicable.
-3.  **Verify schema before write**: **ALWAYS** verify that the dataframe and
+4.  **Verify schema before write**: **ALWAYS** verify that the dataframe and
     destination schema match, use `df.printSchema()` for dataframe schema and
     refer to `@skill:discovering-gcp-data-assets` skill or
     `references/schema_direct_inspection.md` to verify destination schema.
-4.  **Compile code before executing**: For notebooks convert them to python
-    script using `jupyter nbconvert --to script your-notebook.ipynb` first, then
-    compile code using `python3 -m py_compile your-notebook.py`.
-5.  **Execute script**: ONLY when generating a `.py` script refer to
-    `references/gcloud_dataproc.md` on writing command to execute generated code
-    on Dataproc. This DOES NOT apply when generating notebooks.
+5.  **Compile code before executing**: For notebooks convert them to python
+    script using `jupyter nbconvert --to script your-notebook.ipynb` first. Then
+    compile the resulting python script using `python3 -m py_compile
+    your-script.py`. The same can be done for pyspark source code.
+6.  **Execute script**: When requested to run a job, script, session refer to
+    `references/gcloud_dataproc.md` on how to execute generated code on Managed
+    Spark. This DOES NOT apply when generating notebooks.
 
 --------------------------------------------------------------------------------
 
