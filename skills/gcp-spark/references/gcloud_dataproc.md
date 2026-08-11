@@ -1,7 +1,8 @@
 # Dataproc and Spark Integration
+
 Manage Spark resources on Google Cloud Dataproc Clusters and Serverless,
-  including setting up clusters; launching jobs and batches; managing serverless
-  session templates, and inspecting outputs.
+including setting up clusters; launching jobs and batches; managing serverless
+session templates, and inspecting outputs.
 
 ## Background
 
@@ -121,9 +122,9 @@ Use this section if the user requests:
 -   spark sessions, serverless spark sessions, spark interactive sessions,
     serverless interactive sessions, spark notebooks, spark kernels
 
-**Do not** use this section if the user requests
-spark jobs, cluster jobs, or just jobs, **unless** you have confirmed with the
-user that they are using Serverless.
+**Do not** use this section if the user requests spark jobs, cluster jobs, or
+just jobs, **unless** you have confirmed with the user that they are using
+Serverless.
 
 ### Listing batches
 
@@ -165,42 +166,45 @@ gcloud dataproc batches submit pyspark <SCRIPT_PATH.py> \
     --version=2.3 \
     --deps-bucket=<GCS_PATH>
 ```
+
 You MUST set the `--deps-bucket` to a GCS path to upload workload dependencies.
 
 > [!IMPORTANT] Dataproc Serverless batches can be expected to take a very long
 > time. **Typical initial execution time:** 10-15 minutes. This is **NORMAL**
-> behavior.
-> [!WARNING]
-> **DO NOT CANCEL PREMATURELY!**
+> behavior. [!WARNING] **DO NOT CANCEL PREMATURELY!**
 
-#### Reading or writing to BigLake Iceberg catalog
-If the pyspark script is reading or writing data to BigLake Iceberg catalog. Set
- these properties
-```
---properties="\
-spark.sql.catalog.<CATALOG_NAME>=org.apache.iceberg.spark.SparkCatalog,\
-spark.sql.catalog.<CATALOG_NAME>.type=rest,\
-spark.sql.catalog.<CATALOG_NAME>.uri=\
-https://biglake.googleapis.com/iceberg/v1/restcatalog,\
-spark.sql.catalog.<CATALOG_NAME>.io-impl=\
-org.apache.iceberg.gcp.gcs.GCSFileIO,\
-spark.sql.catalog.<CATALOG_NAME>.header.x-goog-user-project=<PROJECT_ID>,\
-spark.sql.catalog.<CATALOG_NAME>.warehouse=<WAREHOUSE>,\
-spark.sql.catalog.<CATALOG_NAME>.rest.auth.type=\
-org.apache.iceberg.gcp.auth.GoogleAuthManager,\
-spark.sql.extensions=\
-org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions"
-```
-If the BigLake is GCS Catalog type then `WAREHOUSE="gs://<CATALOG_NAME>"`, if
- it's BQ federated type then `WAREHOUSE="bq://projects/<PROJECT_ID>"`
+### Connector Dependencies & Properties
 
-#### Reading data from spanner
-Include the spark spanner connect jar using argument
- `--jars=gs://spark-lib/spanner/spark-3.5-spanner-1.2.2.jar`
+> [!IMPORTANT] Examples below work for spark version 3.5 which is used in
+> runtimes 2.2 and 2.3. For other runtimes you need to scan through libraries
+> targeting the appropriate version of spark.
+
+#### Spanner
+
+-   **Dependency**: `--jars=gs://spark-lib/spanner/spark-3.5-spanner-1.4.0.jar`
+-   **Notes**: Pass `.option("projectId", ...)` in PySpark
+
+#### PostgreSQL
+
+-   **Dependency**: `spark.jars.packages=org.postgresql:postgresql:42.6.0`
+-   **Notes**: Pass `--subnet=...` for private IP
+
+#### Iceberg REST
+
+-   **Dependency**:
+    `spark.jars.packages=org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.5.0`
+-   **Notes**: In code use `<CATALOG>.<DATASET>.<TABLE>` (not project ID)
+
+#### Pub/Sub
+
+-   **Dependency**: `from google.cloud import pubsub_v1`
+-   **Notes**: Pre-installed in runtime
 
 #### XGBoost
+
 XGBoost requires spark dynamic allocation to be disabled. Set additional
- properties:
+properties:
+
 ```
 --properties="spark.dynamicAllocation.enabled=false"
 ```
@@ -210,11 +214,11 @@ XGBoost requires spark dynamic allocation to be disabled. Set additional
 **Do not** create sessions using gcloud for use in notebooks. Instead, direct
 the user to associate the notebook with a kernel using the Kernel Selector:
 
-1. Click "Remote Spark Kernels"
-2. Choose a kernel name ending in "on Serverless Spark"
+1.  Click "Remote Spark Kernels"
+2.  Choose a kernel name ending in "on Serverless Spark"
 
-It is expected for Serverless kernel creation to take approximately 2 minutes
-or more.
+It is expected for Serverless kernel creation to take approximately 2 minutes or
+more.
 
 ### Listing sessions
 
@@ -231,5 +235,5 @@ Tips:
 
 -   **Important:** Always include a limit; the default is no limit, which may
     produce too much output to process.
--   Add a `--filter` to limit results, e.g. `state = ACTIVE AND
-    labels.env = staging AND create_time >= "2023-01-01T00:00:00Z"`
+-   Add a `--filter` to limit results, e.g. `state = ACTIVE AND labels.env =
+    staging AND create_time >= "2023-01-01T00:00:00Z"`
