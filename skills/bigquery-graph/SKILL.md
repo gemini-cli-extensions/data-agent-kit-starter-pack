@@ -1,7 +1,9 @@
 ---
 name: bigquery-graph
+license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
+  publisher: google
 description: >-
   Provides guidelines and best practices for querying and defining property graphs and semantic graphs in BigQuery using GQL (Graph Query Language). Use when creating property graphs or querying graph topologies in BigQuery.
 ---
