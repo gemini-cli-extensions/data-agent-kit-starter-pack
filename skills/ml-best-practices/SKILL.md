@@ -15,7 +15,7 @@ description: |
   SQL/BigQuery ML HANDOFF: If the user requires a SQL solution, use this skill to dictate the ANALYSIS STEPS (e.g., markdown analysis cells, visualization logic), but defer to `bigquery` for all SQL syntax.
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 
@@ -60,6 +60,8 @@ How might different modeling approaches impact the prediction accuracy?
 
 -   Understand the schema and field descriptions.
 -   Visualize the target feature over time at a reasonable granularity.
+-   Detect and handle outliers in the target feature before model fitting (e.g.,
+    IQR / quantile analysis).
 -   Always perform a chronological split on the data to create training,
     validation, and test sets.
 -   Are there seasonal trends?
@@ -134,6 +136,8 @@ Predict the continuous valued target feature.
 -   Identify any potential sources of group leakage. Aggregate where appropriate
     to prevent this.
 -   Visualize target feature.
+-   Detect and handle outliers in numerical features and target before model
+    fitting.
 -   Split data into training, validation, and test sets.
 -   Handle missing data. Prefer to keep data instead of dropping it when
     possible.
@@ -210,3 +214,10 @@ production based on predictive power, robustness, and viability.
     and NULL values. First, analyze their frequency. Then, decide whether to
     keep them, drop them or impute them with a contextually appropriate value,
     and explain your reasoning.
+
+-   **Outlier Detection & Handling**: **ALWAYS** inspect numerical distributions
+    for outliers before model fitting using statistical methods (e.g. IQR via
+    `approxQuantile([0.25, 0.75])` in PySpark). Explicitly quantify outlier
+    counts, determine whether they represent valid domain entities (to retain
+    with justification) or data errors (to clean/winsorize), and explain your
+    reasoning.

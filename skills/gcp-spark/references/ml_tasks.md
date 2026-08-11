@@ -1,9 +1,14 @@
 # ML on Dataproc
 
 **Verified patterns** for ML training:
+
 - **XGBoost**: Use `SparkXGBClassifier`
 - **Native Spark ML**: `GBTClassifier`, `RandomForestClassifier`,
   `LogisticRegression`
+-   **Outlier Handling**: Profile numerical columns before feature assembly via
+    `df.approxQuantile("<col>", [0.25, 0.75], 0.01)` for IQR bounds. Quantify
+    outliers and explicitly decide whether to retain valid domain records or
+    filter/winsorize artifacts with stated justification.
 
 ## LightGBM on Dataproc
 
@@ -12,6 +17,7 @@
 > LightGBM wrapper conflicts with Dataproc's internal libraries.
 
 **Alternatives:**
+
 1. **Use XGBoost** — Similar performance, native Spark support.
 2. **Use Native Spark ML** — `GBTClassifier` provides similar gradient boosting
 3. **Use Vertex AI** — Train LightGBM on Vertex, export model, load in Spark
@@ -19,6 +25,7 @@
 4. **Use Dataproc Cluster** (not Serverless) — More control over dependencies
 
 **If you must use LightGBM**, consider:
+
 - Training on a dedicated Dataproc cluster created with LightGBM spark packages
   set in the cluster properties:
   `spark:spark.jars.packages=com.microsoft.azure:synapseml_2.12:1.1.3`
@@ -39,12 +46,14 @@
 > **`SparkXGBClassifier`** requires `dynamicAllocation=false`
 
 **Prohibited** (causes `ValueError`):
+
 ```python
 # ❌ DO NOT do this
 xgb = SparkXGBClassifier(objective="binary:logistic", ...)
 ```
 
 **Correct**:
+
 ```python
 # ✅ Do this - objective is automatically set
 xgb = SparkXGBClassifier(

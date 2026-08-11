@@ -4,6 +4,7 @@
 > You MUST ALWAYS follow the Task Execution Workflow when writing spark code.
 
 ## Task Execution Workflow
+
 1. Configure the spark session to read or write data from the required source
    or destination
 2. Read or write the data from the required source or destination
@@ -16,6 +17,7 @@ configuration are provided by default in Dataproc.
 
 ### Reading from BigQuery
 #### Basic example to read a Big Query table
+
 ```python
 df = spark.read.format("bigquery") \
     .option("table", "<PROJECT_ID>.<DATASET_NAME>.<TABLE_NAME>") \
@@ -57,7 +59,9 @@ enriched_df = main_df.join(
 ```
 
 #### Optimization Tips
+
 1. Select only needed columns from BigQuery
+
 ```python
 ref_df = spark.read.format("bigquery") \
     .option("table", "<PROJECT_ID>.<DATASET_NAME>.<LARGE_TABLE_NAME>") \
@@ -67,6 +71,7 @@ ref_df = spark.read.format("bigquery") \
 ```
 
 2. Using broadcast joins for small reference tables
+
 ```python
 from pyspark.sql.functions import broadcast
 
@@ -75,14 +80,17 @@ enriched_df = main_df.join(
     on="key"
 )
 ```
+
 3. Cache reference data if used multiple times, example: `ref_df.cache()`
 
 ### Writing to BigQuery
 
 #### Non partitioned data
 Write DataFrame to BigQuery using direct writes,
+
  - Set writeMethod to direct
  - Set mode to one of `overwrite`, `append`, `errorifexists` based on task
+
 ```python
 df.write \
     .format("bigquery") \
@@ -95,8 +103,10 @@ df.write \
 Write DataFrame to a partitioned BigQuery table using indirect writes. In
 this method, data is written to GCS first and then loaded into BigQuery.
 A GCS bucket is required as the temporary data location.
+
  - Set temporaryGcsBucket to a gcs bucket name
  - Set a check point path location
+
 ```python
 df.write \
   .format("bigquery") \
@@ -108,6 +118,7 @@ df.write \
 ## BigLake Iceberg Catalog
 
 ### Spark Session Configuration
+
 - [!WARNING] BigLake Iceberg catalog must be configured in the spark session
   before tables can be read.
 - Multiple Iceberg catalogs can be configured in the same spark session
@@ -121,6 +132,7 @@ df.write \
   table, **ALWAYS lookup** table details before proceeding.
 
 Example with GCS storage:
+
 ```python
 spark = SparkSession.builder \
     .appName("<APP_NAME>") \
@@ -157,6 +169,7 @@ spark = SparkSession.builder \
 ```
 
 Example with S3 storage:
+
 ```python
 spark = SparkSession.builder \
     .appName("<APP_NAME>") \
@@ -201,12 +214,14 @@ spark = SparkSession.builder \
 ```
 
 ### Reading from BigLake Iceberg Catalog
+
 - You **MUST** set the current spark catalog before attempting to read, using
   `spark.catalog.setCurrentCatalog("<CATALOG_NAME>")`. **DO NOT** use backticks
   in this call.
 - [!IMPORTANT] You **MUST ALWAYS** surround the catalog name with backticks in
   SQL statements and `load()` calls to ensure proper handling of special
   characters (e.g., `catalog_name`).
+
 ```python
 spark.catalog.setCurrentCatalog("<CATALOG_NAME>")
 df = spark.read.format("iceberg") \
@@ -216,22 +231,25 @@ df = spark.read.format("iceberg") \
 ### Writing to BigLake Iceberg Catalog
 [!IMPORTANT] Follow these instructions before writing code to write to BigLake
 iceberg tables
+
 - **ALWAYS** use Spark's `DataFrameWriterV2` API (`writeTo`) for writing to
   Iceberg tables. This provides a richer API with specific write modes.
 - You **MUST** set the current spark catalog before attempting to write, using
   `spark.catalog.setCurrentCatalog("<CATALOG_NAME>")`. **DO NOT** use backticks
   in this call.
 - **ALWAYS** Ensure namespace is created before writing, using:
+
     ```python
     spark.sql(
         "CREATE NAMESPACE IF NOT EXISTS `<CATALOG_NAME>`.<NAMESPACE_NAME>"
     )
     ```
-> [!IMPORTANT] You **MUST ALWAYS** surround the catalog name with backticks in
-> SQL statements and `writeTo()` calls to ensure proper handling of special
-> characters.
+    > [!IMPORTANT] You **MUST ALWAYS** surround the catalog name with backticks
+    > in SQL statements and `writeTo()` calls to ensure proper handling of
+    > special characters.
 - [!WARNING] BigLake Iceberg catalog must be configured before tables can be
   read.
+
 ```python
 # The basic pattern
 spark.catalog.setCurrentCatalog("<CATALOG_NAME>")
@@ -241,7 +259,8 @@ df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>").using("iceberg")
 #### Write Modes
 
 - **DataFrameWriterV2 `createOrReplace()`**: Creates the table if it does not
-  exist, or replaces it if it does.
+    exist, or replaces it if it does.
+
     ```python
     df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>") \
         .using("iceberg") \
@@ -249,17 +268,20 @@ df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>").using("iceberg")
     ```
 
 - **DataFrameWriterV2 `append()`**: Equivalent to `INSERT INTO`. Appends data to
-  an existing table.
+    an existing table.
+
     ```python
     df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>") \
         .using("iceberg") \
         .append()
     ```
+
 - **SPARK SQL MERGE INTO**: Performs row-level updates, inserts, and deletes by
-  rewriting data files that contain affected rows. The source table can be
-  persisted as a temp view to allow using it in the MERGE INTO statement. The
-  source view and the target table must be joined on the primary key(s) to
-  ensure correct row-level updates, inserts, and deletes.
+    rewriting data files that contain affected rows. The source table can be
+    persisted as a temp view to allow using it in the MERGE INTO statement. The
+    source view and the target table must be joined on the primary key(s) to
+    ensure correct row-level updates, inserts, and deletes.
+
     ```python
     df.createOrReplaceTempView("source_updates")
 
@@ -276,26 +298,33 @@ df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>").using("iceberg")
   asked to:
 *   **`create()`**: Equivalent to `CREATE TABLE AS SELECT`. Fails if the table
     already exists.
+
     ```python
     df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>") \
         .using("iceberg") \
         .create()
     ```
+
 *   **`replace()`**: Equivalent to `REPLACE TABLE AS SELECT`.
+
     ```python
     df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>") \
         .using("iceberg") \
         .replace()
     ```
+
 *   **`overwritePartitions()`**: Equivalent to dynamic `INSERT OVERWRITE`.
     Overwrites partitions in the table that match the data in the DataFrame.
+
     ```python
     df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>") \
         .using("iceberg") \
         .overwritePartitions()
     ```
+
 *   **`overwrite(condition)`**: Overwrites data that matches a specific
     condition (e.g. static overwrite).
+
     ```python
     from pyspark.sql.functions import col
     df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>") \
@@ -309,6 +338,7 @@ df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>").using("iceberg")
 Use partitioning transform functions if writing to partitioned tables using
 timestamp fields. Ex: years, months, days, hours etc.
 Example: 
+
 ```python
 from pyspark.sql.functions import days
 
@@ -321,6 +351,7 @@ df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>") \
 ##### Schema Evolution
 Iceberg supports safe schema evolution. You can merge schema changes during an
 append.
+
 ```python
 df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>") \
     .option("mergeSchema", "true") \
@@ -328,6 +359,7 @@ df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>") \
 ```
 
 ##### Writing to a Specific Branch
+
 ```python
 # To insert into an `audit` branch
 df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>.branch_audit") \
@@ -343,6 +375,7 @@ configuration are provided by default in Dataproc.
 #### CSV format
 Read with `header` and `inferSchema` without these, the header row becomes data
 and all columns are strings
+
 ```python
 df = spark.read.option("header", "true") \
     .option("inferSchema", "true") \
@@ -361,6 +394,7 @@ df = spark.read.option("header", "true") \
 `df.write.csv("gs://bucket/output_path")`
 
 #### Model artifacts
+
 ```python
 # Warehouse already includes gs://, don't add it again
 warehouse = spark.conf.get(f"spark.sql.catalog.<CATALOG_NAME>.warehouse")
@@ -374,6 +408,7 @@ The spanner jar must be configured in the spark session before tables can be
 read. In the notebook code we can ONLY validate the spanner connector is
 configured.
 Example:
+
 ```python
 spark = SparkSession.builder \
     .appName("<APP_NAME>") \
@@ -385,6 +420,7 @@ spark = SparkSession.builder \
 ```
 
 #### Reading Spanner tables
+
 ```python
 df = spark.read.format('cloud-spanner') \
   .option("projectId", "<PROJECT_ID>") \
@@ -399,8 +435,10 @@ The connector supports writing to Spanner tables using the DataFrame `write`
 API.
 
 #### Write Modes
+
 *   **`Append`**: Inserts rows into the existing Spanner table. This is the
     default write mode.
+
     ```python
     df.write.format("cloud-spanner") \
         .option("projectId", "<PROJECT_ID>") \
@@ -412,6 +450,7 @@ API.
     ```
 
 *   **`Overwrite`**: Clears the existing data before writing.
+
     ```python
     df.write.format("cloud-spanner") \
         .option("projectId", "<PROJECT_ID>") \
@@ -422,4 +461,33 @@ API.
         .save()
     ```
 
+## Cloud SQL (PostgreSQL / MySQL)
 
+### Reading from Cloud SQL via JDBC
+
+```python
+df = spark.read.format("jdbc") \
+    .option("url", "jdbc:postgresql://<HOST_OR_PRIVATE_IP>:5432/<DATABASE>") \
+    .option("dbtable", "<TABLE_NAME>") \
+    .option("user", "<USER>") \
+    .option("password", "<PASSWORD>") \
+    .option("driver", "org.postgresql.Driver") \
+    .load()
+```
+
+## Google Cloud Pub/Sub
+
+### Batch Ingestion via Pub/Sub Client
+
+```python
+from google.cloud import pubsub_v1
+import json
+
+subscriber = pubsub_v1.SubscriberClient()
+sub = f"projects/{PROJECT_ID}/subscriptions/{SUBSCRIPTION_NAME}"
+response = subscriber.pull(request={"subscription": sub, "max_messages": 100}, timeout=10.0)
+records = [json.loads(m.message.data.decode("utf-8")) for m in response.received_messages]
+if response.received_messages:
+    subscriber.acknowledge(request={"subscription": sub, "ack_ids": [m.ack_id for m in response.received_messages]})
+df = spark.createDataFrame(records)
+```
