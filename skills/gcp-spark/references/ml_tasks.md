@@ -58,3 +58,14 @@ xgb = SparkXGBClassifier(
 See [XGBoost PySpark documentation]
 (https://xgboost.readthedocs.io/en/stable/python/python_api.html#module-xgboost.spark)
 for allowed parameters.
+
+## Data Leakage Prevention
+
+> [!CAUTION]
+> **Data leakage** invalidates ML models. You MUST implement the following rules to avoid target, time, or group leakage.
+
+1.  **Premature Featurization (Target/Feature Leakage)**: NEVER apply feature transformations (scaling, imputation, normalization, PCA, StringIndexer) *before* splitting the data. **ALWAYS** use a Spark ML `Pipeline` where feature engineering stages come *after* the train/test split.
+2.  **Target Exclusion**: BEFORE creating a feature vector (`VectorAssembler`), explicitly exclude the target variable (label column) and any columns perfectly correlated or derived from the target (e.g., 'total_amount' if predicting 'tax_amount').
+3.  **Group/Entity Leakage**: When predicting on grouped data (e.g., inventory items, customers, financial entities), DO NOT use random splits (`randomSplit`) across the entire dataset. You MUST group splits by entity ID or use a group-based splitting strategy to ensure an entity belongs entirely to training or testing, not both.
+4.  **Hyperparameter Tuning Leakage**: NEVER use the holdout `test` set for hyperparameter tuning. ALWAYS use Cross-Validation (`CrossValidator`) or a separate `TrainValidationSplit` explicitly on the training data.
+5.  **Time/Temporal Leakage**: For temporal data (e.g., financial transactions), NEVER use random splitting. You MUST split the data chronologically (train on past, test on future). Filter by a split date/timestamp to preserve chronological order.
