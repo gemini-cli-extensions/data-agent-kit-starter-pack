@@ -27,7 +27,7 @@ description: >
 
 license: Apache-2.0
 metadata:
-  version: v4
+  version: v5
   publisher: google
 ---
 
@@ -102,9 +102,9 @@ Use this section when configuring a Dataflow Java pipeline project using gradle.
 Use this section to package pipeline code as a Flex template.
 
 Flex Templates offer a hermetic and reproducible launch environment for a
-pipeline. They are easy to launch with `gcloud` or with orchestrators like Cloud
-Composer. You **MUST** package the pipeline as a Flex Template when creating new
-Dataflow pipeline projects.
+pipeline. They are easy to launch with `gcloud` or with orchestrators like
+Managed Airflow (Cloud Composer). You **MUST** package the pipeline as a Flex
+Template when creating new Dataflow pipeline projects.
 
 Follow the steps below:
 

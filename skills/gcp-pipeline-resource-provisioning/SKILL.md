@@ -1,7 +1,7 @@
 ---
 name: gcp-pipeline-resource-provisioning
 description: |
-  Automates declarative resource creation and provisioning for data pipelines, supporting BigQuery, Dataform, Dataproc, BigQuery Data Transfer Service (DTS), and other resources. It manages environment-specific configurations (dev, staging, prod) through a deployment.yaml file.
+  Automates declarative resource creation and provisioning for data pipelines, supporting BigQuery, Dataform, Managed Spark (Dataproc), BigQuery Data Transfer Service (DTS), and other resources. It manages environment-specific configurations (dev, staging, prod) through a deployment.yaml file.
   Use when:
   - Modifying or creating deployment.yaml for deployment settings.
   - Resolving environment-specific variables (e.g., Project IDs, Regions) for deployment.
@@ -14,7 +14,7 @@ description: |
   - Already uses Terraform for the target resources.
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 

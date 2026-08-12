@@ -122,48 +122,40 @@ message DataprocEphemeralConfiguration {
   repeated string impersonation_chain = 6;
 }
 
-message DataprocClusterResourceProfile {
-  message InlineConfig {
-      oneof config_alias {
-        // A Dataproc cluster config.
-        // See: https://docs.cloud.google.com/dataproc/docs/reference/rest/v1/ClusterConfig
-        google.protobuf.Struct cluster_config = 1 [deprecated = true];
+message DataprocClusterResourceProfile { message InlineConfig { oneof
+config_alias { // A Managed Spark (Dataproc) cluster config. // See:
+https://docs.cloud.google.com/dataproc/docs/reference/rest/v1/ClusterConfig
+google.protobuf.Struct cluster_config = 1 [deprecated = true];
 
-        // A Dataproc cluster config.
-        // See: https://docs.cloud.google.com/dataproc/docs/reference/rest/v1/ClusterConfig
-        // For instance group config (e.g. machineTypeUri), see: https://docs.cloud.google.com/dataproc/docs/reference/rest/v1/InstanceGroupConfig
-        google.protobuf.Struct config = 2;
-      }
+```
+    // A Managed Spark (Dataproc) cluster config.
+    // See: https://docs.cloud.google.com/dataproc/docs/reference/rest/v1/ClusterConfig
+    // For instance group config (e.g. machineTypeUri), see: https://docs.cloud.google.com/dataproc/docs/reference/rest/v1/InstanceGroupConfig
+    google.protobuf.Struct config = 2;
   }
-  oneof config {
-      InlineConfig inline = 1;
-      string path = 2;
-      string external_config_path = 3;
-  }
-  // Overrides are applied with deep merge onto the inline or external config. The format of Dataproc cluster config is required.
-  // See: https://docs.cloud.google.com/dataproc/docs/reference/rest/v1/ClusterConfig
-  // For instance group config (e.g. machineTypeUri), see: https://docs.cloud.google.com/dataproc/docs/reference/rest/v1/InstanceGroupConfig
-  google.protobuf.Struct overrides = 4;
-}
+```
 
-message DataprocBatchResourceProfile {
-  message InlineConfig {
-    // A Dataproc runtime config for a batch job.
-    // See: https://docs.cloud.google.com/dataproc-serverless/docs/reference/rest/v1/RuntimeConfig
-    google.protobuf.Struct runtime_config = 1;
-    // A Dataproc environment config for a batch job.
-    // See: https://docs.cloud.google.com/dataproc-serverless/docs/reference/rest/v1/EnvironmentConfig
-    google.protobuf.Struct environment_config = 2;
-  }
-  oneof config {
-    InlineConfig inline = 1;
-    string path = 2;
-    string external_config_path = 3;
-  }
-  // Overrides are applied with deep merge onto the inline or external config. Only runtime_config and environment_config are supported.
-  // See: https://docs.cloud.google.com/dataproc-serverless/docs/reference/rest/v1/projects.locations.sessions#resource:-session
-  google.protobuf.Struct overrides = 4;
-}
+} oneof config { InlineConfig inline = 1; string path = 2; string
+external_config_path = 3; } // Overrides are applied with deep merge onto the
+inline or external config. The format of Managed Spark (Dataproc) cluster config
+is required. // See:
+https://docs.cloud.google.com/dataproc/docs/reference/rest/v1/ClusterConfig //
+For instance group config (e.g. machineTypeUri), see:
+https://docs.cloud.google.com/dataproc/docs/reference/rest/v1/InstanceGroupConfig
+google.protobuf.Struct overrides = 4; }
+
+message DataprocBatchResourceProfile { message InlineConfig { // A Managed Spark
+(Dataproc) runtime config for a batch job. // See:
+https://docs.cloud.google.com/dataproc-serverless/docs/reference/rest/v1/RuntimeConfig
+google.protobuf.Struct runtime_config = 1; // A Managed Spark (Dataproc)
+environment config for a batch job. // See:
+https://docs.cloud.google.com/dataproc-serverless/docs/reference/rest/v1/EnvironmentConfig
+google.protobuf.Struct environment_config = 2; } oneof config { InlineConfig
+inline = 1; string path = 2; string external_config_path = 3; } // Overrides are
+applied with deep merge onto the inline or external config. Only runtime_config
+and environment_config are supported. // See:
+https://docs.cloud.google.com/dataproc-serverless/docs/reference/rest/v1/projects.locations.sessions#resource:-session
+google.protobuf.Struct overrides = 4; }
 
 message DataprocServerlessBatchEngine {
   string location = 1;
@@ -395,6 +387,7 @@ message DataformAirflowExecution {
 }
 
 ## Ochestration Pipeline YAML File example
+
 ```yaml
 modelVersion: 1.0
 pipelineId: sample_orchestration
@@ -440,5 +433,7 @@ actions:
 ```
 
 ## Key Schema Reminders:
+
 1. **Action Key**: Use `- pyspark:` or `- pipeline:` directly. Do NOT use `- type: pyspark`.
-2. **Dataproc Engine**: Under `dataprocOnGce`, you must specify either `existingCluster` or `ephemeralCluster`.
+2.  **Managed Spark Engine**: Under `dataprocOnGce`, you must specify either
+    `existingCluster` or `ephemeralCluster`.

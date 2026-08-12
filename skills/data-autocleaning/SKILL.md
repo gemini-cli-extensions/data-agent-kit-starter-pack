@@ -6,7 +6,7 @@ description: Automated data quality and transformation capabilities for Dataform
   cleaning.
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 
@@ -25,8 +25,8 @@ sourced from **BigQuery** or **Google Cloud Storage (GCS)**.
 -   Apply to **all operations** on new and existing sources: copying, moving,
     appending, ingesting, or extracting data.
 -   Apply to the **source node** specifically, not to subsequent pipeline steps.
--   **Never skip** Dataplex profiling (Steps 1 and 3). Always use Dataplex —
-    **not** ad-hoc BigQuery profiling.
+-   **Never skip** Knowledge Catalog (Dataplex) profiling (Steps 1 and 3).
+    Always use Knowledge Catalog — **not** ad-hoc BigQuery profiling.
 
 ## Task Execution Workflow
 
@@ -36,12 +36,12 @@ Perform these checks **before** generating the `implementation_plan.md`.
 
 1.  **Check Eligibility** — You MUST confirm the source is a BigQuery table or
     GCS source.
-2.  **Gather Data Profile via Dataplex**:
+2.  **Gather Data Profile via Knowledge Catalog (Dataplex)**:
 
     -   **GCS sources**: For GCS sources, you MUST create an external table
-        first before running the dataplex scan.
-    -   **Wait for results**: You **MUST NOT** proceed until the Dataplex
-        profile is available, unless user scan approval was denied.
+        first before running the Knowledge Catalog scan.
+    -   **Wait for results**: You **MUST NOT** proceed until the Knowledge
+        Catalog profile is available, unless user scan approval was denied.
     -   Use the profile as input for cleansing and schema mapping decisions. The
         transformations **MUST NOT** be finalized before profile information is
         available (unless scan was denied).
@@ -52,11 +52,11 @@ Perform these checks **before** generating the `implementation_plan.md`.
             executing it. Use the following template to present the command:
             -   **Command**: `python3 scripts/dataplex_scanner.py ...` (Fetch
                 full arguments from step 6 below)
-            -   **Summary**: The script automates Dataplex data profiling. It
-                checks table sizes, applies dynamic sampling for large tables
-                (>1M rows) to reduce costs, skips empty tables, executes
-                concurrent scans for multiple tables, and polls for results
-                automatically.
+            -   **Summary**: The script automates Knowledge Catalog data
+                profiling. It checks table sizes, applies dynamic sampling for
+                large tables (>1M rows) to reduce costs, skips empty tables,
+                executes concurrent scans for multiple tables, and polls for
+                results automatically.
             -   **Value Add**: Enables deep data analysis (null rates, distinct
                 values, distributions) allowing data-driven cleansing decisions.
                 It helps identify hidden anomalies (garbage values, format
@@ -74,7 +74,7 @@ Perform these checks **before** generating the `implementation_plan.md`.
             output directory.
         4.  **[!IMPORTANT]** The location MUST be a specific Google Cloud region
             like `us-central1`; multi-regions like `us` are not supported in
-            Dataplex scan.
+            Knowledge Catalog scan.
         5.  If there are multiple tables to scan, provide them all in the
             `--tables` argument to run them concurrently.
         6.  Use the following command template:
@@ -101,7 +101,7 @@ Perform these checks **before** generating the `implementation_plan.md`.
 
 ```markdown
 ## Profiling Evidence
-- [ ] Dataplex Data Profile Job ID: <JOB_ID>
+- [ ] Knowledge Catalog Data Profile Job ID: <JOB_ID>
 - [ ] Profile Result Summary: <Brief summary of key findings, e.g., % nulls, distinct values>
 ```
 
@@ -188,8 +188,9 @@ Perform these checks **before** generating the `implementation_plan.md`.
 > [!IMPORTANT]
 >
 > You **MUST** verify transformations strictly using the protocol below before
-> completing the task. **Never** skip this step. Use **Dataplex profiling only**
-> (unless scan was denied by the user) — not ad-hoc SQL queries.
+> completing the task. **Never** skip this step. Use **Knowledge Catalog
+> profiling only** (unless scan was denied by the user) — not ad-hoc SQL
+> queries.
 
 **Quality review protocol:**
 
@@ -198,7 +199,8 @@ Perform these checks **before** generating the `implementation_plan.md`.
 2.  Create a **temporary sample output table** (max 1M rows, 1-hour TTL) by
     running the transformation query.
 3.  Fix any runtime errors and re-run until the query succeeds.
-4.  **Profile the temporary sample output table using Dataplex**:
+4.  **Profile the temporary sample output table using Knowledge Catalog
+    (Dataplex)**:
     -   **Verify approval**: If scan execution was approved in Step 1, proceed.
         If approval was DENIED in Step 1, DO NOT run the scanner script and DO
         NOT ask the user for approval again. Proceed with manual verification
@@ -231,7 +233,7 @@ reason here instead of Job IDs.
 
 ```markdown
 ## Quality Review Profiling Evidence
-- [ ] Post-Transformation Dataplex Profile Job ID: <JOB_ID>
+- [ ] Post-Transformation Knowledge Catalog Profile Job ID: <JOB_ID>
 - [ ] Profile Comparison Summary: <Detailed comparison between initial and final profiles per column>
 ```
 

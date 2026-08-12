@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Script to trigger an Airflow DAG in a Cloud Composer environment."""
+"""Script to trigger an Airflow DAG in a Managed Airflow (Cloud Composer) environment."""
 
 import argparse
 import json
@@ -25,7 +25,7 @@ import requests
 
 
 class ComposerClient:
-  """Client for interacting with Cloud Composer and Airflow."""
+  """Client for interacting with Managed Airflow (Cloud Composer) and Airflow."""
 
   def __init__(self, token: str = '', creds: Any | None = None) -> None:
     self.token = token
@@ -65,7 +65,7 @@ class ComposerClient:
   def get_airflow_uri(
       self, project: str, location: str, environment: str
   ) -> str:
-    """Gets the Airflow URI for a Composer environment."""
+    """Gets the Airflow URI for a Managed Airflow environment."""
     url = f'https://composer.googleapis.com/v1/projects/{project}/locations/{location}/environments/{environment}'
     response = requests.get(url, headers=self._get_headers())
     response.raise_for_status()
@@ -78,7 +78,7 @@ class ComposerClient:
   def trigger_dag_run(
       self, project: str, location: str, environment: str, dag_id: str
   ) -> dict[str, Any]:
-    """Triggers a DAG run in the specified Composer environment."""
+    """Triggers a DAG run in the specified Managed Airflow environment."""
     airflow_uri = self.get_airflow_uri(project, location, environment)
     url = f'{airflow_uri}/api/v1/dags/{dag_id}/dagRuns'
     response = requests.post(url, headers=self._get_headers(), json={})
@@ -89,12 +89,12 @@ class ComposerClient:
 def trigger_dag(
     project: str, location: str, environment: str, dag_id: str
 ) -> str:
-  """Triggers an Airflow DAG in a Cloud Composer environment.
+  """Triggers an Airflow DAG in a Managed Airflow (Cloud Composer) environment.
 
   Args:
     project: GCP Project ID.
     location: GCP Region (e.g., us-central1).
-    environment: Composer environment name.
+    environment: Managed Airflow environment name.
     dag_id: ID of the DAG to trigger.
 
   Returns:
@@ -116,7 +116,7 @@ def main() -> None:
   parser.add_argument('--project', required=True, help='GCP Project ID')
   parser.add_argument('--location', required=True, help='GCP Location')
   parser.add_argument(
-      '--environment', required=True, help='Composer Environment'
+      '--environment', required=True, help='Managed Airflow Environment'
   )
   parser.add_argument('--dag_id', required=True, help='Airflow DAG ID')
 

@@ -6,10 +6,10 @@ description: |
   Use this for:
   - SQL: DROP TABLE/VIEW/SCHEMA/DATABASE, TRUNCATE, or broad DELETE (missing WHERE or using 1=1).
   - Cloud Storage: gsutil rm or gcloud storage rm targeting production data or critical buckets.
-  - Infrastructure: gcloud projects delete, deleting Spanner/BigQuery/Dataproc resources, deleting secrets, or KMS key destruction.
+  - Infrastructure: gcloud projects delete, deleting Spanner/BigQuery/Managed Spark (Dataproc) resources, deleting secrets, or KMS key destruction.
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 

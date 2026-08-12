@@ -72,7 +72,7 @@ environments:
         parent: {{ REPO_NAME }}
         definition: {}
 
-      # --- Dataproc ---
+      # --- Managed Spark (Dataproc) ---
       - type: dataproc.cluster
         name: my-dataproc-cluster
         definition:

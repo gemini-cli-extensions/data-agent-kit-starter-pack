@@ -9,7 +9,7 @@ description: |-
     4. You need to query BigQuery from within a notebook. DO NOT use the Python BigQuery client library; instead, you MUST use the `%%bqsql` magics explained in this skill.
 license: Apache-2.0
 metadata:
-  version: v5
+  version: v6
   publisher: google
 ---
 
@@ -92,10 +92,10 @@ kernel’s Python environment contains the necessary libraries (`bigframes`,
 
 1.  **Local Python**: Standard Python 3 kernel running on the notebook host
     (Managed instance, local machine).
-2.  **Cloud Spark Remote (Dataproc Serverless)**: Transient Spark environment
-    managed by GCP. Use for large-scale data processing.
-3.  **Cloud Spark Remote (Dataproc Cluster)**: Persistent Spark clusters for
-    shared or custom configurations.
+2.  **Cloud Spark Remote (Managed Spark Serverless)**: Transient Spark
+    environment managed by GCP. Use for large-scale data processing.
+3.  **Cloud Spark Remote (Managed Spark Cluster)**: Persistent Spark clusters
+    for shared or custom configurations.
 4.  **Colab (Managed)**: Ephemeral Google-managed runtimes.
 
 ### No Active Kernel / Setup Check
@@ -120,7 +120,7 @@ kernel’s Python environment contains the necessary libraries (`bigframes`,
 > **HARD STOP on kernel failure**: If a cell execution returns "no active
 > kernel" or any kernel-not-found error, you MUST **stop immediately**. Do NOT
 > scaffold, generate, or insert any further cells. Inform the user which kernel
-> is needed (e.g., PySpark / Dataproc Serverless) and wait for explicit
+> is needed (e.g., PySpark / Managed Spark Serverless) and wait for explicit
 > confirmation that a kernel is active before proceeding with notebook
 > execution.
 
@@ -138,7 +138,7 @@ Since these are often ephemeral or managed by GCP:
 
 *   **Check first (REQUIRED)**: Before writing any `%pip install` cell, run
     `%pip list` or `import <package>` to confirm the package is not already
-    present. Managed runtimes (Dataproc Serverless, Colab) pre-install many
+    present. Managed runtimes (Managed Spark Serverless, Colab) pre-install many
     common packages. Only install what is confirmed missing.
 *   Use `%pip install <package>` in the first cell if a package is confirmed
     missing and it's the only way to modify the runtime.
