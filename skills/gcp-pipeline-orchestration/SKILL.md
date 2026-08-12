@@ -1,13 +1,13 @@
 ---
 name: gcp-pipeline-orchestration
 description: This skill helps the agent generate or update orchestration pipeline
-  definitions for Google Cloud Composer to initialize orchestration pipeline or update
+  definitions for Managed Airflow (Cloud Composer) to initialize orchestration pipeline or update
   the orchestration definition for orchestration of various data pipelines, like dbt
   pipelines, notebooks, Spark jobs, Dataform, Python scripts or inline BigQuery SQL
   queries. This skill also helps deploy and trigger orchestration pipelines.
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 
@@ -138,8 +138,8 @@ following fields:
 
 -   First, before creating the orchestration pipeline definition file, you
     **must** first run the following command to get the list of available
-    dataproc environments for the user's project. This avoids using placeholder
-    values to run the jobs.
+    Managed Spark (Dataproc) environments for the user's project. This avoids
+    using placeholder values to run the jobs.
 
     ```
     # Replace <PROJECT_ID> with the actual project_id
@@ -154,26 +154,26 @@ following fields:
     > Running the command without `--format=yaml` provides a clear, tabular
     > output that is easier to read.
 
--   Then use the returned dataproc list with details to create the orchestration
-    pipeline definition file based on the user's requirements for the pipeline's
-    logic and schedule. **IMPORTANT:** Every schedule **must** include an
-    `endTime`. Every schedule **must** use the current date as `startTime` if
-    the user hasn't specified.
+-   Then use the returned Managed Spark cluster list with details to create the
+    orchestration pipeline definition file based on the user's requirements for
+    the pipeline's logic and schedule. **IMPORTANT:** Every schedule **must**
+    include an `endTime`. Every schedule **must** use the current date as
+    `startTime` if the user hasn't specified.
 
     > [!IMPORTANT]
     >
-    > A Composer environment is not a Dataproc cluster. If no Dataproc clusters
-    > are available, do not use a Composer environment for the
-    > `sparkHistoryServerConfig`. It is better to omit this configuration if a
-    > dedicated Spark History Server is not available.
+    > A Managed Airflow environment is not a Managed Spark cluster. If no
+    > Managed Spark clusters are available, do not use a Managed Airflow
+    > environment for the `sparkHistoryServerConfig`. It is better to omit this
+    > configuration if a dedicated Spark History Server is not available.
 
 -   If you want to schedule the python job, check the content of Python content
     to determine if it's a spark job. If it is, use `pyspark` as type instead of
     script as type.
 
 -   Before creating or updating the `deployment.yaml` file, you **must** first
-    run the following command to get the list of available Composer environments
-    for the user's project.
+    run the following command to get the list of available Managed Airflow
+    (Composer) environments for the user's project.
 
     ```
     # Replace <PROJECT_ID> with the actual project_id
@@ -183,13 +183,13 @@ following fields:
     --locations <REGION> \
     ```
 
-    After listing available Composer environments, you **must** check each
-    environment to ensure the composer is using the right image version or has
-    installed right PyPI packages. Run the following command for each
+    After listing available Managed Airflow environments, you **must** check
+    each environment to ensure the environment is using the right image version
+    or has installed right PyPI packages. Run the following command for each
     environment:
 
     ```
-    # Replace <ENVIRONMENT_NAME> with the Composer environment name
+    # Replace <ENVIRONMENT_NAME> with the Managed Airflow environment name
     # Replace <REGION> with the region
     gcloud composer environments describe <ENVIRONMENT_NAME> \
     --location <REGION> \
@@ -323,7 +323,8 @@ Deploy → Poll → Trigger flow.
     uses the latest code. Extract the `bundle ID` from deploy output and the
     `pipelineId` from the orchestration YAML.
 
-3.  **Poll for DAG readiness**: Wait for the DAG to be registered in Composer.
+3.  **Poll for DAG readiness**: Wait for the DAG to be registered in Managed
+    Airflow.
 
     ```bash
     # Initial delay: wait 30 seconds after deploy

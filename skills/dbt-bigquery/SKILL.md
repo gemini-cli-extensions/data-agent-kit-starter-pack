@@ -7,7 +7,7 @@ description: Expert guidance for creating, modifying, and optimizing dbt pipelin
   **setting up a new dbt project** or configuring existing one
 license: Apache-2.0
 metadata:
-  version: v5
+  version: v6
   publisher: google
 ---
 
@@ -137,7 +137,7 @@ Follow these steps when fulfilling dbt-related requests:
 ## Troubleshooting dbt
 
 -   **Identify the Context**: Determine if the failure is local or related to a
-    remote orchestration pipeline (e.g., Cloud Composer DAG run).
+    remote orchestration pipeline (e.g., Managed Airflow DAG run).
 -   **Log Gathering**: For remote DAG failures, use `gcloud logging read` to
     fetch logs for the specific `task-id` and `run-id`. Search for stack traces
     or runtime exceptions.

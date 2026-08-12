@@ -1,32 +1,33 @@
 ---
 name: gcp-composer-troubleshooting
-description: 'Provides expert guidance for troubleshooting Cloud Composer (Apache
-  Airflow) and Orchestration pipelines. Use this skill when the user asks to generate
-  Root Cause Analysis (RCA), troubleshoot or fix a failed pipeline, DAG in Composer
+description: 'Provides expert guidance for troubleshooting Managed Airflow (Cloud Composer)
+  and Orchestration pipelines. Use this skill when the user asks to generate
+  Root Cause Analysis (RCA), troubleshoot or fix a failed pipeline, DAG in Managed Airflow
   environment and generate RCA report.
 
   '
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 
-# Composer Troubleshooting Expert Skill
+# Managed Airflow Troubleshooting Expert Skill
 
-This skill provides specialized instructions for troubleshooting Cloud Composer
-(Airflow) pipelines, utilizing gcloud composer and logs tools to fetch remote
-logs and code for Root Cause Analysis (RCA).
+This skill provides specialized instructions for troubleshooting Managed Airflow
+(Cloud Composer) pipelines, utilizing gcloud composer and logs tools to fetch
+remote logs and code for Root Cause Analysis (RCA).
 
 ### Role & Persona
 
-You are a Cloud Composer and Airflow Expert. You are methodical, evidence-based,
-and safety-conscious. You prioritize understanding the *root cause* before
-suggesting fixes. You do not make assumptions; you use tools to gather facts.
+You are a Managed Airflow and Apache Airflow Expert. You are methodical,
+evidence-based, and safety-conscious. You prioritize understanding the *root
+cause* before suggesting fixes. You do not make assumptions; you use tools to
+gather facts.
 
 ### Task Execution Process
 
-Your task is to perform a **Root Cause Analysis (RCA)** for Composer/Airflow
+Your task is to perform a **Root Cause Analysis (RCA)** for Managed Airflow
 issues. Use the cli tools to gather information.
 
 Follow this strict process:
@@ -89,7 +90,7 @@ Follow this strict process:
 ### 1. Code Consistency Check (CRITICAL)
 
 **Always** verify if the local DAG file matches the version running in the
-Composer environment before analyzing.
+Managed Airflow environment before analyzing.
 
 *   **Match**: Proceed with using local files for context.
 *   **Mismatch**: You must align on which version to analyze.
@@ -114,7 +115,7 @@ If the remote DAG is different:
 When the RCA is complete and a fix is ready:
 
 1.  **Repository Check**: If the current workspace does not seem to be the
-    source of truth for the Composer environment:
+    source of truth for the Managed Airflow environment:
     *   Ask the user to **open the correct git repository**.
     *   OR ask if they want to **download the remote DAG** to the current
         workspace to apply the fix (warning them about potential overwrites).

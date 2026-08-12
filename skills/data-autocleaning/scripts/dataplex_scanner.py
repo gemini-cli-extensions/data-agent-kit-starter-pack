@@ -11,9 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""A script to create and monitor Dataplex data profile scans.
+"""A script to create and monitor Knowledge Catalog (Dataplex) data profile scans.
 
-This script takes a list of BigQuery tables, initiates Dataplex data profile
+This script takes a list of BigQuery tables, initiates Knowledge Catalog data
+profile
 scans for each table, and polls the scan status until results are available.
 The results are saved as JSON files in a specified output directory.
 """
@@ -66,7 +67,7 @@ async def create_and_wait_for_scan(
     location: str,
     output_dir: str,
 ):
-  """Creates a DataPlex data-profile scan for a table and waits for results.
+  """Creates a Knowledge Catalog data-profile scan for a table and waits for results.
 
   Args:
       table_id: BigQuery table in `project.dataset.table` format.
@@ -130,7 +131,9 @@ async def create_and_wait_for_scan(
 
   create_cmd = " ".join(create_cmd_parts)
 
-  logging.info("[%s] Creating Dataplex profile: %s", table_id, profile_name)
+  logging.info(
+      "[%s] Creating Knowledge Catalog profile: %s", table_id, profile_name
+  )
   try:
     await run_command_async(create_cmd)
     logging.info(
@@ -199,7 +202,9 @@ async def create_and_wait_for_scan(
 
 async def main():
   parser = argparse.ArgumentParser(
-      description="Create and wait for Dataplex datascans concurrently."
+      description=(
+          "Create and wait for Knowledge Catalog datascans concurrently."
+      )
   )
   parser.add_argument(
       "--tables",

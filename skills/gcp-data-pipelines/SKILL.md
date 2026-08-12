@@ -2,14 +2,14 @@
 name: gcp-data-pipelines
 description: 'Primary entry point for building, managing, and orchestrating data pipelines
   on Google Cloud. Guides users to the appropriate skill for dbt, Dataflow (Apache
-  Beam), Dataform, Spark (Dataproc Serverless), BigQuery Data Transfer Service (DTS)
-  or orchestration pipeline using Cloud Composer. Clarify requirements and resolve
+  Beam), Dataform, Spark (Managed Spark), BigQuery Data Transfer Service (DTS)
+  or orchestration pipeline using Managed Airflow (Cloud Composer). Clarify requirements and resolve
   ambiguity for creating, updating and running data pipelines.
 
   '
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 
@@ -69,63 +69,63 @@ pipeline options with a brief summary to help them choose:
 
 **Data pipeline tools** — pick one to build or transform data:
 
-| Option            | Best For              | Skill                            |
-| ----------------- | --------------------- | -------------------------------- |
-| **BigQuery DTS**  | Managed ingestion     | `bigquery-data-transfer-service` |
-:                   : from datasources      :                                  :
-| **dbt**           | SQL-first teams;      | `dbt-bigquery`                   |
-:                   : modular models with   :                                  :
-:                   : built-in tests &      :                                  :
-:                   : docs; all transforms  :                                  :
-:                   : run inside BigQuery   :                                  :
-| **Dataflow**      | Streaming pipelines;  | `gcp-dataflow`                   |
-:                   : Apache Beam; Unified  :                                  :
-:                   : stream and batch      :                                  :
-:                   : processing;           :                                  :
-:                   : High-throughput       :                                  :
-:                   : Pubsub integration;   :                                  :
-:                   : ML Preprocessing and  :                                  :
-:                   : Inference at scale;   :                                  :
-:                   : Advanced              :                                  :
-:                   : observability;        :                                  :
-:                   : Serverless data       :                                  :
-:                   : processing            :                                  :
-| **Dataform**      | Google-native ELT;    | `dataform-bigquery`              |
-:                   : GCP Console           :                                  :
-:                   : integration; SQLX/JS  :                                  :
-:                   : for complex           :                                  :
-:                   : dependency management :                                  :
-| **Spark (Dataproc | Large-scale data;     | `gcp-spark`                      |
-: Serverless)**     : PySpark/Java/Scala;   :                                  :
-:                   : ML preprocessing;     :                                  :
-:                   : Iceberg/BigLake       :                                  :
-| **Other**         | Data Fusion, or       | —                                |
-:                   : generic Python —      :                                  :
-:                   : proceed with general  :                                  :
-:                   : GCP assistance        :                                  :
+| Option           | Best For               | Skill                            |
+| ---------------- | ---------------------- | -------------------------------- |
+| **BigQuery DTS** | Managed ingestion from | `bigquery-data-transfer-service` |
+:                  : datasources            :                                  :
+| **dbt**          | SQL-first teams;       | `dbt-bigquery`                   |
+:                  : modular models with    :                                  :
+:                  : built-in tests & docs; :                                  :
+:                  : all transforms run     :                                  :
+:                  : inside BigQuery        :                                  :
+| **Dataflow**     | Streaming pipelines;   | `gcp-dataflow`                   |
+:                  : Apache Beam; Unified   :                                  :
+:                  : stream and batch       :                                  :
+:                  : processing;            :                                  :
+:                  : High-throughput Pubsub :                                  :
+:                  : integration; ML        :                                  :
+:                  : Preprocessing and      :                                  :
+:                  : Inference at scale;    :                                  :
+:                  : Advanced               :                                  :
+:                  : observability;         :                                  :
+:                  : Serverless data        :                                  :
+:                  : processing             :                                  :
+| **Dataform**     | Google-native ELT; GCP | `dataform-bigquery`              |
+:                  : Console integration;   :                                  :
+:                  : SQLX/JS for complex    :                                  :
+:                  : dependency management  :                                  :
+| **Spark (Managed | Large-scale data;      | `gcp-spark`                      |
+: Spark)**         : PySpark/Java/Scala; ML :                                  :
+:                  : preprocessing;         :                                  :
+:                  : Iceberg/BigLake        :                                  :
+| **Other**        | Data Fusion, or        | —                                |
+:                  : generic Python —       :                                  :
+:                  : proceed with general   :                                  :
+:                  : GCP assistance         :                                  :
 
 **Deployment & Orchestration** — used to provision infrastructure and coordinate
 multiple pipelines already in the repo:
 
-| Option           | Best For           | Skill                                |
-| ---------------- | ------------------ | ------------------------------------ |
-| **Cloud          | GCP Data Pipeline  | `gcp-pipeline-orchestration`         |
-: Composer**       : Orchestration      :                                      :
-:                  : deploy/schedule    :                                      :
-:                  : existing           :                                      :
-:                  : pipelines(dbt +    :                                      :
-:                  : Spark, etc.). as a :                                      :
-:                  : unified workflow   :                                      :
-| **Provisioning** | Declarative GCP    | `gcp-pipeline-resource-provisioning` |
-:                  : resource creation  :                                      :
-:                  : (Datasets, DTS,    :                                      :
-:                  : Dataproc)          :                                      :
+| Option            | Best For          | Skill                                |
+| ----------------- | ----------------- | ------------------------------------ |
+| **Managed Airflow | GCP Data Pipeline | `gcp-pipeline-orchestration`         |
+: (Cloud            : Orchestration     :                                      :
+: Composer)**       : deploy/schedule   :                                      :
+:                   : existing          :                                      :
+:                   : pipelines(dbt +   :                                      :
+:                   : Spark, etc.). as  :                                      :
+:                   : a unified         :                                      :
+:                   : workflow          :                                      :
+| **Provisioning**  | Declarative GCP   | `gcp-pipeline-resource-provisioning` |
+:                   : resource creation :                                      :
+:                   : (Datasets, DTS,   :                                      :
+:                   : Managed Spark)    :                                      :
 
 > [!TIP]
 >
 > If the user mentions **scheduling**, **automating**, **cron**, or
-> **coordinating** existing scripts, queries, or notebooks — highlight **Cloud
-> Composer / Orchestration** as the most likely fit.
+> **coordinating** existing scripts, queries, or notebooks — highlight **Managed
+> Airflow / Orchestration** as the most likely fit.
 
 > [!NOTE]
 >
@@ -161,11 +161,11 @@ two-step process:
         environment (e.g., using `dbt run`, `gcloud dataproc jobs submit`,
         `dataform run` etc.).
     *   **Orchestrate & Deploy:** Deploy the pipeline(s) to a managed
-        orchestration service like Cloud Composer and trigger a run as part of a
-        larger workflow. Use `@skill:gcp-pipeline-orchestration` skill for more
-        context.
+        orchestration service like Managed Airflow (Cloud Composer) and trigger
+        a run as part of a larger workflow. Use
+        `@skill:gcp-pipeline-orchestration` skill for more context.
     *   "Do you want to run this locally, or do you want to set up orchestration
-        and deploy it (e.g., using Cloud Composer)?"
+        and deploy it (e.g., using Managed Airflow)?"
 
 ## Next Steps
 

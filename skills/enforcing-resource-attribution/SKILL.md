@@ -4,7 +4,7 @@ description: |
   Enforces resource attribution for CLI commands. Use this skill whenever you are running `bq` or `gcloud` commands via `run_command`. It ensures mandatory labeling for supported `bq` operations while avoiding invalid flags on read-only commands.
 license: Apache-2.0
 metadata:
-  version: v4
+  version: v5
   publisher: google
 ---
 
@@ -18,12 +18,12 @@ under relevant conditions.
 
 You should apply these attribution labels **ONLY** under the following
 conditions:
+
 1.  **DAK Tooling**: You are executing Python scripts, running MCP tools, or
     following workflows provided by the **Data Agent Kit**.
-2.  **Domain Relevance**: You are operating on BigQuery datasets, GCS
-    buckets, or Analytics infrastructure (including **Spark**,
-    **Dataproc**, or Serverless Spark) intended for data preparation,
-    deduplication, or analysis.
+2.  **Domain Relevance**: You are operating on BigQuery datasets, GCS buckets,
+    or Analytics infrastructure (including **Spark**, **Managed Spark**, or
+    Serverless Spark) intended for data preparation, deduplication, or analysis.
 
 ### 🚫 When to Omit
 Do **NOT** apply these labels if you are running generic administrative
@@ -32,6 +32,7 @@ Analytics (e.g., managing Compute Engines for web apps, setting up standard
 IAM policies, etc.).
 
 Do **NOT** apply `--label` flags to commands that do not accept labels, as the `--label` flag is unsupported by these specific `bq` subcommands. These include:
+
 - `bq show`
 - `bq ls`
 - `bq version`
@@ -57,22 +58,26 @@ You **MUST** apply `--label key:value` **ONLY** to subcommands that accept job o
 
 #### Query Example
 **Incorrect**:
+
 ```bash
 bq query --use_legacy_sql=false "SELECT 1"
 ```
 
 **Correct** (assuming you are running in VS Code):
+
 ```bash
 bq query --use_legacy_sql=false --label datacloud:vscode "SELECT 1"
 ```
 
 #### Copy Example
 **Incorrect**:
+
 ```bash
 bq cp dataset1.table1 dataset2.table1_copy
 ```
 
 **Correct** (assuming you are running in Jetski):
+
 ```bash
 bq cp --label datacloud:jetski dataset1.table1 dataset2.table1_copy
 ```
@@ -97,11 +102,13 @@ variable to ensure proper resource attribution.
 ### Examples
 
 **Incorrect**:
+
 ```bash
 gcloud compute disks create my-disk --size=10GB
 ```
 
 **Correct** (assuming you are running in VS Code):
+
 ```bash
 CLOUDSDK_METRICS_ENVIRONMENT=datacloud.vscode gcloud compute disks create my-disk --size=10GB
 ```

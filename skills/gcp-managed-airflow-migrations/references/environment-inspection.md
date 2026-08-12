@@ -7,8 +7,8 @@ commands to list environments, get detailed configuration, and identify the
 starting versions of your source environment (`<SOURCE_ENV>`) in region
 `<SOURCE_REGION>`.
 
-1.  **List Environments:** Identify the available Composer environments in your
-    project.
+1.  **List Environments:** Identify the available Managed Airflow (Composer)
+    environments in your project.
 
     ```bash
     gcloud composer environments list \

@@ -1,7 +1,7 @@
 # Local Development Environment Verification
 
 If you want to verify your changes locally before deploying to the target
-environment, you can use the Composer Local Development CLI tool
+environment, you can use the Managed Airflow Local Development CLI tool
 (`composer-dev`).
 
 ## 1. List and Describe Local Environments
