@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v7
+  version: v8
   publisher: google
 ---
 
@@ -117,6 +117,7 @@ The Dataproc service account needs:
 *   `roles/bigquery.jobUser`: Query materialization
 *   `roles/storage.objectUser`: Read/write GCS
 *   `roles/spanner.databaseUser`: Spanner writes
+*   `roles/cloudsql.client`: Cloud SQL (PostgreSQL/MySQL) instance access
 
 --------------------------------------------------------------------------------
 
