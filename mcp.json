@@ -148,6 +148,19 @@
         "--user-agent-metadata",
         "datacloud.other"
       ]
+    },
+    "cloud-storage": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "cloud-storage",
+        "--stdio",
+        "--user-agent-metadata",
+        "datacloud.other"
+      ]
     }
   }
 }
