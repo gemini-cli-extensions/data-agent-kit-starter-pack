@@ -57,8 +57,14 @@ features to check for conflicts (such as Soft Delete, Versioning, Retention/Lock
 policies, or storage class):
 
 ```bash
-gcloud storage buckets describe gs://my-bucket/ --format="json(softDeletePolicy,versioning,retentionPolicy,storageClass)"
+gcloud storage buckets describe gs://my-bucket/ --format="json(soft_delete_policy,versioning_enabled,retention_policy,default_storage_class)"
 ```
+
+> [!NOTE]
+> `gcloud storage` output field names use snake_case rather than
+> JSON-API names — notably `versioning_enabled` instead of `versioning`. Unknown
+> or camelCase keys in a `--format` projection silently print null without
+> erroring.
 
 --------------------------------------------------------------------------------
 
