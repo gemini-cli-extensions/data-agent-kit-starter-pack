@@ -465,12 +465,20 @@ API.
 
 ### Reading from Cloud SQL via JDBC
 
+> [!WARNING] NEVER embed plaintext secrets or passwords directly in code or
+> scripts. Always retrieve credentials securely via environment variables (or
+> Secret Manager).
+
 ```python
+import os
+
+password = os.environ.get("DB_PASSWORD", "")
+
 df = spark.read.format("jdbc") \
     .option("url", "jdbc:postgresql://<HOST_OR_PRIVATE_IP>:5432/<DATABASE>") \
     .option("dbtable", "<TABLE_NAME>") \
     .option("user", "<USER>") \
-    .option("password", "<PASSWORD>") \
+    .option("password", password) \
     .option("driver", "org.postgresql.Driver") \
     .load()
 ```
