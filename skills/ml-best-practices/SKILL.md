@@ -15,7 +15,7 @@ description: |
   SQL/BigQuery ML HANDOFF: If the user requires a SQL solution, use this skill to dictate the ANALYSIS STEPS (e.g., markdown analysis cells, visualization logic), but defer to `bigquery` for all SQL syntax.
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 
@@ -201,10 +201,12 @@ production based on predictive power, robustness, and viability.
 
 [!IMPORTANT] ALWAYS follow these ML practices
 
--   **Strict Featurization Ordering**: For supervised learning **ALWAYS** split
-    the dataset into training and test data **BEFORE** fitting preprocessing
-    pipelines (e.g. scaling, encoding). Fit the pipelines on the training data
-    and test data independently.
+-   **Strict Featurization Ordering & ML Pipelines**: Encapsulate feature
+    transformations (e.g., `VectorAssembler`, `StandardScaler`, `StringIndexer`)
+    inside ML `Pipeline` objects with the estimator rather than transforming
+    DataFrames directly. Split data **BEFORE** fitting. `fit()` pipelines
+    exclusively on training data and apply to validation/test sets via
+    `transform()`.
 
 -   **Handling Missing or NULL Values**: **ALWAYS** check for and handle missing
     and NULL values. First, analyze their frequency. Then, decide whether to
