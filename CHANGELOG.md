@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.8.0](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.7.2...0.8.0) (2026-08-07)
+
+
+### Features
+
+* **plugin:** support agent plugin spec ([a9b14ea](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/a9b14ea88087f59b3d65ce653c9a39a81efaff01)), refs [#198](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/issues/198)
+
+
+### Miscellaneous Chores
+
+* force release 0.8.0 ([35a2768](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/35a2768d96d7bca6073ec067de92cf066c005ff3))
+
 ## [0.7.2](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.7.1...0.7.2) (2026-07-28)
 
 

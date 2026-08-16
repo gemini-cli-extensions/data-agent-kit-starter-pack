@@ -189,6 +189,21 @@
         "BIGTABLE_PROJECT": "${user_config.PROJECT_ID}",
         "BIGTABLE_INSTANCE": ""
       }
+    },
+    "cloud-storage": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@toolbox-sdk/server@>=1.1.0",
+        "--prebuilt",
+        "cloud-storage",
+        "--stdio",
+        "--user-agent-metadata",
+        "datacloud.claude"
+      ],
+      "env": {
+        "CLOUD_STORAGE_PROJECT": "${user_config.PROJECT_ID}"
+      }
     }
   }
 }
