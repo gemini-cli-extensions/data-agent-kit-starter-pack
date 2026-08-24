@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v8
+  version: v9
   publisher: google
 ---
 
@@ -106,10 +106,6 @@ Before submitting a job, verify:
     using --properties=spark.jars.packages=...,
     --archives=gs://.../env.tar.gz#environment, --py-files, or a custom
     --container-image.
--   [ ] **Parameterized scripts via command-line arguments**: You must use
-    command-line arguments for all configurable input/output paths, table names,
-    and environment parameters instead of hardcoding static constants. Pass
-    arguments via `-- <args>` in gcloud dataproc.
 
 --------------------------------------------------------------------------------
 
