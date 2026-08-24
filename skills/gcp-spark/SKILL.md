@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v7
+  version: v8
   publisher: google
 ---
 
@@ -56,6 +56,7 @@ metadata:
     next steps to resolve the issue. Do NOT scan all buckets for alternative
     fallback datasets when encountering GCS errors.
 3.  **Generate spark code**:
+
     *   **Output Format**: **ALWAYS** generate code in **Python Notebooks
         (.ipynb)** format. Generate scripts (.py) only if explicitly requested.
     *   **Read and Write data**: **ALWAYS** Refer to
@@ -105,6 +106,10 @@ Before submitting a job, verify:
     using --properties=spark.jars.packages=...,
     --archives=gs://.../env.tar.gz#environment, --py-files, or a custom
     --container-image.
+-   [ ] **Parameterized scripts via command-line arguments**: You must use
+    command-line arguments for all configurable input/output paths, table names,
+    and environment parameters instead of hardcoding static constants. Pass
+    arguments via `-- <args>` in gcloud dataproc.
 
 --------------------------------------------------------------------------------
 
