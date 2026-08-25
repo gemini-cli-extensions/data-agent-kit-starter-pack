@@ -31,8 +31,9 @@ jobs:
         with:
           # There is no security token. So, it would fail on any links which aren't public.
           #
-          # The google-cloud-storage-basics skill docs contain illustrative command
-          # examples (gcloud/curl/apt/REST) with placeholder buckets, versions, and
-          # accounts. lychee scans URLs inside fenced code blocks, so those
-          # non-navigable example URLs fail the check; exclude that skill's paths.
-          args: "--verbose --no-progress --exclude-path skills/google-cloud-storage-basics **/*.md"
+          # The google-cloud-storage-basics and bigtable-basics skill docs contain
+          # illustrative command examples (gcloud/curl/apt/REST) with placeholder
+          # buckets, endpoints, versions, and accounts. lychee scans URLs inside
+          # fenced code blocks, so those non-navigable example URLs fail the check;
+          # exclude those skills' paths.
+          args: "--verbose --no-progress --exclude-path skills/google-cloud-storage-basics --exclude-path skills/bigtable-basics --exclude-path skills/bigtable_basics **/*.md"
