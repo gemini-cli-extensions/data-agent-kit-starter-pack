@@ -10,6 +10,8 @@ description: >-
 
 # BigQuery AI & ML
 
+<!-- Presubmit trigger test update for DAK skill watching -->
+
 BigQuery integrates with Vertex AI to provide powerful machine learning and
 generative AI capabilities directly within SQL queries using built-in functions
 like `AI.FORECAST`, `AI.KEY_DRIVERS`, `AI.DETECT_ANOMALIES`, and `AI.GENERATE`.
