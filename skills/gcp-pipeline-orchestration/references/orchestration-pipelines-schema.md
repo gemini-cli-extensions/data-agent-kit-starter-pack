@@ -1,5 +1,7 @@
 # Pipeline YAML Schema
 Defines the orchestration pipelines schema using Protocol Buffers.
+Source of truth for schema: https://github.com/GoogleCloudPlatform/orchestration-pipelines/blob/main/orchestration_pipelines_models/pipeline_v1_model/protos/orchestration_pipeline.proto
+
 Field names in YAML should generally be camelCase (e.g., use `pipelineId` for the proto field `pipeline_id`).
 However, fields of type `Struct` which represent configuration objects for other systems (e.g., `cluster_config`, `environment_config`, `job`, `workflow_invocation`) must use snake_case in YAML.
 ## Syntax
@@ -205,6 +207,7 @@ message Action {
   //   - pipeline: { ... }
   //   - data_ingestion: { ... }
   //   - orchestration_pipeline: { ... }
+  //   - ai: { ... }
   // Do NOT use a "type" field.
   oneof action {
     PythonAction python = 1;
@@ -214,6 +217,7 @@ message Action {
     PipelineAction pipeline = 5;
     DataIngestionAction data_ingestion = 6;
     OrchestrationPipelineAction orchestration_pipeline = 7;
+    AIAction ai = 8;
   }
 }
 
@@ -238,6 +242,7 @@ message PythonAction {
 }
 
 message PythonEnvironment {
+  message InlineRequirements {
     // list of pip packages
     repeated string list = 1;
   }
@@ -528,6 +533,56 @@ message OrchestrationPipelineAction {
   TriggerRule trigger_rule = 7; // Default: all_success.
 }
 
+/////////////////////////////////////
+// AI Action
+////////////////////////////////////
+message AIAction {
+  string name = 1 [
+    (pipeline_models.validation.is_required) = true,
+    (pipeline_models.validation.regex) = "^[a-zA-Z0-9_.-]+$",
+    (pipeline_models.validation.min_len) = 1,
+    (pipeline_models.validation.max_len) = 64
+  ];
+  repeated string depends_on = 2;
+  string execution_timeout = 3 [(pipeline_models.validation.is_iso8601_duration) = true];
+  TriggerRule trigger_rule = 4; // Default: all_success.
+
+  oneof provider {
+    AgentPlatform agent_platform = 5;
+  }
+
+  map<string, string> labels = 6;
+}
+
+message AgentPlatform {
+  string project_id = 1;
+  string location = 2;
+
+  oneof type {
+    AgentPlatformModelUpload model_upload = 3;
+    AgentPlatformBatchInference batch_inference = 4;
+  }
+}
+
+message AgentPlatformModelUpload {
+  string model_name = 1 [(pipeline_models.validation.is_required) = true];
+  string description = 2;
+  string model_artifact_uri = 3 [(pipeline_models.validation.is_required) = true];
+  string serving_container_image_uri = 4 [(pipeline_models.validation.is_required) = true];
+}
+
+message AgentPlatformBatchInference {
+  string job_display_name = 1 [(pipeline_models.validation.is_required) = true];
+  string model_name = 2 [(pipeline_models.validation.is_required) = true];
+  string instances_format = 3;
+  string predictions_format = 4;
+  string bigquery_source = 5;
+  repeated string gcs_source = 6;
+  string bigquery_destination_prefix = 7;
+  string gcs_destination_prefix = 8;
+  repeated string impersonation_chain = 12;
+}
+
 ## Orchestration Pipeline YAML File example
 ```yaml
 modelVersion: 1.0
@@ -571,10 +626,19 @@ actions:
         dbt:
           airflowWorker:
             projectDirectoryPath: path/to/dbt_project
+  - ai:
+      name: "upload_model_vertex"
+      agentPlatform:
+        modelUpload:
+          modelName: "model_name"
+          description: "Model description"
+          modelArtifactUri: path/to/model/artifact
+          servingContainerImageUri: path/to/serving/image
+
 ```
 
 ## Key Schema Reminders:
-1. **Action Key**: Use `- pyspark:`, `- notebook:`, `- sql:`, `- pipeline:`, `- data_ingestion:`, or `- orchestration_pipeline:` directly as the key. Do NOT use `- type: pyspark`.
+1. **Action Key**: Use `- pyspark:`, `- notebook:`, `- sql:`, `- pipeline:`, `- data_ingestion:`, `- orchestration_pipeline:`, or `- ai:` directly as the key. Do NOT use `- type: pyspark`.
 2. **Dataproc Engine**: Under `dataprocOnGce`, you **MUST** specify either `existingCluster` (with `clusterName`) or `ephemeralCluster` (with `clusterName` and `resourceProfile`). For Serverless Dataproc, use `dataprocServerless: {}`.
 3. **Environment Requirements**:
    - For file dependencies: `environment.requirements.path: "requirements.txt"`
