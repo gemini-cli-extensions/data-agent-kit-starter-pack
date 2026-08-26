@@ -147,7 +147,12 @@ Tips:
 ### Launching batches
 
 > [!WARNING] This DOES NOT apply to executing **Python Notebooks (.ipynb)**.
-> [!IMPORTANT] Refer to this guide when executing **PySpark Script (.py)** ONLY.
+> [!IMPORTANT] This section applies to **PySpark (.py) job**. For other
+> batch jobs e.g. spark-sql use an appropriate job type.
+
+> [!IMPORTANT] Dataproc Serverless batches (`gcloud dataproc batches submit`) do
+> not require running cluster. You MUST NOT create or provision new Dataproc
+> cluster when submitting serverless batch jobs.
 
 Determine the properties and configuration required by the pyspark script before
 executing the command for Job Submission
