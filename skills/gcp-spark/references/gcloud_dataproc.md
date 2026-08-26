@@ -2,7 +2,7 @@
 
 Manage Spark resources on Google Cloud Dataproc Clusters and Serverless,
 including setting up clusters; launching jobs and batches; managing serverless
-session templates, and inspecting outputs.
+session templates; running Spark Connect sessions; and inspecting outputs.
 
 ## Background
 
@@ -225,12 +225,70 @@ the user to associate the notebook with a kernel using the Kernel Selector:
 It is expected for Serverless kernel creation to take approximately 2 minutes or
 more.
 
+### Spark Connect on Dataproc
+
+To run or author Spark Connect sessions from Python or scripts, YOU MUST follow
+these steps:
+
+1.  **Activating environment**:
+
+    *   **UV installed** (`command -v uv`): Follow **UV environment** (ensure
+        Python version matches runtime e.g. 3.12).
+    *   **Otherwise**: Follow **Pip environment**.
+
+2.  **UV environment**:
+
+    ```bash
+    uv venv spark_env --python 3.12
+    source spark_env/bin/activate
+    uv pip install dataproc-spark-connect
+    ```
+
+3.  **Pip environment**:
+
+    ```bash
+    python3 -m venv spark_env
+    source spark_env/bin/activate
+    pip install dataproc-spark-connect
+    ```
+
+4.  **Initialize `DataprocSparkSession` & Execute**: Use `DataprocSparkSession`
+    from `google.cloud.dataproc_spark_connect` to connect to Dataproc
+    Serverless. Session provisioning takes **2–3 minutes**; execute scripts in
+    the foreground (e.g. `python3 script.py | tee driver_log.txt`):
+
+    ```python
+    from google.cloud.dataproc_spark_connect import DataprocSparkSession
+
+    spark = (
+        # Always use the active Dataproc project (e.g. from `gcloud config get project`)
+        DataprocSparkSession.builder.projectId("<DATAPROC_PROJECT_ID>")
+        .location("<REGION>")
+        # Optional: .dataprocSessionId("<SESSION_ID>") to name or reuse an existing session
+        .getOrCreate()
+    )
+
+    # Run Spark DataFrame or SQL operations
+    df = spark.sql("SELECT 'Hello from Spark Connect' AS message")
+    df.show()
+
+    # Deactivate / stop the session
+    spark.stop()
+    ```
+
+5.  **Local Environment Cleanup**:
+
+    ```bash
+    deactivate
+    rm -rf spark_env
+    ```
+
 ### Listing sessions
 
 Prefer MCP if available. If using gcloud, use this command template:
 
 ```
-gcloud beta dataproc sessions list \
+gcloud dataproc sessions list \
     --format="json(createTime, uuid, creator, state, jupyterSession, sparkConnectSession)" \
     --sort-by="~createTime" \
     --limit=100
