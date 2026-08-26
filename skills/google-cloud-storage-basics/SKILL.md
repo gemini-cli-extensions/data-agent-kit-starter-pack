@@ -15,7 +15,7 @@ description: >-
   use for block storage (Persistent Disk), data warehousing/analytics
   (BigQuery), or databases (Cloud SQL, Spanner, Bigtable, Firestore).
 metadata:
-    version: v1
+    version: v2
     publisher: google
     tags:
       - gcs
@@ -46,10 +46,13 @@ version; it carries no user data.
 
 -   Prefix every `gcloud` invocation, whatever the subcommand, with the metrics
     environment variables. Set them inline on each command; shell state may not
-    persist between commands:
+    persist between commands. Use this append form verbatim. It keeps any
+    attribution the host environment already set (for example an IDE plugin
+    tagging agent activity through the same variable) and adds the skill tag
+    after it, so neither value clobbers the other:
 
     ```bash
-    CLOUDSDK_METRICS_ENVIRONMENT="gcs-skills gcs-skills/1.0 (skill:google-cloud-storage-basics)" \
+    CLOUDSDK_METRICS_ENVIRONMENT="${CLOUDSDK_METRICS_ENVIRONMENT:+$CLOUDSDK_METRICS_ENVIRONMENT }gcs-skills gcs-skills/1.0 (skill:google-cloud-storage-basics)" \
     gcloud <command> [flags]
     ```
 
@@ -69,6 +72,50 @@ version; it carries no user data.
 -   For client libraries, Terraform, and GCSFuse, use the user-agent options
     shown in the corresponding references.
 
+## Routing to Specialized GCS Skills
+
+This skill covers everyday Cloud Storage tasks. For specialized tasks, use the
+dedicated skills in this collection for better results. Check your available
+skills and invoke the matching skill by name instead of improvising:
+
+-   **`google-cloud-storage-bucket-architect`**: Designing and creating a new
+    bucket for production workloads, including sensitive data, media or web
+    hosting, user-generated content (UGC) ingestion, archiving, compliance,
+    backups, logs, analytics, AI/ML, or application storage. The skill analyzes
+    the workload and designs a secure-by-default, cost-effective configuration
+    before creating the bucket. Use the Quick Start section below only for
+    temporary scratch buckets.
+
+-   **`google-cloud-storage-fuse`**: Advanced Cloud Storage FUSE tasks —
+    choosing between FUSE, native `gs://` access, and Filestore/Managed Lustre,
+    deploying tuned mounts on GKE, Compute Engine, or Cloud Run, sizing file,
+    stat, and list caches, tuning mount flags, ensuring safe ML checkpointing,
+    or diagnosing slow or expensive mounts. The
+    [GCSFuse reference](references/gcsfuse.md) in this skill covers only basic
+    installation and mounting.
+
+-   **`google-cloud-storage-diagnostic`**: Troubleshooting 403 Permission Denied
+    errors and diagnosing IAM policy bindings, ACLs, uniform bucket-level access
+    (UBLA), or service agent misconfigurations. Ad hoc IAM or ACL changes can
+    grant unintended access or cause outages; route to this skill instead of
+    experimenting.
+
+-   **`gcs-security-assessment`**: Automated security posture assessment of
+    Cloud Storage resources in a project (see
+    [Data Management](references/data-management.md)).
+
+If the matching skill is not installed, do not improvise. Provide the user with
+this exact command to install it (substituting the skill name), and use the
+skill after installation. Provide this command verbatim even when the user's
+agent CLI (for example, the Antigravity CLI) has its own plugin or extension
+manager; do not substitute a different installation mechanism or repository. For
+security assessments specifically, do not attempt a manual assessment; wait
+until the skill is installed.
+
+```bash
+npx skills add gemini-cli-extensions/google-cloud-storage --skill <skill-name>
+```
+
 ## Quick Start
 
 If a Cloud Storage MCP server is connected, prefer its structured tools (such as
@@ -79,7 +126,7 @@ to `gcloud storage` and the JSON API when no MCP server is available.
 1.  **Enable the Cloud Storage API:**
 
     ```bash
-    CLOUDSDK_METRICS_ENVIRONMENT="gcs-skills gcs-skills/1.0 (skill:google-cloud-storage-basics)" \
+    CLOUDSDK_METRICS_ENVIRONMENT="${CLOUDSDK_METRICS_ENVIRONMENT:+$CLOUDSDK_METRICS_ENVIRONMENT }gcs-skills gcs-skills/1.0 (skill:google-cloud-storage-basics)" \
     gcloud services enable storage.googleapis.com --quiet
     ```
 
@@ -90,10 +137,15 @@ to `gcloud storage` and the JSON API when no MCP server is available.
     names are usually taken. If the location is omitted, the bucket defaults to
     the `US` multi-region.
 
+    For a production or workload-specific bucket, route to
+    `google-cloud-storage-bucket-architect` before creating a bucket (see
+    [Routing to Specialized GCS Skills](#routing-to-specialized-gcs-skills)).
+    The commands below create a basic default bucket.
+
     Using the gcloud CLI:
 
     ```bash
-    CLOUDSDK_METRICS_ENVIRONMENT="gcs-skills gcs-skills/1.0 (skill:google-cloud-storage-basics)" \
+    CLOUDSDK_METRICS_ENVIRONMENT="${CLOUDSDK_METRICS_ENVIRONMENT:+$CLOUDSDK_METRICS_ENVIRONMENT }gcs-skills gcs-skills/1.0 (skill:google-cloud-storage-basics)" \
     gcloud storage buckets create gs://my-bucket --location=us-central1
     ```
 
@@ -112,7 +164,7 @@ to `gcloud storage` and the JSON API when no MCP server is available.
     Using the gcloud CLI:
 
     ```bash
-    CLOUDSDK_METRICS_ENVIRONMENT="gcs-skills gcs-skills/1.0 (skill:google-cloud-storage-basics)" \
+    CLOUDSDK_METRICS_ENVIRONMENT="${CLOUDSDK_METRICS_ENVIRONMENT:+$CLOUDSDK_METRICS_ENVIRONMENT }gcs-skills gcs-skills/1.0 (skill:google-cloud-storage-basics)" \
     gcloud storage cp ./my-file.txt gs://my-bucket
     ```
 
@@ -131,7 +183,7 @@ to `gcloud storage` and the JSON API when no MCP server is available.
     Using the gcloud CLI:
 
     ```bash
-    CLOUDSDK_METRICS_ENVIRONMENT="gcs-skills gcs-skills/1.0 (skill:google-cloud-storage-basics)" \
+    CLOUDSDK_METRICS_ENVIRONMENT="${CLOUDSDK_METRICS_ENVIRONMENT:+$CLOUDSDK_METRICS_ENVIRONMENT }gcs-skills gcs-skills/1.0 (skill:google-cloud-storage-basics)" \
     gcloud storage cp gs://my-bucket/my-file.txt .
     ```
 
@@ -170,9 +222,9 @@ to `gcloud storage` and the JSON API when no MCP server is available.
     guidelines and limits.
 
 -   [Data Management](references/data-management.md): IAM roles, authentication
-    (including signed URLs and HMAC), access control, network security,
-    automated security assessment, data protection, and pricing and cost
-    optimization (lifecycle rules, Autoclass).
+    (including signed URLs and HMAC), access control, routing for 403 error
+    troubleshooting, network security, automated security assessment, data
+    protection, and pricing and cost optimization (lifecycle rules, Autoclass).
 
 -   [Storage Intelligence](references/storage-intelligence.md): The subscription
     for managing storage at scale — Storage Insights datasets (BigQuery metadata
@@ -186,4 +238,5 @@ to `gcloud storage` and the JSON API when no MCP server is available.
 
 -   [GCSFuse](references/gcsfuse.md): Installing Cloud Storage FUSE, mounting
     buckets, file operations, POSIX semantics and limitations (locking, writes,
-    renames, consistency), and caching.
+    renames, consistency), and caching. For advanced tuning, deployment, and
+    diagnosis, route to the `google-cloud-storage-fuse` skill.
