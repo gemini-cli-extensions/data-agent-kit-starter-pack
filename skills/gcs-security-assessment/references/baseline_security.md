@@ -68,11 +68,11 @@ means connections can downgrade to insecure versions.
 
 -   Enforce minimum TLS 1.2 via org policy
 
-### HMAC Key Restriction (Project-Level Org Policy)
+### HMAC Authentication Restriction (Project-Level Org Policy)
 
-Secure State                      | Vulnerable State
---------------------------------- | -----------------------------------
-HMAC key creation is `RESTRICTED` | HMAC key creation is not restricted
+Secure State                        | Vulnerable State
+----------------------------------- | -------------------------------------
+HMAC authentication is `RESTRICTED` | HMAC authentication is not restricted
 
 **Why it matters:** HMAC keys are long-lived static credentials. If a key leaks,
 it remains valid until manually revoked. Restricting HMAC forces the use of
@@ -80,7 +80,8 @@ short-lived OAuth/OIDC tokens.
 
 **Remediation:**
 
--   Restrict HMAC key creation via org policy
+-   Restrict HMAC authentication via org policy
+    (`constraints/storage.restrictAuthTypes`)
 
 ### Data Access Audit Logging (Project-Level)
 

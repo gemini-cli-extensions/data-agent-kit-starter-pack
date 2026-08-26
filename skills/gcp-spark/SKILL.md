@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v7
+  version: v11
   publisher: google
 ---
 
@@ -25,6 +25,17 @@ metadata:
 
 ## Task Execution Workflow
 
+0.  **Pre-Flight Auth & Runtime Check (MANDATORY STEP 0)**: BEFORE inspecting
+    schemas, running shell commands, or generating code:
+
+    *   **Execute Auth Check**: Execute `@skill:google-cloud-auth-verification`
+        pre-flight check.
+    *   **Upfront Runtime Selection Prompt**: Ask the user upfront: *"Where
+        would you like to execute this Spark workload? (1. Dataproc Serverless
+        Spark [Recommended for GCP], 2. Local Machine, 3. Colab Enterprise)"*.
+        You MUST STOP your turn immediately after asking and wait for user
+        response.
+
 1.  **Understand schemas**: **ALWAYS** use `@skill:discovering-gcp-data-assets`
     skill or `references/schema_direct_inspection.md` to understand input and
     output schemas. Include the schema in your thought process BEFORE generating
@@ -33,6 +44,14 @@ metadata:
     across other projects as it can take a long time. If an expected dataset or
     table does not exist, use `@skill:discovering-gcp-data-assets` to discover
     all similar tables in the namespace or project.
+
+    > [!IMPORTANT] **Short-Circuit Data Asset Discovery**: If the user prompt
+    > contains a direct GCS path (`gs://...`), a raw file path, or targets a new
+    > table/directory being created, **SKIP** Dataplex/BigQuery catalog metadata
+    > searches (`gcloud dataplex`, `bq ls`). **AFTER completing Step 0 (Auth
+    > Verification)**, proceed directly to schema inspection (`gcloud storage
+    > cat` or Spark `load().schema`). Cap all asset discovery attempts at **2
+    > retries max**.
 
     *MINOR TYPO RULE*: If there is a minor typo (e.g. `employees` vs
     `employee`), you can fix the error and proceed.
@@ -56,8 +75,12 @@ metadata:
     next steps to resolve the issue. Do NOT scan all buckets for alternative
     fallback datasets when encountering GCS errors.
 3.  **Generate spark code**:
+
     *   **Output Format**: **ALWAYS** generate code in **Python Notebooks
         (.ipynb)** format. Generate scripts (.py) only if explicitly requested.
+    *   **Notebook Guidance**: If generating notebooks (.ipynb), you MUST read
+        `@skill:notebook-guidance` BEFORE writing an implementation plan or
+        code.
     *   **Read and Write data**: **ALWAYS** Refer to
         `references/read_write_data.md` when reading or writing data.
     *   **ML Tasks**: Refer to `@skill:ml-best-practices` skill and
@@ -69,13 +92,10 @@ metadata:
     destination schema match, use `df.printSchema()` for dataframe schema and
     refer to `@skill:discovering-gcp-data-assets` skill or
     `references/schema_direct_inspection.md` to verify destination schema.
-5.  **Compile code before executing**: For notebooks convert them to python
-    script using `jupyter nbconvert --to script your-notebook.ipynb` first. Then
-    compile the resulting python script using `python3 -m py_compile
-    your-script.py`. The same can be done for pyspark source code.
-6.  **Execute script**: When requested to run a job, script, session refer to
+5.  **Execute code**: When requested to run a job, script, or session, refer to
     `references/gcloud_dataproc.md` on how to execute generated code on Managed
-    Spark. This DOES NOT apply when generating notebooks.
+    Spark. This DOES NOT apply when generating notebooks (use `execute_cell`
+    tool).
 
 --------------------------------------------------------------------------------
 
@@ -100,6 +120,14 @@ Before submitting a job, verify:
     perform transformations, aggregations (`groupBy().agg()`), or data reduction
     (`limit()`, `sample()`) in Spark before converting small summaries to Pandas
     for plotting or display.
+-   [ ] **Avoid small file problem on GCS writes**: Use `.coalesce(N)` or
+    `.repartition(N, "partition_col")` before `.write.parquet()` to avoid
+    creating thousands of tiny 1-KB files in GCS.
+-   [ ] **Enable Adaptive Query Execution (AQE)**: Set
+    `spark.conf.set("spark.sql.adaptive.enabled", "true")` for auto-coalescing
+    shuffle partitions.
+-   [ ] **BigQuery views option**: Set `.option("viewsEnabled", "true")` when
+    reading BigQuery SQL queries or views.
 -   [ ] **No inline pip install in Spark jobs**: NEVER run pip install or
     subprocess package installations inside PySpark scripts. Pass dependencies
     using --properties=spark.jars.packages=...,
@@ -123,4 +151,4 @@ The Dataproc service account needs:
 ## Spark resource management
 
 Refer to `references/gcloud_dataproc.md` for detailed guidelines on managing
-Spark clusters, jobs, batches, and interactive sessions.
+Spark clusters, jobs, batches, interactive sessions, and Spark Connect sessions.
