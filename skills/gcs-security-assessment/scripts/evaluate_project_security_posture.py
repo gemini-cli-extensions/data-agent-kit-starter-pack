@@ -49,10 +49,22 @@ class OrgPolicySecureTypeEnum(enum.Enum):
   Attributes:
     ENFORCED: The 'enforce' rule is set to True.
     NO_ALLOW_ALL: The 'allowAll' is not present in the rules.
+    RESTRICT_AUTH_TYPES: The HMAC signed-request auth types are denied.
   """
 
   ENFORCED = 1
   NO_ALLOW_ALL = 2
+  RESTRICT_AUTH_TYPES = 3
+
+
+_HMAC_AUTH_TYPES = frozenset({
+    "USER_ACCOUNT_HMAC_SIGNED_REQUESTS",
+    "SERVICE_ACCOUNT_HMAC_SIGNED_REQUESTS",
+})
+_HMAC_AUTH_GROUPS = frozenset({
+    "in:ALL_HMAC_SIGNED_REQUESTS",
+    "in:ALL_SIGNED_REQUESTS",
+})
 
 
 class _NoAllowAllOrgPolicyRuleValue(TypedDict, total=False):
@@ -128,6 +140,38 @@ def _check_no_allow_all_org_policy(
   return bool(rules and not any(rule.get("allowAll") for rule in rules))
 
 
+def _check_restrict_auth_types_org_policy(
+    rules: Collection[_NoAllowAllOrgPolicyRule],
+) -> bool:
+  """Checks if the provided OrgPolicy rules restrict HMAC authentication.
+
+  A storage.restrictAuthTypes OrgPolicy is considered secure if:
+  - Any rule has "denyAll" set to True.
+  - Any rule denies all HMAC requests via a group (e.g.,
+    "in:ALL_HMAC_SIGNED_REQUESTS" or "in:ALL_SIGNED_REQUESTS").
+  - The denied values across rules include both user and service account HMAC
+    signed requests.
+
+  Args:
+    rules: A list of rules for a specific OrgPolicy.
+
+  Returns:
+    True if HMAC authentication is restricted, False otherwise.
+  """
+  if any(rule.get("denyAll", False) for rule in rules):
+    return True
+
+  denied_values: set[str] = set()
+  for rule in rules:
+    values = rule.get("values") or {}
+    for denied in values.get("deniedValues", []):
+      if denied in _HMAC_AUTH_GROUPS:
+        return True
+      denied_values.add(denied)
+
+  return _HMAC_AUTH_TYPES.issubset(denied_values)
+
+
 def check_secure_org_policies_enforced(
     *,
     project_id: str,
@@ -148,9 +192,7 @@ def check_secure_org_policies_enforced(
   org_policies: dict[str, OrgPolicySecureTypeEnum] = {
       "gcp.resourceLocations": OrgPolicySecureTypeEnum.NO_ALLOW_ALL,
       "gcp.restrictTLSVersion": OrgPolicySecureTypeEnum.NO_ALLOW_ALL,
-      "storage.disableServiceAccountHmacKeyCreation": (
-          OrgPolicySecureTypeEnum.ENFORCED
-      ),
+      "storage.restrictAuthTypes": OrgPolicySecureTypeEnum.RESTRICT_AUTH_TYPES,
       "storage.secureHttpTransport": OrgPolicySecureTypeEnum.ENFORCED,
   }
 
@@ -180,6 +222,8 @@ def check_secure_org_policies_enforced(
       secure = any(rule.get("enforce", False) for rule in rules)
     elif policy_type is OrgPolicySecureTypeEnum.NO_ALLOW_ALL:
       secure = _check_no_allow_all_org_policy(rules)
+    elif policy_type is OrgPolicySecureTypeEnum.RESTRICT_AUTH_TYPES:
+      secure = _check_restrict_auth_types_org_policy(rules)
     else:
       org_policy_results[policy_name] = {"error": "Unable to evaluate policy."}
       continue

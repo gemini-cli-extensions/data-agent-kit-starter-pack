@@ -23,6 +23,16 @@ Several behaviors below are version-dependent; check the installed version with
 > [Filestore](https://cloud.google.com/filestore/docs) or
 > [Google Cloud Managed Lustre](https://cloud.google.com/managed-lustre/docs).
 
+> [!TIP]
+> **Advanced Cloud Storage FUSE Work**
+>
+> For advanced Cloud Storage FUSE work beyond the basic installation and
+> mounting in this reference, use the `google-cloud-storage-fuse` skill (see the
+> "Routing to Specialized GCS Skills" section in SKILL.md). If it is not
+> installed, give the user this exact command (not the CLI's own plugin or
+> extension manager): `npx skills add gemini-cli-extensions/google-cloud-storage
+> --skill google-cloud-storage-fuse`
+
 ## Quick Start and Installation
 
 > [!NOTE]

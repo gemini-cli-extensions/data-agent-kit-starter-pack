@@ -9,11 +9,41 @@ description: |-
     4. You need to query BigQuery from within a notebook. DO NOT use the Python BigQuery client library; instead, you MUST use the `%%bqsql` magics explained in this skill.
 license: Apache-2.0
 metadata:
-  version: v5
+  version: v6
   publisher: google
 ---
 
 # Notebook Guidance
+
+## MANDATORY Pre-Flight Execution Order (STEP 0 FIRST)
+
+0.  **Pre-Flight Step 0 (MANDATORY TURN 1 FIRST ACTION)**: BEFORE writing cells,
+    creating files, generating notebooks, running commands, or executing code
+    (regardless of whether notebook `execute_cell` tool is available or absent):
+    *   **Execute Auth Check**: Execute `@skill:google-cloud-auth-verification`
+        pre-flight check. Default to notebook MCP tools (`execute_cell`).
+    *   **Verify Auth**: Verify `gcloud` authentication (`gcloud auth list`). If
+        unauthenticated or no credentialed account exists, **HARD STOP**
+        immediately and prompt the user to log in (`gcloud auth login` & `gcloud
+        auth application-default login`).
+    *   **Upfront Runtime Selection**: Ask the user upfront: *"Where would you
+        like to execute this notebook workload? (1. Dataproc Serverless
+        Spark, 2. Local Machine, 3. Colab Enterprise)"*. Instruct the human
+        user: *"Please click the top-right VSCode notebook toolbar to select
+        your target kernel (Dataproc Serverless or Local Python), then click
+        Proceed."*
+    *   **CRITICAL TURN 1 HARD STOP**: You MUST stop your turn immediately after
+        asking and wait for user response before creating any `.ipynb` files,
+        writing any cells, or generating any code.
+
+> [!IMPORTANT]
+>
+> **Agent execution rules**: You MUST perform Pre-Flight Step 0 above on Turn 1
+> BEFORE creating or generating any notebook cells. After receiving user
+> confirmation: * **If notebook `execute_cell` tool is available**: You MUST
+> follow the incremental GENERATE CELL -> EXECUTE CELL -> VALIDATE flow. * **If
+> notebook `execute_cell` tool is NOT available**: You MUST generate the
+> complete notebook and request user execution.
 
 ## When to Use a Notebook
 
@@ -42,17 +72,6 @@ Do NOT use a notebook ONLY if:
 comparison is involved, favor a notebook and a visualization. A notebook is the
 "standard" environment for our developer workflow; do not avoid it because of
 "overhead".
-
-## Notebook Best Practices
-
-> [!IMPORTANT]
->
-> **Agent execution rules**: Your behavior MUST depend on whether the
-> `notebook_execute_cell` tool is available in your current context: * **If
-> notebook `execute_cell` tool is available**: You MUST follow the incremental
-> GENERATE CELL -> EXECUTE CELL -> VALIDATE flow. * **If notebook `execute_cell`
-> tool is NOT available**: You MUST generate the complete notebook and request
-> user execution.
 
 1.  **CONDITIONAL EXECUTION FLOW**:
     *   **If notebook `execute_cell` tool is available**: Follow the **STEP BY
@@ -123,6 +142,71 @@ kernel’s Python environment contains the necessary libraries (`bigframes`,
 > is needed (e.g., PySpark / Dataproc Serverless) and wait for explicit
 > confirmation that a kernel is active before proceeding with notebook
 > execution.
+
+> [!IMPORTANT]
+>
+> **MCP-First Execution & Auth Pre-Flight Order**: Refer to
+> `@skill:google-cloud-auth` to enforce MCP tool prioritization and `gcloud`
+> authentication checks before generating code or execution plans.
+
+> [!IMPORTANT]
+>
+> **2-Retry Setup Circuit Breaker**: Cap environment setup, kernel connection,
+> or library installation retries at a maximum of **2 attempts**. If setup or
+> kernel connection fails twice, **HARD STOP** immediately and prompt the user
+> to pivot runtimes: *"Environment setup encountered errors twice. Would you
+> like to pivot to Dataproc Serverless Spark, or help resolve the local setup?"*
+>
+> [!IMPORTANT]
+>
+> **Real-Time Error Explanation Rule**: When cell execution reveals a code
+> failure, you MUST output a **1-line error summary** in your chat response
+> prior to calling `replace_cell` (e.g. *"Cell 3 failed with Py4JJavaError:
+> SparkSession catalog error. Updating catalog configuration in-place..."*).
+> Never silently edit cells in a loop without explaining what failed to the
+> user.
+
+> [!NOTE]
+>
+> **No Pre-Flight Script Compilation**: Do NOT run external shell python
+> `compile()` scripts to validate raw notebook JSON string syntax before
+> invoking `execute_cell`. Trust the notebook MCP tools directly.
+
+> [!NOTE]
+>
+> **Pre-Flight Tool Consolidation**: Do NOT issue separate sequential
+> `view_file` calls for pre-loaded workspace skills on every turn, and do NOT
+> issue 1-line sequential shell probe commands (`google.auth.default()`,
+> `pyspark.__version__`, `pip list`). Bundle environment probing into a single
+> composite check command.
+
+> [!NOTE]
+>
+> **macOS Local PySpark Requirements**: Running PySpark ML locally on macOS
+> requires OpenJDK (`JAVA_HOME`) and OpenMP (`libomp.dylib`). If missing, inform
+> the user immediately or recommend Dataproc Serverless Spark.
+
+> [!IMPORTANT]
+>
+> **Upfront Runtime Selection & Kernel Selection Checkpoint**: 1. Before
+> generating notebook code, ask the user upfront: *"Where would you like to
+> execute this Spark workload? (1. Dataproc Serverless Spark, 2. Local
+> Machine, 3. Colab Enterprise)"*. 2. Because VS Code security blocks extensions
+> from programmatically selecting kernels, instruct the human user: *"Please
+> click the top-right VSCode notebook toolbar to select your target kernel
+> (Dataproc Serverless or Local Python), then click Proceed."*
+
+> [!NOTE]
+>
+> **Dataproc Serverless Session Delay**: Dataproc Serverless Interactive
+> Sessions take ~2 minutes to spin up GCE VMs. Inform the user of this wait time
+> when starting remote execution.
+
+> [!NOTE]
+>
+> **IPython Magic Stripping on Script Conversion**: When converting `.ipynb`
+> notebooks to `.py` scripts via `nbconvert`, comment out or strip `%` and `%%`
+> magic lines (e.g. `%%bqsql`, `%pip`) to prevent Python syntax errors.
 
 ### Proper Library Installation
 

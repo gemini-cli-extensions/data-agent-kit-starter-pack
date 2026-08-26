@@ -7,7 +7,7 @@ description: Expertise in generating clean, correct, and efficient Dataform pipe
   up a new Dataform project or configuring workflow_settings.yaml.
 license: Apache-2.0
 metadata:
-  version: v5
+  version: v6
   publisher: google
 ---
 
@@ -86,6 +86,9 @@ Follow these steps when fulfilling Dataform-related requests:
     GCS URIs.
     -   **List Datasets**: `bq ls --project_id=<PROJECT_ID>`
     -   **List Tables**: `bq ls <PROJECT_ID>:<DATASET_ID>`
+    -   **List Graphs**: ``bq query --use_legacy_sql=false "SELECT * FROM
+        `<PROJECT_ID>.<DATASET_ID>.INFORMATION_SCHEMA.PROPERTY_GRAPHS` LIMIT
+        100"``
     -   **Check Schema/Info**: `bq show --schema --format=prettyjson
         <PROJECT_ID>:<DATASET_ID>.<TABLE_ID>` or `bq show --format=prettyjson
         <PROJECT_ID>:<DATASET_ID>.<TABLE_ID>`
