@@ -1,8 +1,5 @@
 ---
 name: google-cloud-auth-verification
-aliases:
-  - gcloud-auth-verification
-  - google-cloud-auth
 description: >-
   Mandatory Step 0 pre-flight execution order and authentication verification for Google Cloud Platform (GCP),
   Application Default Credentials (ADC), gcloud CLI, Spark, Dataproc, BigQuery, GCS, and notebook runtimes.
