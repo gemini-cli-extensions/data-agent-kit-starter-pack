@@ -10,21 +10,18 @@ metadata:
   publisher: google
 ---
 
-# Google Cloud & MCP Authentication Guidelines
+# Google Cloud Authentication Guidelines
 
 ## Mandatory Pre-Flight Execution & Auth Hierarchy
 
 > [!IMPORTANT] **Pre-Flight Execution Priority Order**: Before generating code,
 > implementation plans, or executing tasks for any GCP or Notebook workload:
 >
-> 1.  **MCP Tools Inherit Extension Auth**: Calls to MCP tools (such as MCP
->     Toolbox or OneMCP) automatically use the authenticated extension session
->     without requiring pre-flight `gcloud` shell probes.
-> 2.  **Verify Shell, Script & Notebook Credentials**: If shell-based commands,
+> 1.  **Verify Shell, Script & Notebook Credentials**: If shell-based commands,
 >     local Python scripts, or notebook kernels (`gs://...`, BigQuery, Dataproc)
 >     are required, verify credentials via bundled probe (`gcloud auth list &&
 >     gcloud config list`) or Application Default Credentials (ADC).
-> 3.  **Distinguish Authentication vs. IAM Permissions**:
+> 2.  **Distinguish Authentication vs. IAM Permissions**:
 >     -   If `gcloud auth list` returns `No credentialed accounts`, **HARD
 >         STOP** immediately and instruct the user to run `gcloud auth login`
 >         and `gcloud auth application-default login`.
@@ -36,7 +33,7 @@ metadata:
 >         tell the user to log in again with `gcloud auth login`. Diagnose
 >         missing IAM roles (e.g., `roles/bigquery.dataEditor`) on the active
 >         account.
-> 4.  **HARD STOP if Unauthenticated**: If no active GCP credentials or valid
+> 3.  **HARD STOP if Unauthenticated**: If no active GCP credentials or valid
 >     `gcloud` authentication are detected, **STOP IMMEDIATELY**. Prompt the
 >     user to run `gcloud auth login` and `gcloud auth application-default
 >     login`. Do NOT attempt local virtualenv creation, package installation, or
