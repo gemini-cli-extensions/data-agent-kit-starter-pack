@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v7
+  version: v10
   publisher: google
 ---
 
@@ -56,6 +56,7 @@ metadata:
     next steps to resolve the issue. Do NOT scan all buckets for alternative
     fallback datasets when encountering GCS errors.
 3.  **Generate spark code**:
+
     *   **Output Format**: **ALWAYS** generate code in **Python Notebooks
         (.ipynb)** format. Generate scripts (.py) only if explicitly requested.
     *   **Read and Write data**: **ALWAYS** Refer to
@@ -73,9 +74,10 @@ metadata:
     script using `jupyter nbconvert --to script your-notebook.ipynb` first. Then
     compile the resulting python script using `python3 -m py_compile
     your-script.py`. The same can be done for pyspark source code.
-6.  **Execute script**: When requested to run a job, script, session refer to
-    `references/gcloud_dataproc.md` on how to execute generated code on Managed
-    Spark. This DOES NOT apply when generating notebooks.
+6.  **Execute script**: When requested to run a job, script, session, or Spark
+    Connect session, refer to `references/gcloud_dataproc.md` on how to execute
+    generated code on Managed Spark. This DOES NOT apply when generating
+    notebooks.
 
 --------------------------------------------------------------------------------
 
@@ -123,4 +125,4 @@ The Dataproc service account needs:
 ## Spark resource management
 
 Refer to `references/gcloud_dataproc.md` for detailed guidelines on managing
-Spark clusters, jobs, batches, and interactive sessions.
+Spark clusters, jobs, batches, interactive sessions, and Spark Connect sessions.

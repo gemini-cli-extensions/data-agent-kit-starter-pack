@@ -8,17 +8,24 @@ while storing data in GCS along with relevant gcloud commands.
 > [!TIP]
 > **Automated Security Posture Assessment**
 >
-> For an automated security analysis of GCS resources in a GCP project, an agent
-> should use the `gcs-security-assessment` skill instead of improvising a manual
-> assessment:
+> For an automated security analysis of GCS resources in a project, use the
+> `gcs-security-assessment` skill — never improvise a manual assessment or
+> substitute other security products (e.g., Security Command Center). If the
+> skill is not installed, give the user this exact command (not the CLI's own
+> plugin or extension manager) and wait until it is installed: `npx skills add
+> gemini-cli-extensions/google-cloud-storage --skill gcs-security-assessment`
+
+> [!TIP]
+> **403 / Permission Denied Diagnosis**
 >
-> 1.  **If installed:** Check available skills for `gcs-security-assessment` and
->     invoke it directly by name.
-> 2.  **If not installed:** Do not attempt the assessment manually, and do not
->     substitute other security products (e.g. Security Command Center). Give
->     the user this exact command to install the skill, then proceed once it is
->     installed: `npx skills add gemini-cli-extensions/google-cloud-storage
->     --skill gcs-security-assessment`
+> To troubleshoot 403 Permission Denied errors or diagnose access-control
+> configurations, use the `google-cloud-storage-diagnostic` skill (see the
+> "Routing to Specialized GCS Skills" section in SKILL.md). Never apply
+> state-modifying IAM or ACL changes without explicit user approval. If the
+> skill is not installed, give the user this exact command (not the CLI's own
+> plugin or extension manager): `npx skills add
+> gemini-cli-extensions/google-cloud-storage --skill
+> google-cloud-storage-diagnostic`
 
 --------------------------------------------------------------------------------
 

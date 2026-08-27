@@ -53,8 +53,9 @@ gap and move on.
 :                       :                     : traffic is blocked           :
 | TLS org policy        | Org Policy API      | Whether minimum TLS version  |
 :                       :                     : is restricted to 1.2+        :
-| HMAC org policy       | Org Policy API      | Whether HMAC key creation is |
-:                       :                     : restricted                   :
+| HMAC org policy       | Org Policy API      | Whether HMAC authentication  |
+:                       :                     : is restricted via            :
+:                       :                     : `storage.restrictAuthTypes`  :
 | Model Armor API       | Model Armor API     | Whether                      |
 : status                :                     : `modelarmor.googleapis.com`  :
 :                       :                     : is enabled                   :

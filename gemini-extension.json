@@ -25,7 +25,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@toolbox-sdk/server@>=1.1.0",
+        "@toolbox-sdk/server@latest",
         "--prebuilt",
         "bigquery",
         "--stdio",
@@ -41,7 +41,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@toolbox-sdk/server@>=1.1.0",
+        "@toolbox-sdk/server@latest",
         "--prebuilt",
         "spanner",
         "--stdio",
@@ -59,7 +59,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@toolbox-sdk/server@>=1.1.0",
+        "@toolbox-sdk/server@latest",
         "--prebuilt",
         "alloydb-postgres-admin",
         "--stdio",
@@ -72,7 +72,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@toolbox-sdk/server@>=1.1.0",
+        "@toolbox-sdk/server@latest",
         "--prebuilt",
         "alloydb-postgres",
         "--stdio",
@@ -94,7 +94,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@toolbox-sdk/server@>=1.1.0",
+        "@toolbox-sdk/server@latest",
         "--prebuilt",
         "cloud-sql-postgres-admin",
         "--stdio",
@@ -107,7 +107,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@toolbox-sdk/server@>=1.1.0",
+        "@toolbox-sdk/server@latest",
         "--prebuilt",
         "cloud-sql-postgres",
         "--stdio",
@@ -128,7 +128,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@toolbox-sdk/server@>=1.1.0",
+        "@toolbox-sdk/server@latest",
         "--prebuilt",
         "dataplex",
         "--stdio",
@@ -143,7 +143,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@toolbox-sdk/server@>=1.1.0",
+        "@toolbox-sdk/server@latest",
         "--prebuilt",
         "dataproc",
         "--stdio",
@@ -159,7 +159,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@toolbox-sdk/server@>=1.1.0",
+        "@toolbox-sdk/server@latest",
         "--prebuilt",
         "serverless-spark",
         "--stdio",
@@ -175,7 +175,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@toolbox-sdk/server@>=1.1.0",
+        "@toolbox-sdk/server@latest",
         "--prebuilt",
         "bigtable",
         "--stdio",
@@ -191,7 +191,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@toolbox-sdk/server@>=1.1.0",
+        "@toolbox-sdk/server@latest",
         "--prebuilt",
         "cloud-storage",
         "--stdio",
