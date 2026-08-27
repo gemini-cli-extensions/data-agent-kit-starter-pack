@@ -13,7 +13,7 @@ description: |
     6. Before executing Python scripts via the terminal to ensure the correct virtual environment is active.
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 
@@ -24,6 +24,17 @@ metadata:
 > **BEFORE any `pip install`**: You MUST first detect the project's existing
 > dependency manager and use it correctly. Do NOT override the project's
 > established tooling.
+
+> [!NOTE]
+>
+> **Pre-Flight Environment Check Bundling**: You MUST NOT run multiple
+> sequential 1-line shell check commands (e.g. separate commands for python
+> version, pyspark version, auth check, pip list). Combine all pre-flight
+> environment and package availability probes into a single composite python
+> one-liner or shell check step. This bundling also applies to marker file
+> detection; use a single `ls` or `find` command to check for all potential
+> dependency manager files at once (e.g. `ls uv.lock poetry.lock Pipfile.lock
+> requirements.txt pyproject.toml`).
 
 ## Dependency Manager Detection
 

@@ -79,7 +79,7 @@ are currently tested in the [MCP Toolbox GitHub](https://github.com/googleapis/g
 *   **Conventional Commits:** This repository uses
     [Release Please](https://github.com/googleapis/release-please) to manage
     releases. Your commit messages must adhere to the
-    [Conventional Commits](https://www.conventionalcommits.org/) specification.
+    [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
 *   **Dependency Updates:** [Renovate](https://github.com/apps/forking-renovate)
     is configured to automatically create pull requests for dependency updates.
 
