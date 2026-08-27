@@ -145,8 +145,8 @@ Policy Fix #2. Enforce minimum TLS 1.2
                Console: IAM & Admin > Organization Policies > constraints/gcp.restrictTLSVersion
                gcloud: gcloud org-policies set-policy policy.yaml --project=PROJECT_ID
 
-Policy Fix #3. Restrict HMAC key creation
-               Console: IAM & Admin > Organization Policies > constraints/storage.disableServiceAccountHmacKeyCreation
+Policy Fix #3. Restrict HMAC authentication
+               Console: IAM & Admin > Organization Policies > constraints/storage.restrictAuthTypes
                gcloud: gcloud org-policies set-policy policy.yaml --project=PROJECT_ID
 
 Policy Fix #4. Enable Data Access audit logs

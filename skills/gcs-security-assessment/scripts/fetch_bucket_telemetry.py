@@ -215,14 +215,22 @@ def main() -> None:
       else None
   )
 
-  risk_score, telemetry = fetch_bucket_telemetry(
-      project_id=args.project_id,
-      dataset_name=args.dataset_name,
-      bucket_names=bucket_names,
-  )
-  print(
-      json.dumps({"risk_score": risk_score, "telemetry": telemetry}, indent=2)
-  )
+  try:
+    risk_score, telemetry = fetch_bucket_telemetry(
+        project_id=args.project_id,
+        dataset_name=args.dataset_name,
+        bucket_names=bucket_names,
+    )
+    print(
+        json.dumps({"risk_score": risk_score, "telemetry": telemetry}, indent=2)
+    )
+  except (
+      cloud_rest_helpers_nodeps.CloudRestError,
+      RuntimeError,
+      TypeError,
+      ValueError,
+  ) as e:
+    print(json.dumps({"error": repr(e)}))
 
 
 if __name__ == "__main__":

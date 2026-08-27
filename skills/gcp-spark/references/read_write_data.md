@@ -1,21 +1,37 @@
 # Definitive Guide to reading and writing tables using spark code
 
-> [!IMPORTANT]
-> You MUST ALWAYS follow the Task Execution Workflow when writing spark code.
+> [!IMPORTANT] You MUST ALWAYS follow the Task Execution Workflow when writing
+> spark code.
 
 ## Task Execution Workflow
 
-1. Configure the spark session to read or write data from the required source
-   or destination
-2. Read or write the data from the required source or destination
+1.  Configure the spark session to read or write data from the required source
+    or destination
+2.  Read or write the data from the required source or destination
+
+> [!IMPORTANT] **Flexible Spark Session Catalog Templates**: Avoid hardcoding
+> Apache Iceberg or BigLake REST Catalogs if metastores are not pre-configured.
+> Use the appropriate session template:
+>
+> 1.  **Standard Direct GCS Storage (Default Fallback)**: Write directly to
+>     `gs://<bucket>/<table_name>` as Parquet/CSV.
+> 2.  **BigLake REST Catalog**: Use only when BigLake REST catalog properties
+>     are explicitly provided.
+> 3.  **Local PySpark Development**: Use local Hadoop catalog configurations.
+>
+> If an Iceberg catalog namespace does not exist (causing
+> `NoSuchNamespaceException`), **FALL BACK** to direct GCS storage
+> (`gs://.../table_name`).
 
 ## BigQuery
 
 ### Spark Session Configuration
+
 No session configuration is needed to read from BigQuery, all jars and
 configuration are provided by default in Dataproc.
 
 ### Reading from BigQuery
+
 #### Basic example to read a Big Query table
 
 ```python
@@ -25,8 +41,10 @@ df = spark.read.format("bigquery") \
 ```
 
 #### Executing a BigQuery SQL query
+
 The Spark BigQuery connector allows you to run Standard SQL SELECT queries
 directly on BigQuery and load the results into a spark dataframe.
+
 > [!IMPORTANT] You must enable views option to run direct queries
 
 ```python
@@ -42,6 +60,7 @@ df = spark.read.format("bigquery").option("viewsEnabled", "true").load(sql)
 ```
 
 #### BigQuery Join Patterns
+
 When enriching data with BigQuery reference tables:
 
 ```python
@@ -60,7 +79,7 @@ enriched_df = main_df.join(
 
 #### Optimization Tips
 
-1. Select only needed columns from BigQuery
+1.  Select only needed columns from BigQuery
 
 ```python
 ref_df = spark.read.format("bigquery") \
@@ -70,7 +89,7 @@ ref_df = spark.read.format("bigquery") \
     .select("id", "name")
 ```
 
-2. Using broadcast joins for small reference tables
+2.  Using broadcast joins for small reference tables
 
 ```python
 from pyspark.sql.functions import broadcast
@@ -81,15 +100,16 @@ enriched_df = main_df.join(
 )
 ```
 
-3. Cache reference data if used multiple times, example: `ref_df.cache()`
+3.  Cache reference data if used multiple times, example: `ref_df.cache()`
 
 ### Writing to BigQuery
 
 #### Non partitioned data
+
 Write DataFrame to BigQuery using direct writes,
 
- - Set writeMethod to direct
- - Set mode to one of `overwrite`, `append`, `errorifexists` based on task
+-   Set writeMethod to direct
+-   Set mode to one of `overwrite`, `append`, `errorifexists` based on task
 
 ```python
 df.write \
@@ -99,13 +119,15 @@ df.write \
     .mode("overwrite") \
     .save()
 ```
-#### Partitioned data
-Write DataFrame to a partitioned BigQuery table using indirect writes. In
-this method, data is written to GCS first and then loaded into BigQuery.
-A GCS bucket is required as the temporary data location.
 
- - Set temporaryGcsBucket to a gcs bucket name
- - Set a check point path location
+#### Partitioned data
+
+Write DataFrame to a partitioned BigQuery table using indirect writes. In this
+method, data is written to GCS first and then loaded into BigQuery. A GCS bucket
+is required as the temporary data location.
+
+-   Set temporaryGcsBucket to a gcs bucket name
+-   Set a check point path location
 
 ```python
 df.write \
@@ -119,17 +141,17 @@ df.write \
 
 ### Spark Session Configuration
 
-- [!WARNING] BigLake Iceberg catalog must be configured in the spark session
-  before tables can be read.
-- Multiple Iceberg catalogs can be configured in the same spark session
-- [!IMPORTANT] You **MUST** identify the storage layer for the BigLake Iceberg
-  table before configuring the spark session. Use
-  `@skill:discovering-gcp-data-assets` to **search** and **lookup** the table
-  details. Check the value for the `metadataPath` field from the lookup
-  results, if it starts with `gs:` proceed with GCS storage, if it starts with
-  `s3:` then proceed with S3 storage.
-- [!WARNING] **DO NOT** assume catalog_name, project_id, io implementation for a
-  table, **ALWAYS lookup** table details before proceeding.
+-   [!WARNING] BigLake Iceberg catalog must be configured in the spark session
+    before tables can be read.
+-   Multiple Iceberg catalogs can be configured in the same spark session
+-   [!IMPORTANT] You **MUST** identify the storage layer for the BigLake Iceberg
+    table before configuring the spark session. Use
+    `@skill:discovering-gcp-data-assets` to **search** and **lookup** the table
+    details. Check the value for the `metadataPath` field from the lookup
+    results, if it starts with `gs:` proceed with GCS storage, if it starts with
+    `s3:` then proceed with S3 storage.
+-   [!WARNING] **DO NOT** assume catalog_name, project_id, io implementation for
+    a table, **ALWAYS lookup** table details before proceeding.
 
 Example with GCS storage:
 
@@ -215,12 +237,12 @@ spark = SparkSession.builder \
 
 ### Reading from BigLake Iceberg Catalog
 
-- You **MUST** set the current spark catalog before attempting to read, using
-  `spark.catalog.setCurrentCatalog("<CATALOG_NAME>")`. **DO NOT** use backticks
-  in this call.
-- [!IMPORTANT] You **MUST ALWAYS** surround the catalog name with backticks in
-  SQL statements and `load()` calls to ensure proper handling of special
-  characters (e.g., `catalog_name`).
+-   You **MUST** set the current spark catalog before attempting to read, using
+    `spark.catalog.setCurrentCatalog("<CATALOG_NAME>")`. **DO NOT** use
+    backticks in this call.
+-   [!IMPORTANT] You **MUST ALWAYS** surround the catalog name with backticks in
+    SQL statements and `load()` calls to ensure proper handling of special
+    characters (e.g., `catalog_name`).
 
 ```python
 spark.catalog.setCurrentCatalog("<CATALOG_NAME>")
@@ -229,26 +251,28 @@ df = spark.read.format("iceberg") \
 ```
 
 ### Writing to BigLake Iceberg Catalog
+
 [!IMPORTANT] Follow these instructions before writing code to write to BigLake
 iceberg tables
 
-- **ALWAYS** use Spark's `DataFrameWriterV2` API (`writeTo`) for writing to
-  Iceberg tables. This provides a richer API with specific write modes.
-- You **MUST** set the current spark catalog before attempting to write, using
-  `spark.catalog.setCurrentCatalog("<CATALOG_NAME>")`. **DO NOT** use backticks
-  in this call.
-- **ALWAYS** Ensure namespace is created before writing, using:
+-   **ALWAYS** use Spark's `DataFrameWriterV2` API (`writeTo`) for writing to
+    Iceberg tables. This provides a richer API with specific write modes.
+-   You **MUST** set the current spark catalog before attempting to write, using
+    `spark.catalog.setCurrentCatalog("<CATALOG_NAME>")`. **DO NOT** use
+    backticks in this call.
+-   **ALWAYS** Ensure namespace is created before writing, using:
 
     ```python
     spark.sql(
         "CREATE NAMESPACE IF NOT EXISTS `<CATALOG_NAME>`.<NAMESPACE_NAME>"
     )
     ```
+
     > [!IMPORTANT] You **MUST ALWAYS** surround the catalog name with backticks
     > in SQL statements and `writeTo()` calls to ensure proper handling of
     > special characters.
-- [!WARNING] BigLake Iceberg catalog must be configured before tables can be
-  read.
+-   [!WARNING] BigLake Iceberg catalog must be configured before tables can be
+    read.
 
 ```python
 # The basic pattern
@@ -258,7 +282,7 @@ df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>").using("iceberg")
 
 #### Write Modes
 
-- **DataFrameWriterV2 `createOrReplace()`**: Creates the table if it does not
+-   **DataFrameWriterV2 `createOrReplace()`**: Creates the table if it does not
     exist, or replaces it if it does.
 
     ```python
@@ -267,8 +291,8 @@ df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>").using("iceberg")
         .createOrReplace()
     ```
 
-- **DataFrameWriterV2 `append()`**: Equivalent to `INSERT INTO`. Appends data to
-    an existing table.
+-   **DataFrameWriterV2 `append()`**: Equivalent to `INSERT INTO`. Appends data
+    to an existing table.
 
     ```python
     df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>") \
@@ -276,8 +300,8 @@ df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>").using("iceberg")
         .append()
     ```
 
-- **SPARK SQL MERGE INTO**: Performs row-level updates, inserts, and deletes by
-    rewriting data files that contain affected rows. The source table can be
+-   **SPARK SQL MERGE INTO**: Performs row-level updates, inserts, and deletes
+    by rewriting data files that contain affected rows. The source table can be
     persisted as a temp view to allow using it in the MERGE INTO statement. The
     source view and the target table must be joined on the primary key(s) to
     ensure correct row-level updates, inserts, and deletes.
@@ -294,8 +318,9 @@ df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>").using("iceberg")
     """)
     ```
 
-- [!WARNING] These are less preferred write modes, use them ONLY if explicitly
-  asked to:
+-   [!WARNING] These are less preferred write modes, use them ONLY if explicitly
+    asked to:
+
 *   **`create()`**: Equivalent to `CREATE TABLE AS SELECT`. Fails if the table
     already exists.
 
@@ -335,9 +360,9 @@ df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>").using("iceberg")
 #### Advanced Iceberg Writes
 
 ##### Writing with partitions
+
 Use partitioning transform functions if writing to partitioned tables using
-timestamp fields. Ex: years, months, days, hours etc.
-Example: 
+timestamp fields. Ex: years, months, days, hours etc. Example:
 
 ```python
 from pyspark.sql.functions import days
@@ -349,6 +374,7 @@ df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>") \
 ```
 
 ##### Schema Evolution
+
 Iceberg supports safe schema evolution. You can merge schema changes during an
 append.
 
@@ -367,12 +393,14 @@ df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>.branch_audit") \
 ```
 
 ## Google Cloud Storage (GCS)
-No session configuration is needed to read from GCS, all jars and
-configuration are provided by default in Dataproc.
+
+No session configuration is needed to read from GCS, all jars and configuration
+are provided by default in Dataproc.
 
 ### Reading from GCS
 
 #### CSV format
+
 Read with `header` and `inferSchema` without these, the header row becomes data
 and all columns are strings
 
@@ -383,14 +411,17 @@ df = spark.read.option("header", "true") \
 ```
 
 #### Parquet format
+
 `df = spark.read.parquet("gs://<BUCKET>/<PATH_TO_PARQUET>")`
 
 #### Json format
+
 `df = spark.read.json("gs://<BUCKET>/<PATH_TO_JSON>")`
 
 ### Writing to GCS
 
 #### Csv format
+
 `df.write.csv("gs://bucket/output_path")`
 
 #### Model artifacts
@@ -403,11 +434,12 @@ model.write().overwrite().save(model_path)
 ```
 
 ## Spanner
+
 ### Spark Session Configuration
+
 The spanner jar must be configured in the spark session before tables can be
 read. In the notebook code we can ONLY validate the spanner connector is
-configured.
-Example:
+configured. Example:
 
 ```python
 spark = SparkSession.builder \
@@ -431,6 +463,7 @@ df = spark.read.format('cloud-spanner') \
 ```
 
 ### Writing to Spanner
+
 The connector supports writing to Spanner tables using the DataFrame `write`
 API.
 
@@ -465,12 +498,20 @@ API.
 
 ### Reading from Cloud SQL via JDBC
 
+> [!WARNING] NEVER embed plaintext secrets or passwords directly in code or
+> scripts. Always retrieve credentials securely via environment variables (or
+> Secret Manager).
+
 ```python
+import os
+
+password = os.environ.get("DB_PASSWORD", "")
+
 df = spark.read.format("jdbc") \
     .option("url", "jdbc:postgresql://<HOST_OR_PRIVATE_IP>:5432/<DATABASE>") \
     .option("dbtable", "<TABLE_NAME>") \
     .option("user", "<USER>") \
-    .option("password", "<PASSWORD>") \
+    .option("password", password) \
     .option("driver", "org.postgresql.Driver") \
     .load()
 ```
