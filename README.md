@@ -176,7 +176,7 @@ Edit the configuration file:
 </details>
 
 <!-- {x-release-please-end} -->
-<!-- release-version-force-update: 0.8.0 -->
+<!-- release-version-force-update: 0.10.0 -->
 
 ## Usage Examples
 
