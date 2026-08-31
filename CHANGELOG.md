@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.10.0](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.8.0...0.10.0) (2026-08-31)
+
+
+### Features
+
+* Add semantic schema mapping skill for ontology driven data engineering ([f015039](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/f01503992d4308bcc90792b7aa2ae35a1653f3ee))
+* Add Spark Connect session lifecycle guide with DataprocSparkSession to gcp_spark skill ([b977284](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/b97728471647bc2eaf38ce49022c8414caa5de5a))
+* Avoid redundant cluster creation for serverless batch jobs in gcp_spark skill ([15d9e27](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/15d9e272522613e49a6b0853b5d677ae4d287376))
+* Enforce argparse parameterization for Spark scripts in gcp_spark skill ([d0cf7eb](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/d0cf7eb914a204a74f8406ad51597101f7764a23))
+* Enforce Python standard logging over print() in gcp_spark skill ([29f17a0](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/29f17a0843cd1858b96a989ffb4ff2fd7f898b29))
+* **orchestration:** update orchestration pipeline schema ([eb5f3e3](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/eb5f3e389d8ab56510ea7bf496da96edd02438bd))
+* **orchestration:** update orchestration pipelines schema to support AI actions ([fc13f54](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/fc13f5430aa6a24924b746b76409fa3393aaea74))
+* Remove hardcoded secrets from Cloud SQL examples in gcp_spark skill ([682aee5](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/682aee5a0e49072a30625ec685820e1a50ec7cda))
+* **skills:** Update google-cloud-auth-verification with bundled probe and IAM handling ([a891ebc](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/a891ebc5aec2812355977ef85e046bd95dc5e472))
+* Use @toolbox-sdk/server@latest and remove Windows-specific quoting ([4e51d1c](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/4e51d1c03cb56e5ca09c90b2fbae6df5dd9dea91))
+
+
+### Bug Fixes
+
+* Preserve host attribution values when tagging gcloud commands. ([e830e87](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/e830e879a1278367e5e45eace4da12b10fcb290c))
+* **skills:** Generalize GCP auth verification pre-flight hierarchy ([fd3ac55](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/fd3ac5583d387b037e1862c042c70635dec6074c))
+* **skills:** Remove unsupported aliases field from google-cloud-auth-verification frontmatter ([3bc2e21](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/3bc2e21d6f847ee6e537a7d44acf2ae7cf24349b))
+
+
+### Miscellaneous Chores
+
+* force release 0.10.0 ([3dd3f00](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/3dd3f00f21ba5209ebd9039dbdbb6c80783b0ccf))
+
 ## [0.8.0](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.7.2...0.8.0) (2026-08-07)
 
 
