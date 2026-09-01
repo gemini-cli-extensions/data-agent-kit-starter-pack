@@ -31,8 +31,10 @@ jobs:
         with:
           # There is no security token. So, it would fail on any links which aren't public.
           #
-          # The google-cloud-storage-basics skill docs contain illustrative command
+          # The google-cloud-storage-* skill docs contain illustrative command
           # examples (gcloud/curl/apt/REST) with placeholder buckets, versions, and
-          # accounts. lychee scans URLs inside fenced code blocks, so those
-          # non-navigable example URLs fail the check; exclude that skill's paths.
-          args: "--verbose --no-progress --exclude-path skills/google-cloud-storage-basics **/*.md"
+          # accounts. Additionally, external CI runner IPs hitting Google Cloud
+          # documentation links trigger Google anti-abuse rate limits. Exclude GCS
+          # partner skill paths from the link checker.
+          args: "--verbose --no-progress --exclude-path skills/google-cloud-storage-basics --exclude-path skills/google-cloud-storage-fuse --exclude-path skills/google-cloud-storage-bucket-architect **/*.md"
+
