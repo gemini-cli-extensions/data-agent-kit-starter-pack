@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v11
+  version: v12
   publisher: google
 ---
 
@@ -59,6 +59,13 @@ metadata:
 
     *   **Output Format**: **ALWAYS** generate code in **Python Notebooks
         (.ipynb)** format. Generate scripts (.py) only if explicitly requested.
+    *   **Spark Connect for Notebooks**: When writing PySpark notebooks
+        (.ipynb), **ALWAYS** use Google Cloud Managed Spark Connect
+        (`google-cloud-spark-connect` library) to initialize the Spark session
+        and execute against Dataproc Serverless. Do **NOT** initialize a
+        local `SparkSession.builder.getOrCreate()` or create local Spark
+        clusters in notebooks. Refer to `references/gcloud_dataproc.md` for
+        `ManagedSparkSession` initialization and configuration instructions.
     *   **Read and Write data**: **ALWAYS** Refer to
         `references/read_write_data.md` when reading or writing data.
     *   **Machine Learning Tasks**: Refer to `@skill:ml-best-practices` skill and
