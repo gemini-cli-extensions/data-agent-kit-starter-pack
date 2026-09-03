@@ -12,8 +12,24 @@
 ## BigQuery
 
 ### Spark Session Configuration
-No session configuration is needed to read from BigQuery, all jars and
-configuration are provided by default in Dataproc.
+
+On Managed Spark on Google Cloud, BigQuery connector jars are pre-installed.
+When initializing local session, set the BigQuery package coordinates and
+dependencies:
+
+```python
+from pyspark.sql import SparkSession
+
+# For Spark 4.0 environments
+spark = (
+    SparkSession.builder.appName("<APP_NAME>")
+    .config(
+        "spark.jars.packages",
+        "com.google.cloud.spark:spark-4.0-bigquery:0.45.0,javax.inject:javax.inject:1",
+    )
+    .getOrCreate()
+)
+```
 
 ### Reading from BigQuery
 #### Basic example to read a Big Query table
