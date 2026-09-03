@@ -3,23 +3,17 @@
   "mcpServers": {
     "notebook": {
       "type": "stdio",
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "-p",
-        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
-        "notebook-tools",
+        "${PLUGIN_ROOT}/mcp/dist/index.js",
         "--mode=notebook"
       ]
     },
     "visualization": {
       "type": "stdio",
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "-p",
-        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
-        "notebook-tools",
+        "${PLUGIN_ROOT}/mcp/dist/index.js",
         "--mode=visualization"
       ]
     },
