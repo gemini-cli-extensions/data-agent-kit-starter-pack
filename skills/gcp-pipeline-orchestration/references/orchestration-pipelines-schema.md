@@ -101,7 +101,11 @@ message LocalEngine {
 }
 
 message BigQueryEngine {
+  // Location of the BigQuery dataset / job execution (e.g., "US", "EU", "us-central1").
+  // If not specified, falls back to defaults.location. Must match the dataset's region or multi-region.
   string location = 1;
+  // Destination table (e.g., "project.dataset.table_name").
+  // When destination_table is set, the SQL query must be a pure SELECT statement without DDL (no CREATE TABLE).
   string destination_table = 2;
   repeated string impersonation_chain = 3;
 }
@@ -236,6 +240,9 @@ message PythonAction {
   string main_file_path = 4 [(pipeline_models.validation.is_required) = true];
   string python_callable = 5 [(pipeline_models.validation.is_required) = true];
   google.protobuf.Struct op_kwargs = 6;
+  // Optional. If omitted or requirements are not specified, executes as standard
+  // PythonOperator in the Airflow worker host environment.
+  // When requirements are specified, executes as PythonVirtualenvOperator in an isolated virtualenv.
   PythonEnvironment environment = 7;
   PythonEngine engine = 8 [(pipeline_models.validation.is_required) = true];
   TriggerRule trigger_rule = 9; // Default: all_success.
@@ -253,6 +260,7 @@ message PythonEnvironment {
     }
   }
 
+  // Optional pip requirements. If omitted, task runs as standard PythonOperator.
   Requirements requirements = 1;
   bool system_site_packages = 2; // Default: false.
 }
@@ -641,8 +649,13 @@ actions:
 1. **Action Key**: Use `- pyspark:`, `- notebook:`, `- sql:`, `- pipeline:`, `- data_ingestion:`, `- orchestration_pipeline:`, or `- ai:` directly as the key. Do NOT use `- type: pyspark`.
 2. **Dataproc Engine**: Under `dataprocOnGce`, you **MUST** specify either `existingCluster` (with `clusterName`) or `ephemeralCluster` (with `clusterName` and `resourceProfile`). For Serverless Dataproc, use `dataprocServerless: {}`.
 3. **Environment Requirements**:
-   - For file dependencies: `environment.requirements.path: "requirements.txt"`
-   - For inline dependencies: **MUST** use nested `list` under `inline` (`environment.requirements.inline.list: ["pkg1", "pkg2"]`). Do NOT pass an array directly to `inline`.
+   - The `environment` field is **optional** on `python` actions. Omit `environment` to run using standard `PythonOperator` when extra dependencies are not required.
+   - When custom dependencies are needed, specifying `requirements` compiles to `PythonVirtualenvOperator`:
+     - For file dependencies: `environment.requirements.path: "requirements.txt"`
+     - For inline dependencies: **MUST** use nested `list` under `inline` (`environment.requirements.inline.list: ["pkg1", "pkg2"]`). Do NOT pass an array directly to `inline`.
 4. **Action Params (`params`)**:
    - Keys must match regex `^[a-zA-Z0-9_-]+$` (only alphanumeric, underscores, and hyphens).
    - Values must match regex `^[^';|`&]+$` (cannot contain `'`, `;`, `|`, `` ` ``, `&`).
+5. **SQL Action Location & Query Guidelines**:
+   - **BigQuery (`engine.bigquery`)**: Always set `location` to match the dataset's region/multi-region. Specify the target table via `destinationTable` and use pure `SELECT` queries without DDL statements (do NOT use `CREATE TABLE` or `CREATE OR REPLACE TABLE`).
+   - **Dataproc (`engine.dataprocServerless` / `engine.dataprocOnGce`)**: Dataproc engines do not have a `destinationTable` field; include DDL/DML statements (`CREATE TABLE ... AS SELECT ...` or `INSERT OVERWRITE ...`) directly within the SQL query text to persist tables.
