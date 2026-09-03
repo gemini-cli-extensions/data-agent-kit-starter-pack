@@ -1,12 +1,9 @@
 {
   "mcpServers": {
     "notebook": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "-p",
-        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
-        "notebook-tools",
+        "${CLAUDE_PLUGIN_ROOT}/mcp/dist/index.js",
         "--mode=notebook"
       ],
       "env": {},
@@ -15,12 +12,9 @@
       ]
     },
     "visualization": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "-p",
-        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
-        "notebook-tools",
+        "${CLAUDE_PLUGIN_ROOT}/mcp/dist/index.js",
         "--mode=visualization"
       ],
       "env": {},
