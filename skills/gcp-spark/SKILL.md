@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v11
+  version: v12
   publisher: google
 ---
 
@@ -107,6 +107,23 @@ Before submitting a job, verify:
     using --properties=spark.jars.packages=...,
     --archives=gs://.../env.tar.gz#environment, --py-files, or a custom
     --container-image.
+-   [ ] **Direct Spark BigQuery reading & Environment Focus**: Directly read
+    input tables using Spark BigQuery connector
+    (`spark.read.format("bigquery").option("table", ...).load()`) or BigQuery
+    client. Do NOT run environment probes, shell checks (`which spark-submit`,
+    `apt-get`), or package installs (`pip install`), and NEVER fall back to
+    local data synthesis.
+-   [ ] **Comprehensive EDA & Temporal Pattern Analysis**: In time-series and
+    transaction analysis tasks:
+    -   Perform IQR-based outlier detection on monetary or price columns
+        (`Price`, `Amount`) and document identified outliers.
+    -   Extract temporal features (`dayofweek`, `hour`, `date_format`) and
+        visualize activity across day of week and hour of day (identifying peak
+        days, daily cycles, and weekend patterns).
+    -   Inspect key numerical distributions (e.g. multi-modal price
+        distributions) and feature correlations (e.g. Price vs. Amount
+        relationship).
+    -   Provide a succinct markdown summary of key findings, cycles, and trends.
 
 --------------------------------------------------------------------------------
 
