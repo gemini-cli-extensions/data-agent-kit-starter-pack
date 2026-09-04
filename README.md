@@ -176,7 +176,7 @@ Edit the configuration file:
 </details>
 
 <!-- {x-release-please-end} -->
-<!-- release-version-force-update: 0.10.0 -->
+<!-- github-release-force: 0.10.1 -->
 
 ## Usage Examples
 

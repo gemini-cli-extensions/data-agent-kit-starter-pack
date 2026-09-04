@@ -3,6 +3,7 @@
   "version": "0.10.0",
   "description": "Developer toolkit for Data Cloud and AI integrations.",
   "bin": {
+    "mcp-proxy": "mcp/bin/mcp_proxy_bundle.cjs",
     "notebook-tools": "mcp/dist/index.js"
   },
   "dependencies": {
