@@ -7,7 +7,7 @@ description: This skill helps the agent generate or update orchestration pipelin
   queries. This skill also helps deploy and trigger orchestration pipelines.
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 
@@ -170,6 +170,22 @@ following fields:
 -   If you want to schedule the python job, check the content of Python content
     to determine if it's a spark job. If it is, use `pyspark` as type instead of
     script as type.
+
+-   **BigQuery Dataset Location**: When creating a `sql` action with the `bigquery` engine, you **must inspect the location of any referenced BigQuery
+    datasets** (e.g., whether it is multi-region `US`/`EU` or a specific region
+    like `us-central1`).
+    Run:
+
+    ```
+    # Replace <PROJECT_ID> and <DATASET_ID> with the actual project and dataset ID
+    bq show --format=prettyjson <PROJECT_ID>:<DATASET_ID>
+    ```
+
+    Extract the `location` field (e.g., `US`, `EU`, `us-central1`) and set
+    `actions[].sql.engine.bigquery.location: <LOCATION>` (or
+    `actions[].dataIngestion.bigqueryDts.location: <LOCATION>`). Do NOT omit the
+    location or assume `defaults.location` matches the BigQuery dataset
+    location.
 
 -   Before creating or updating the `deployment.yaml` file, you **must** first
     run the following command to get the list of available Composer environments

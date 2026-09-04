@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v11
+  version: v13
   publisher: google
 ---
 
@@ -28,11 +28,16 @@ metadata:
 1.  **Understand schemas**: **ALWAYS** use `@skill:discovering-gcp-data-assets`
     skill or `references/schema_direct_inspection.md` to understand input and
     output schemas. Include the schema in your thought process BEFORE generating
-    any code. Do NOT guess column names. Unless explicitly specified, assume
-    that the assets are located in the same project. Avoid scanning for assets
-    across other projects as it can take a long time. If an expected dataset or
-    table does not exist, use `@skill:discovering-gcp-data-assets` to discover
-    all similar tables in the namespace or project.
+    any code. Do NOT guess column names. When a fully qualified BigQuery table
+    is provided in the prompt (e.g. `project.dataset.table`), directly inspect
+    its schema using `bigquery__get_table_info` or
+    `spark.read.format("bigquery").option("table", ...).load().printSchema()`
+    rather than running redundant multi-catalog searches across Dataplex or
+    listing dataset IDs. Unless explicitly specified, assume that the assets are
+    located in the same project. Avoid scanning for assets across other projects
+    as it can take a long time. If an expected dataset or table does not exist,
+    use `@skill:discovering-gcp-data-assets` to discover all similar tables in
+    the namespace or project.
 
     *MINOR TYPO RULE*: If there is a minor typo (e.g. `employees` vs
     `employee`), you can fix the error and proceed.
@@ -59,6 +64,23 @@ metadata:
 
     *   **Output Format**: **ALWAYS** generate code in **Python Notebooks
         (.ipynb)** format. Generate scripts (.py) only if explicitly requested.
+    *   **Spark Connect for Notebooks**:
+
+        > [!IMPORTANT] When writing PySpark notebooks (.ipynb), you **MUST**
+        > initialize the Spark session using Google Cloud Managed Spark Connect
+        > (`google-cloud-spark-connect` library) to execute against Dataproc
+        > Serverless. Do **NOT** import or use
+        > `pyspark.sql.SparkSession.builder.getOrCreate()` or create local Spark
+        > clusters in notebooks.
+
+        Refer to `references/gcloud_dataproc.md` for detailed configuration.
+        Minimal initialization snippet:
+
+        ```python
+        from google.cloud.managed_spark_connect import ManagedSparkSession
+
+        spark = ManagedSparkSession.builder.getOrCreate()
+        ```
     *   **Read and Write data**: **ALWAYS** Refer to
         `references/read_write_data.md` when reading or writing data.
     *   **Machine Learning Tasks**: Refer to `@skill:ml-best-practices` skill and
@@ -74,10 +96,10 @@ metadata:
     script using `jupyter nbconvert --to script your-notebook.ipynb` first. Then
     compile the resulting python script using `python3 -m py_compile
     your-script.py`. The same can be done for pyspark source code.
-6.  **Execute script**: When requested to run a job, script, session, or Spark
-    Connect session, refer to `references/gcloud_dataproc.md` on how to execute
-    generated code on Managed Spark. This DOES NOT apply when generating
-    notebooks.
+6.  **Execute script or notebook**: When requested to run a job, script,
+    session, or execute notebook cells against Managed Spark, refer to
+    `references/gcloud_dataproc.md` on how to execute code on Dataproc
+    Serverless using Spark Connect or Dataproc jobs.
 
 --------------------------------------------------------------------------------
 

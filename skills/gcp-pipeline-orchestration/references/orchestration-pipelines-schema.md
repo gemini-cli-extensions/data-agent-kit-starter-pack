@@ -101,6 +101,8 @@ message LocalEngine {
 }
 
 message BigQueryEngine {
+  // Location of the BigQuery dataset / job execution (e.g., "US", "EU", "us-central1").
+  // If not specified, falls back to defaults.location. Must match the dataset's region or multi-region.
   string location = 1;
   string destination_table = 2;
   repeated string impersonation_chain = 3;
@@ -646,3 +648,4 @@ actions:
 4. **Action Params (`params`)**:
    - Keys must match regex `^[a-zA-Z0-9_-]+$` (only alphanumeric, underscores, and hyphens).
    - Values must match regex `^[^';|`&]+$` (cannot contain `'`, `;`, `|`, `` ` ``, `&`).
+5. **BigQuery SQL Action Location**: When using `engine.bigquery` in a `sql` action, always check the referenced dataset location (e.g. using `bq show --format=prettyjson <project>:<dataset>`) and explicitly set `location` (e.g. `US`, `EU`, `us-central1`) to prevent location mismatch errors against multi-region or regional datasets.
