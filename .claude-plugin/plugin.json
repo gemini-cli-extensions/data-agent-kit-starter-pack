@@ -9,22 +9,10 @@
   "mcpServers": "./.claude-mcp.json",
   "hooks": "./.claude-plugin/hooks.json",
   "userConfig": {
-    "PROJECT_ID": {
-      "type": "string",
-      "title": "GCP Project ID",
-      "description": "Project ID when using the MCP toolbox for databases",
-      "required": true
-    },
     "GCP_REGION": {
       "type": "string",
       "title": "GCP Region",
       "description": "Region for GCP services (e.g. us-west1)",
-      "required": true
-    },
-    "BIGQUERY_LOCATION": {
-      "type": "string",
-      "title": "BigQuery Location",
-      "description": "Location for BigQuery datasets (e.g. US)",
       "required": true
     }
   }
