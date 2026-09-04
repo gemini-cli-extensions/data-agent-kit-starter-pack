@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.10.1](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.10.0...0.10.1) (2026-09-04)
+
+
+### Features
+
+* add Bigtable basics skill and EvalBench test cases to DAK ([e06c822](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/e06c822566e46f0d3ccebc969550dd75cc24f944))
+* Add resolving-mcp-region-configs skill to Data Agent Common ([0878ed8](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/0878ed83ce665501651c0fd1e5283b135c3e4dd2))
+* Add Spark 4.0 BigQuery connector coordinates to gcp-spark skill ([e86233d](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/e86233ddaeee10a10ffcdc564bc792a46cd85944))
+* **mcp:** route Google Cloud MCP services through bundled Node stdio proxy ([d17797d](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/d17797deff4205936ad1a578934178b82e55928d))
+* Simplify claude user config by removing BigQuery location and ProjectId string. ([44d991f](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/44d991fa9ced624181fd7a8b1ed3e26cadb47dfa))
+* **skills:** Update managing_python_dependencies with pre-flight environment check bundling ([ad94694](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/ad94694cb96cbda89fa45e5b18b47cd722bd6645))
+
+
+### Bug Fixes
+
+* Update BigFrames skills to reduce agent confusions. ([deabd80](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/deabd800d918d877be7dc47127f5bc2436a8e6e2))
+
+
+### Miscellaneous Chores
+
+* force release 0.10.1 ([#309](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/issues/309)) ([6c33297](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/commit/6c3329771bdb2f118ba288cbba6c4cdb7d105b13))
+
 ## [0.10.0](https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack/compare/0.8.0...0.10.0) (2026-08-31)
 
 
