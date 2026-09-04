@@ -1,10 +1,9 @@
 {
   "mcpServers": {
     "notebook": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
+        "${PLUGIN_ROOT}/mcp/dist/index.js",
         "--mode=notebook"
       ],
       "env": {},
@@ -13,10 +12,9 @@
       ]
     },
     "visualization": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
+        "${PLUGIN_ROOT}/mcp/dist/index.js",
         "--mode=visualization"
       ],
       "env": {},
@@ -25,184 +23,83 @@
       ]
     },
     "bigquery": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "bigquery",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.codex"
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://bigquery.googleapis.com/mcp"
       ],
       "env": {
-        "BIGQUERY_LOCATION": "$BIGQUERY_LOCATION",
-        "BIGQUERY_PROJECT": "$PROJECT_ID"
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
       }
     },
     "spanner": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "spanner",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.codex"
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://spanner.googleapis.com/mcp"
       ],
       "env": {
-        "SPANNER_DATABASE": "",
-        "SPANNER_DIALECT": "",
-        "SPANNER_INSTANCE": "",
-        "SPANNER_PROJECT": "$PROJECT_ID"
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
       }
-    },
-    "alloydb-postgres-admin": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "alloydb-postgres-admin",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.codex"
-      ],
-      "env": {}
     },
     "alloydb-postgres": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "alloydb-postgres",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.codex"
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://alloydb.googleapis.com/mcp"
       ],
       "env": {
-        "ALLOYDB_POSTGRES_CLUSTER": "",
-        "ALLOYDB_POSTGRES_DATABASE": "",
-        "ALLOYDB_POSTGRES_INSTANCE": "",
-        "ALLOYDB_POSTGRES_IP_TYPE": "",
-        "ALLOYDB_POSTGRES_PASSWORD": "",
-        "ALLOYDB_POSTGRES_PROJECT": "$PROJECT_ID",
-        "ALLOYDB_POSTGRES_REGION": "$GCP_REGION",
-        "ALLOYDB_POSTGRES_USER": ""
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
       }
     },
-    "cloud-sql-postgresql-admin": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "cloud-sql-postgres-admin",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.codex"
-      ],
-      "env": {}
-    },
     "cloud-sql-postgresql": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "cloud-sql-postgres",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.codex"
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://sqladmin.googleapis.com/mcp"
       ],
       "env": {
-        "CLOUD_SQL_POSTGRES_DATABASE": "",
-        "CLOUD_SQL_POSTGRES_INSTANCE": "",
-        "CLOUD_SQL_POSTGRES_IP_TYPE": "",
-        "CLOUD_SQL_POSTGRES_PASSWORD": "",
-        "CLOUD_SQL_POSTGRES_PROJECT": "$PROJECT_ID",
-        "CLOUD_SQL_POSTGRES_REGION": "$GCP_REGION",
-        "CLOUD_SQL_POSTGRES_USER": ""
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
       }
     },
     "knowledge_catalog": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "dataplex",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.codex"
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://dataplex.googleapis.com/mcp"
       ],
       "env": {
-        "DATAPLEX_PROJECT": "$PROJECT_ID"
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
       }
     },
     "dataproc": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "dataproc",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.codex"
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://dataproc-$GCP_REGION.googleapis.com/mcp"
       ],
       "env": {
-        "DATAPROC_PROJECT": "$PROJECT_ID",
-        "DATAPROC_REGION": "$GCP_REGION"
-      }
-    },
-    "serverless-spark": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "serverless-spark",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.codex"
-      ],
-      "env": {
-        "SERVERLESS_SPARK_PROJECT": "$PROJECT_ID",
-        "SERVERLESS_SPARK_LOCATION": "$GCP_REGION"
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
       }
     },
     "bigtable": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "bigtable",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.codex"
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://bigtableadmin.googleapis.com/mcp"
       ],
       "env": {
-        "BIGTABLE_PROJECT": "$PROJECT_ID",
-        "BIGTABLE_INSTANCE": ""
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
       }
     },
     "cloud-storage": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "cloud-storage",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.codex"
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://storage.googleapis.com/storage/mcp"
       ],
       "env": {
-        "CLOUD_STORAGE_PROJECT": "$PROJECT_ID"
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
       }
     }
   }
