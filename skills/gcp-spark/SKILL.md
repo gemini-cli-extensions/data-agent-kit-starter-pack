@@ -1,23 +1,23 @@
 ---
 name: gcp-spark
 description: |
-  Develops and executes Spark code on Dataproc Clusters and Serverless.
+  Develops and executes Spark code on Managed Spark on Google Cloud (Dataproc Clusters and Serverless).
   Reads and writes data using BigLake Iceberg catalogs, BigQuery and Spanner.
   Debugs execution failures.
   Use when:
-  - Writing Spark ETL pipelines on GCP.
-  - Training or running inference with ML models with spark on GCP.
+  - Writing Spark ETL pipelines on Google Cloud Platform.
+  - Training or running inference with Machine Learning models with spark on Google Cloud Platform.
   - Managing Spark clusters, jobs, batches, and interactive sessions.
   Don't use when:
   - Writing generic Python scripts that don't use Spark.
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v10
+  version: v11
   publisher: google
 ---
 
-# Spark on Dataproc
+# Managed Spark on Google Cloud
 
 > [!IMPORTANT]
 >
@@ -61,8 +61,8 @@ metadata:
         (.ipynb)** format. Generate scripts (.py) only if explicitly requested.
     *   **Read and Write data**: **ALWAYS** Refer to
         `references/read_write_data.md` when reading or writing data.
-    *   **ML Tasks**: Refer to `@skill:ml-best-practices` skill and
-        `references/ml_tasks.md` when generating ML code.
+    *   **Machine Learning Tasks**: Refer to `@skill:ml-best-practices` skill and
+        `references/ml_tasks.md` when generating Machine Learning code.
     *   **Spark Optimizations**: **ALWAYS** refer to
         `references/spark_optimizations.md` when generating spark code and apply
         optimization whenever applicable.
@@ -112,7 +112,7 @@ Before submitting a job, verify:
 
 ## IAM Requirements
 
-The Dataproc service account needs:
+The Managed Spark (Dataproc) service account needs:
 
 *   `roles/dataproc.worker`: Job execution
 *   `roles/biglake.admin`: Iceberg table management
