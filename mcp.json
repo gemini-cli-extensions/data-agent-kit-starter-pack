@@ -6,7 +6,9 @@
       "command": "npx",
       "args": [
         "-y",
+        "-p",
         "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
+        "notebook-tools",
         "--mode=notebook"
       ]
     },
@@ -15,152 +17,99 @@
       "command": "npx",
       "args": [
         "-y",
+        "-p",
         "git+https://github.com/gemini-cli-extensions/data-agent-kit-starter-pack.git",
+        "notebook-tools",
         "--mode=visualization"
       ]
     },
     "bigquery": {
       "type": "stdio",
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "bigquery",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.other"
-      ]
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://bigquery.googleapis.com/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.other\"}"
+      }
     },
     "spanner": {
       "type": "stdio",
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "spanner",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.other"
-      ]
-    },
-    "alloydb-postgres-admin": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "alloydb-postgres-admin",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.other"
-      ]
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://spanner.googleapis.com/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.other\"}"
+      }
     },
     "alloydb-postgres": {
       "type": "stdio",
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "alloydb-postgres",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.other"
-      ]
-    },
-    "cloud-sql-postgresql-admin": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "cloud-sql-postgres-admin",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.other"
-      ]
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://alloydb.googleapis.com/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.other\"}"
+      }
     },
     "cloud-sql-postgresql": {
       "type": "stdio",
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "cloud-sql-postgres",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.other"
-      ]
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://sqladmin.googleapis.com/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.other\"}"
+      }
     },
     "knowledge_catalog": {
       "type": "stdio",
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "dataplex",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.other"
-      ]
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://dataplex.googleapis.com/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.other\"}"
+      }
     },
     "dataproc": {
       "type": "stdio",
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "dataproc",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.other"
-      ]
-    },
-    "serverless-spark": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "serverless-spark",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.other"
-      ]
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://dataproc-$GCP_REGION.googleapis.com/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.other\"}"
+      }
     },
     "bigtable": {
       "type": "stdio",
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "bigtable",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.other"
-      ]
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://bigtableadmin.googleapis.com/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.other\"}"
+      }
     },
     "cloud-storage": {
       "type": "stdio",
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "@toolbox-sdk/server@latest",
-        "--prebuilt",
-        "cloud-storage",
-        "--stdio",
-        "--user-agent-metadata",
-        "datacloud.other"
-      ]
+        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "https://storage.googleapis.com/storage/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.other\"}"
+      }
     }
   }
 }
