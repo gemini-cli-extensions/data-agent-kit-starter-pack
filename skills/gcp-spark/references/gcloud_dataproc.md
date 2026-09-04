@@ -1,13 +1,14 @@
-# Dataproc and Spark Integration
+# Managed Spark on Google Cloud (Dataproc) and Spark Integration
 
-Manage Spark resources on Google Cloud Dataproc Clusters and Serverless,
-including setting up clusters; launching jobs and batches; managing serverless
-session templates; running Spark Connect sessions; and inspecting outputs.
+Manage Spark resources on Managed Spark on Google Cloud (Dataproc Clusters and
+Serverless), including setting up clusters; launching jobs and batches; managing
+serverless session templates; running Spark Connect sessions; and inspecting
+outputs.
 
 ## Background
 
-Dataproc is Google Cloud's managed service for running Hadoop and Spark
-workloads. The two basic flavors are:
+Managed Spark on Google Cloud (Dataproc) is Google Cloud's managed service for
+running Hadoop and Spark workloads. The two basic flavors are:
 
 -   **Clusters** aka **Dataproc on GCE**: users create a cluster, then submit
     one or more Spark or other jobs. Users have control over the underlying VM
