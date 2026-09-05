@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v11
+  version: v12
   publisher: google
 ---
 
@@ -107,6 +107,13 @@ Before submitting a job, verify:
     using --properties=spark.jars.packages=...,
     --archives=gs://.../env.tar.gz#environment, --py-files, or a custom
     --container-image.
+-   [ ] **Managed Spark Connect and BigQuery data integrity**: When reading
+    BigQuery tables directly in PySpark notebooks, ALWAYS initialize
+    `DataprocSparkSession` via Google Cloud Managed Spark Connect and read using
+    `spark.read.format("bigquery").option("table", ...).load()`. NEVER fallback
+    to local SparkSession initialization, mock data, or synthetic generators
+    (`np.random`, `lognormal`) when encountering table discovery or read issues;
+    instead, preserve data integrity and directly query the specified table.
 
 --------------------------------------------------------------------------------
 
