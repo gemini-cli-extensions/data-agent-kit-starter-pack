@@ -226,10 +226,10 @@ the user to associate the notebook with a kernel using the Kernel Selector:
 It is expected for Serverless kernel creation to take approximately 2 minutes or
 more.
 
-### Spark Connect on Dataproc
+### Spark Connect on Dataproc (Notebooks and Scripts)
 
-To run or author Spark Connect sessions from Python or scripts, YOU MUST follow
-these steps:
+To initialize, run, or author Spark Connect sessions in PySpark notebooks or
+Python scripts, follow these steps:
 
 1.  **Activating environment**:
 
@@ -242,7 +242,7 @@ these steps:
     ```bash
     uv venv spark_env --python 3.12
     source spark_env/bin/activate
-    uv pip install dataproc-spark-connect
+    uv pip install -U google-cloud-spark-connect
     ```
 
 3.  **Pip environment**:
@@ -250,24 +250,18 @@ these steps:
     ```bash
     python3 -m venv spark_env
     source spark_env/bin/activate
-    pip install dataproc-spark-connect
+    pip install -U google-cloud-spark-connect
     ```
 
-4.  **Initialize `DataprocSparkSession` & Execute**: Use `DataprocSparkSession`
-    from `google.cloud.dataproc_spark_connect` to connect to Dataproc
-    Serverless. Session provisioning takes **2–3 minutes**; execute scripts in
-    the foreground (e.g. `python3 script.py | tee driver_log.txt`):
+4.  **Initialize `ManagedSparkSession` & Execute**: Use `ManagedSparkSession`
+    from `google.cloud.managed_spark_connect` to connect to Dataproc Serverless.
+    Session provisioning takes **2–3 minutes**; execute scripts in the
+    foreground (e.g. `python3 script.py | tee driver_log.txt`):
 
     ```python
-    from google.cloud.dataproc_spark_connect import DataprocSparkSession
+    from google.cloud.managed_spark_connect import ManagedSparkSession
 
-    spark = (
-        # Always use the active Dataproc project (e.g. from `gcloud config get project`)
-        DataprocSparkSession.builder.projectId("<DATAPROC_PROJECT_ID>")
-        .location("<REGION>")
-        # Optional: .dataprocSessionId("<SESSION_ID>") to name or reuse an existing session
-        .getOrCreate()
-    )
+    spark = ManagedSparkSession.builder.getOrCreate()
 
     # Run Spark DataFrame or SQL operations
     df = spark.sql("SELECT 'Hello from Spark Connect' AS message")
@@ -275,6 +269,37 @@ these steps:
 
     # Deactivate / stop the session
     spark.stop()
+    ```
+
+    You can configure Spark properties using the `.config()` method:
+
+    ```python
+    from google.cloud.managed_spark_connect import ManagedSparkSession
+
+    spark = (
+        ManagedSparkSession.builder.config("spark.executor.memory", "4g")
+        .config("spark.executor.cores", "2")
+        .getOrCreate()
+    )
+    ```
+
+    For advanced configuration, use the `Session` class:
+
+    ```python
+    from google.cloud.dataproc_v1 import Session
+    from google.cloud.managed_spark_connect import ManagedSparkSession
+
+    session_config = Session()
+    session_config.environment_config.execution_config.subnetwork_uri = (
+        "<SUBNET_URI>"
+    )
+    session_config.runtime_config.version = "3.0"
+    spark = (
+        ManagedSparkSession.builder.projectId("<PROJECT_ID>")
+        .location("us-central1")
+        .dataprocSessionConfig(session_config)
+        .getOrCreate()
+    )
     ```
 
 5.  **Local Environment Cleanup**:
