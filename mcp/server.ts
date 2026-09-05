@@ -444,7 +444,7 @@ async function startStandaloneServer() {
 }
 
 async function run() {
-  let ideName = process.env.DATA_CLOUD_CURR_IDE_NAME;
+  let ideName: string | null | undefined = process.env.DATA_CLOUD_CURR_IDE_NAME;
   if (!ideName) {
     ideName = await inferIdeName();
     if (ideName) {
@@ -462,7 +462,7 @@ async function run() {
         const notebookTransport = new StdioClientTransport({
           command: process.execPath,
           args: [proxyCmd, `notebooks-${ideName.toLowerCase()}`],
-          env: process.env
+          env: process.env as Record<string, string>,
         });
         notebookClient = new Client({ name: 'notebook-client', version: '0.1.0' }, { capabilities: {} });
         await notebookClient.connect(notebookTransport);
@@ -477,7 +477,7 @@ async function run() {
         const vizTransport = new StdioClientTransport({
           command: process.execPath,
           args: [proxyCmd, `visualization-${ideName.toLowerCase()}`],
-          env: process.env
+          env: process.env as Record<string, string>,
         });
         vizClient = new Client({ name: 'viz-client', version: '0.1.0' }, { capabilities: {} });
         await vizClient.connect(vizTransport);
