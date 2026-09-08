@@ -1,105 +1,107 @@
 {
   "mcpServers": {
     "notebook": {
+      "type": "stdio",
       "command": "node",
       "args": [
-        "${PLUGIN_ROOT}/mcp/dist/index.js",
+        "mcp/dist/index.js",
         "--mode=notebook"
-      ],
-      "env": {},
-      "env_vars": [
-        "DATA_CLOUD_CURR_IDE_NAME"
       ]
     },
     "visualization": {
+      "type": "stdio",
       "command": "node",
       "args": [
-        "${PLUGIN_ROOT}/mcp/dist/index.js",
+        "mcp/dist/index.js",
         "--mode=visualization"
-      ],
-      "env": {},
-      "env_vars": [
-        "DATA_CLOUD_CURR_IDE_NAME"
       ]
     },
     "bigquery": {
+      "type": "stdio",
       "command": "node",
       "args": [
-        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "mcp/bin/mcp_proxy_bundle.cjs",
         "https://bigquery.googleapis.com/mcp"
       ],
       "env": {
-        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity-cli\"}"
       }
     },
     "spanner": {
+      "type": "stdio",
       "command": "node",
       "args": [
-        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "mcp/bin/mcp_proxy_bundle.cjs",
         "https://spanner.googleapis.com/mcp"
       ],
       "env": {
-        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity-cli\"}"
       }
     },
     "alloydb-postgres": {
+      "type": "stdio",
       "command": "node",
       "args": [
-        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "mcp/bin/mcp_proxy_bundle.cjs",
         "https://alloydb.googleapis.com/mcp"
       ],
       "env": {
-        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity-cli\"}"
       }
     },
     "cloud-sql-postgresql": {
+      "type": "stdio",
       "command": "node",
       "args": [
-        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "mcp/bin/mcp_proxy_bundle.cjs",
         "https://sqladmin.googleapis.com/mcp"
       ],
       "env": {
-        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity-cli\"}"
       }
     },
     "knowledge_catalog": {
+      "type": "stdio",
       "command": "node",
       "args": [
-        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "mcp/bin/mcp_proxy_bundle.cjs",
         "https://dataplex.googleapis.com/mcp"
       ],
       "env": {
-        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity-cli\"}"
       }
     },
     "dataproc": {
+      "type": "stdio",
       "command": "node",
       "args": [
-        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "mcp/bin/mcp_proxy_bundle.cjs",
         "https://dataproc-$GCP_REGION.googleapis.com/mcp"
       ],
       "env": {
-        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity-cli\"}"
       }
     },
     "bigtable": {
+      "type": "stdio",
       "command": "node",
       "args": [
-        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "mcp/bin/mcp_proxy_bundle.cjs",
         "https://bigtableadmin.googleapis.com/mcp"
       ],
       "env": {
-        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity-cli\"}"
       }
     },
     "cloud-storage": {
+      "type": "stdio",
       "command": "node",
       "args": [
-        "${PLUGIN_ROOT}/mcp/bin/mcp_proxy_bundle.cjs",
+        "mcp/bin/mcp_proxy_bundle.cjs",
         "https://storage.googleapis.com/storage/mcp"
       ],
       "env": {
-        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.codex\"}"
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity-cli\"}"
       }
     }
   }

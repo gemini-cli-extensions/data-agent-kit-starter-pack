@@ -149,7 +149,7 @@ To verify your configuration:
 <summary><b>Antigravity CLI</b></summary>
 
 Edit the configuration file:
-`~/.gemini/antigravity-cli/plugins/data-agent-kit-starter-pack/mcp_config.json`
+`~/.gemini/config/plugins/dak/mcp_config.json`
 </details>
 
 <details>
