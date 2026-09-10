@@ -263,6 +263,24 @@ iceberg tables
     > [!IMPORTANT] You **MUST ALWAYS** surround the catalog name with backticks
     > in SQL statements and `writeTo()` calls to ensure proper handling of
     > special characters.
+-   **Catalog & Namespace Fallback**: When targeting an Iceberg catalog that is
+    unconfigured or raises `NoSuchNamespaceException` / `NoSuchCatalogException`
+    on default GCS storage, DO NOT hardcode arbitrary catalog session configs.
+    Check namespace availability or fallback gracefully to writing directly to
+    GCS in Parquet or CSV format:
+
+    ```python
+    try:
+        spark.sql(
+            "CREATE NAMESPACE IF NOT EXISTS `<CATALOG_NAME>`.<NAMESPACE_NAME>"
+        )
+        df.writeTo("`<CATALOG_NAME>`.<NAMESPACE_NAME>.<TABLE_NAME>").using(
+            "iceberg"
+        ).createOrReplace()
+    except Exception:
+        # Fallback to direct GCS storage if Iceberg catalog/namespace is unavailable
+        df.write.mode("overwrite").parquet("gs://<BUCKET>/<PATH>")
+    ```
 - [!WARNING] BigLake Iceberg catalog must be configured before tables can be
   read.
 
