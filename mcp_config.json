@@ -1,0 +1,98 @@
+{
+  "mcpServers": {
+    "notebook": {
+      "command": "node",
+      "args": [
+        "mcp/dist/index.js",
+        "--mode=notebook"
+      ]
+    },
+    "visualization": {
+      "command": "node",
+      "args": [
+        "mcp/dist/index.js",
+        "--mode=visualization"
+      ]
+    },
+    "bigquery": {
+      "command": "node",
+      "args": [
+        "mcp/bin/mcp_proxy_bundle.cjs",
+        "https://bigquery.googleapis.com/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity\"}"
+      }
+    },
+    "spanner": {
+      "command": "node",
+      "args": [
+        "mcp/bin/mcp_proxy_bundle.cjs",
+        "https://spanner.googleapis.com/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity\"}"
+      }
+    },
+    "alloydb-postgres": {
+      "command": "node",
+      "args": [
+        "mcp/bin/mcp_proxy_bundle.cjs",
+        "https://alloydb.googleapis.com/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity\"}"
+      }
+    },
+    "cloud-sql-postgresql": {
+      "command": "node",
+      "args": [
+        "mcp/bin/mcp_proxy_bundle.cjs",
+        "https://sqladmin.googleapis.com/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity\"}"
+      }
+    },
+    "knowledge_catalog": {
+      "command": "node",
+      "args": [
+        "mcp/bin/mcp_proxy_bundle.cjs",
+        "https://dataplex.googleapis.com/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity\"}"
+      }
+    },
+    "dataproc": {
+      "command": "node",
+      "args": [
+        "mcp/bin/mcp_proxy_bundle.cjs",
+        "https://dataproc-$GCP_REGION.googleapis.com/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity\"}"
+      }
+    },
+    "bigtable": {
+      "command": "node",
+      "args": [
+        "mcp/bin/mcp_proxy_bundle.cjs",
+        "https://bigtableadmin.googleapis.com/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity\"}"
+      }
+    },
+    "cloud-storage": {
+      "command": "node",
+      "args": [
+        "mcp/bin/mcp_proxy_bundle.cjs",
+        "https://storage.googleapis.com/storage/mcp"
+      ],
+      "env": {
+        "X_GOOG_PROXY_HEADERS": "{\"User-Agent\": \"datacloud.antigravity\"}"
+      }
+    }
+  }
+}
