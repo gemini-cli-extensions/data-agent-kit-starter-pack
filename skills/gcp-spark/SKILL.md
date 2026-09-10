@@ -13,7 +13,7 @@ description: |
   - Performing simple SQL queries that can be done directly in BigQuery.
 license: Apache-2.0
 metadata:
-  version: v11
+  version: v12
   publisher: google
 ---
 
@@ -46,6 +46,12 @@ metadata:
     Do NOT proceed with code generation, do NOT add fallback logic to code, and
     do NOT automatically substitute any alternative table (even if its schema
     seems to match) without explicit user permission.
+
+    *BigLake Iceberg Tables*: In `<CATALOG_NAME>.<NAMESPACE>.<TABLE>`,
+    `<CATALOG_NAME>` is the Iceberg REST catalog name, not a project ID. When a
+    table is missing or raises `NoSuchTableException`, list the available tables via
+    `spark.catalog.listTables('<NAMESPACE>')` and follow the *STRICT HALT RULE*:
+    report the missing table and alternatives to the user and halt.
 2.  **Verify source accessibility**: verify access/existence using `gcloud
     storage ls gs://<path-to-dataset>`. If accessing or reading a GCS path fails
     with a storage error e.g., permission errors like `403
