@@ -7,7 +7,7 @@ description: >-
   Trigger: an expected mcp__*_{service}_* tool is missing entirely (not just failing), or a call to one fails/hangs on a malformed host. Check via ToolSearch/deferred-tools listing before falling back to gcloud/bq CLI. Asks the user for a region, patches the live MCP config file(s), and tells the user how to restart without losing session context.
 license: Apache-2.0
 metadata:
-  version: v1
+  version: v2
   publisher: google
 ---
 
@@ -79,8 +79,3 @@ so the fix survives a reinstall):
     -   **Claude Code**: `claude --resume` (or `--continue`)
     -   **Codex**: `codex resume --last` (or `codex resume` for a picker)
     -   **Antigravity**: use its resume/history picker if available
-
-5.  For *this* request only, it's fine to fall back to `gcloud`/`bq` CLI once so
-    the user isn't blocked — say explicitly that it's a one-time fallback and
-    that the MCP tools should be used after the restart, so the workaround
-    doesn't become silently permanent.
