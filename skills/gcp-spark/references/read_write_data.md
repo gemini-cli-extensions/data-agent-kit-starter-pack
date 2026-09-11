@@ -153,6 +153,10 @@ Example with GCS storage:
 spark = SparkSession.builder \
     .appName("<APP_NAME>") \
     .config(
+        "spark.jars.packages",
+        "org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.5.0,org.apache.iceberg:iceberg-gcp-bundle:1.5.0",
+    ) \
+    .config(
         "spark.sql.extensions",
         "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions",
     ) \
@@ -178,8 +182,19 @@ spark = SparkSession.builder \
         "org.apache.iceberg.gcp.auth.GoogleAuthManager",
     ) \
     .config(
+        "spark.sql.catalog.<GCS_CATALOG_NAME>.gcp.auth.credentials-path",
+        "<PATH_TO_SA_KEY_JSON>",
+    ) \
+    .config(
         "spark.sql.catalog.<GCS_CATALOG_NAME>.io-impl",
         "org.apache.iceberg.gcp.gcs.GCSFileIO",
+    ) \
+    .config(
+        "spark.hadoop.google.cloud.auth.service.account.enable", "true"
+    ) \
+    .config(
+        "spark.hadoop.google.cloud.auth.service.account.json.keyfile",
+        "<PATH_TO_SA_KEY_JSON>",
     ) \
     .getOrCreate()
 ```
