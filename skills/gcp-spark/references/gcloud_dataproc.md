@@ -175,6 +175,12 @@ gcloud dataproc batches submit pyspark <SCRIPT_PATH.py> \
 
 You MUST set the `--deps-bucket` to a GCS path to upload workload dependencies.
 
+> [!IMPORTANT] Dependencies MUST be passed via
+> `--properties="spark.jars.packages=..."`, `--archives`, or `--py-files`; NEVER
+> run `pip install` or use `subprocess` package installations inside PySpark
+> scripts. Dynamic arguments (such as GCS paths) MUST NOT be hardcoded in
+> scripts—pass them via `argparse` after `--` (e.g. `... -- --arg value`).
+
 > [!IMPORTANT] Dataproc Serverless batches can be expected to take a very long
 > time. **Typical initial execution time:** 10-15 minutes. This is **NORMAL**
 > behavior. [!WARNING] **DO NOT CANCEL PREMATURELY!**
