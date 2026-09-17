@@ -9,7 +9,7 @@ description: |-
     4. You need to query BigQuery from within a notebook. DO NOT use the Python BigQuery client library; instead, you MUST use the `%%bqsql` magics explained in this skill.
 license: Apache-2.0
 metadata:
-  version: v5
+  version: v6
   publisher: google
 ---
 
@@ -101,14 +101,23 @@ kernel’s Python environment contains the necessary libraries (`bigframes`,
 ### No Active Kernel / Setup Check
 
 1.  **Infer or Ask about Kernel Preferences**:
+    -   **Infer from notebook purpose**:
+        -   Only "Spark" notebooks may use a **Remote Spark** kernel.
+            "BigFrames" and "BigQuery" notebooks MUST use **Local Python**.
+    -   **Infer from notebook cells**:
+        -   Presence of a Spark Connect session, for example
+            `ManagedSparkSession` or `DataprocSparkSession`, indicates
+            **Local Python**.
+    -   **Infer from notebook metadata**:
+        -   Read the `metadata.kernelspec` notebook field. A **Remote Spark**
+            kernel name starts with a connection hash.
     -   **Infer from Context**:
-        -   If the task mentions "Spark", "PySpark", or "distributed compute",
-            or if the active workspace is already a Spark cluster, lean towards
+        -   For a "Spark" notebook, evidence of a local Python setup (such as a
+            Spark Connect session) means you should lean towards
+            **Local Python**. Without such evidence, lean towards
             **Remote Spark**.
-        -   If the task is focused on "BigQuery", "BigFrames", or standard API
-            calls, lean towards **Local Python**.
     -   **Ask when Ambiguous**: If multiple options fit, ask if they prefer a
-        **Local Python** or a **Cloud/Remote Kernel** (e.g., Colab, Spark).
+        **Local Python** or a **Remote Kernel**.
 2.  **For Local Setup**: Use `@skill:managing-python-dependencies` to verify if
     a virtual environment exists. If not, create one. Ensure `ipykernel` is
     installed in that environment. Install any other relevant libraries.
@@ -217,6 +226,113 @@ key is to keep them grouped logically and separated by Markdown headers.*
     irreversible.
 3.  You SHOULD focus on columns directly related to accomplishing the task; not
     every column NEEDS to be cleaned.
+
+## Cell Execution
+
+When it is available, you **SHOULD** use the `notebook_execute_cell` tool to
+execute cells.
+
+For **Local Python** execution, you **MUST** use a virtual environment and the
+Python version inferred from the kernel definition.
+
+## Cell Execution Failure Handling
+
+> [!CAUTION]
+>
+> When a cell fails, the agent MUST follow the protocol below. The agent MUST
+> NEVER silently work around failures by fabricating data, substituting models,
+> or changing infrastructure. **Fake outputs that look correct are worse than a
+> visible error.**
+
+### 1. Retry First
+
+On any cell failure, **retry the cell once**: immediately call the cell
+execution tool again with the exact same parameters (same cell, same unmodified
+code). Do NOT edit the code, change the kernel, or alter any tool argument
+before this retry. Transient errors (network timeouts, kernel restarts, race
+conditions) are common. If the retry also fails with the **same or
+substantially similar error**, the failure is confirmed. Proceed to step 2.
+
+### 2. Classify the Failure
+
+Categorize the confirmed failure to determine whether the agent is allowed to
+fix it autonomously:
+
+#### Syntax / Logic Error
+
+-   Examples: `SyntaxError`, `NameError`, typos in column names, wrong API
+    usage.
+-   Agent May Fix: **YES** — fix the code.
+
+#### Missing Library
+
+-   Examples: `ModuleNotFoundError`, `ImportError`.
+-   Agent May Fix: **YES** — install it using
+    `@skill:managing-python-dependencies`.
+
+#### Infrastructure / Access Failure
+
+-   Examples: permission denied on GCS/S3, unreachable Spark master, missing
+    credentials, VPC/firewall errors.
+-   Agent May Fix: **NO** — STOP and ask the user.
+
+#### Missing Data or Model Artifact
+
+-   Examples: file/table/bucket not found, model path does not exist, empty
+    dataset.
+-   Agent May Fix: **NO** — STOP and ask the user.
+
+#### Kernel / Runtime Incompatibility
+
+-   Examples: Java version mismatch, unsupported Python version, class version
+    errors.
+-   Agent May Fix: **NO** — STOP and ask the user.
+
+### 3. Prohibited Workarounds (NEVER DO THESE)
+
+The following actions are **strictly forbidden** as remediation for a failing
+cell. Violating any of these produces misleading outputs that the user cannot
+trust.
+
+1.  **No Fabricating Data** — Never generate synthetic/sample data to replace a
+    dataset that failed to load. Never use `spark.createDataFrame(...)` or
+    `pd.DataFrame(...)` with made-up rows as a substitute for real data sources.
+2.  **No Substituting Models** — Never train a placeholder/dummy model to
+    replace a pre-trained model that failed to load. Never swap model types
+    (e.g., `RandomForestClassifier` for `XGBClassifier`) just to make the cell
+    pass.
+3.  **No Silently Changing Infrastructure** — Never switch
+    `master("spark://...")` → `master("local[*]")`. Never replace `gs://` /
+    `s3://` paths with local filesystem paths. Never swap a remote database
+    connection for a local file.
+4.  **No Downgrading the Execution Environment** — Never replace a
+    remote/managed Spark session with a local PySpark session.
+5.  **No Rewriting Cell Intent** — Never change what a cell fundamentally does
+    (e.g., turning "load from GCS" into "generate locally"). Minor syntax/API
+    fixes are allowed; replacing the data source is not.
+6.  **No Silently Reducing Data Scope** — Never add or lower `LIMIT` clauses,
+    filter predicates, or sampling to work around timeouts or resource errors
+    without explicit user approval.
+7.  **No Commenting Out Failing Code** — Never comment out or delete lines that
+    fail in order to make the cell "succeed". The cell must execute its intended
+    logic or not at all.
+
+### 4. Required User Interaction on Unresolvable Failures
+
+When a failure falls into a "STOP" category above, the agent MUST:
+
+1.  **Diagnose**: determine the most likely root cause from the error message
+    and context (e.g., "The GCS bucket returned a
+    403 — this is a permissions issue or the bucket may not exist in this
+    project").
+2.  **Report**: show the user the exact error message, which cell failed, and
+    the diagnosis.
+3.  **Suggest**: propose concrete actions the user can take to resolve it
+    (e.g., "Please verify the bucket exists with
+    `gcloud storage ls gs://foo-bucket/` and that your account has
+    `storage.objectViewer` on it").
+4.  **Wait**: do NOT proceed to subsequent cells. Wait for the user to resolve
+    the issue and explicitly confirm before retrying.
 
 ## Specialized Notebook Guidance
 
